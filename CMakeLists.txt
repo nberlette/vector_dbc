@@ -10,9 +10,7 @@ option(OPTION_USE_CPP11_REGEX "Use std::regex instead of boost::regex" OFF)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 set(CMAKE_INSTALL_PREFIX /)
 
-add_subdirectory(src)
-
 include(CTest)
-enable_testing()
-
 include(CPack)
+
+add_subdirectory(src)
