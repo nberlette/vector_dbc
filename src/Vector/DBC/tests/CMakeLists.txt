@@ -7,3 +7,7 @@ if(OPTION_RUN_CPPCHECK)
 endif()
 
 add_subdirectory(unittests)
+
+if(OPTION_USE_GCOV_LCOV)
+  add_subdirectory(lcov)
+endif()
