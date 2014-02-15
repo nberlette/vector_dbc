@@ -44,7 +44,7 @@ set(header_files
 
 add_compiler_export_flags()
 
-add_library(Vector_DBC SHARED ${source_files})
+add_library(Vector_DBC SHARED ${source_files} ${header_files})
 
 generate_export_header(Vector_DBC)
 
