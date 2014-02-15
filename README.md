@@ -6,14 +6,12 @@ This is a library to access CAN Databases (aka CANdb, aka DBC files) from Vector
 
 Building under Linux works as usual:
 
-<pre>
-mkdir build
-cd build
-cmake ..
-make
-make install DESTDIR=..
-make package
-</pre>
+    mkdir build
+    cd build
+    cmake ..
+    make
+    make install DESTDIR=..
+    make package
 
 # Build on Windows (e.g. Windows 7 64-Bit)
 
@@ -40,17 +38,13 @@ Dynamic tests are
 
 The test execution can be triggered using
 
-<pre>
-make test
-</pre>
+    make test
 
 # Package
 
 The package generation can be triggered using
 
-<pre>
-make package
-</pre>
+    make package
 
 # Repository Structure
 
