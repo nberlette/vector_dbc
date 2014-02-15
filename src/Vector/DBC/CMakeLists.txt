@@ -64,7 +64,7 @@ install(
   DESTINATION lib)
 
 install(
-  FILES ${CMAKE_CURRENT_BINARY_DIR}/Vector_DBC_export.h
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/vector_dbc_export.h
   DESTINATION include/Vector/DBC)
 
 install(
