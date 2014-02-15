@@ -21,8 +21,12 @@
 
 #pragma once
 
+#include "config.h"
+
 #include <map>
 #include <string>
+
+#include "vector_dbc_export.h"
 
 namespace Vector {
 namespace DBC {

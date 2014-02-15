@@ -21,9 +21,13 @@
 
 #pragma once
 
+#include "config.h"
+
 #include <string>
 
 #include "ValueDescriptions.h"
+
+#include "vector_dbc_export.h"
 
 namespace Vector {
 namespace DBC {
@@ -31,7 +35,7 @@ namespace DBC {
 /**
  * Value Table (VAL_TABLE)
  */
-class ValueTable
+class VECTOR_DBC_EXPORT ValueTable
 {
 public:
     ValueTable();

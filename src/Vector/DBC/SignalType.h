@@ -21,10 +21,14 @@
 
 #pragma once
 
+#include "config.h"
+
 #include <string>
 
 #include "ByteOrder.h"
 #include "ValueType.h"
+
+#include "vector_dbc_export.h"
 
 namespace Vector {
 namespace DBC {
@@ -32,7 +36,7 @@ namespace DBC {
 /**
  * Signal Type (SGTYPE)
  */
-class SignalType
+class VECTOR_DBC_EXPORT SignalType
 {
 public:
     SignalType();

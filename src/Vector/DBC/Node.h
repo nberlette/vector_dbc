@@ -21,10 +21,14 @@
 
 #pragma once
 
+#include "config.h"
+
 #include <map>
 #include <string>
 
 #include "Attribute.h"
+
+#include "vector_dbc_export.h"
 
 namespace Vector {
 namespace DBC {
@@ -32,7 +36,7 @@ namespace DBC {
 /**
  * Node (BU)
  */
-class Node
+class VECTOR_DBC_EXPORT Node
 {
 public:
     Node();

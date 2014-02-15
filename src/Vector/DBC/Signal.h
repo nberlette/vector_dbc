@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include "config.h"
+
 #include <map>
 #include <set>
 #include <string>
@@ -31,13 +33,15 @@
 #include "ValueDescriptions.h"
 #include "ValueType.h"
 
+#include "vector_dbc_export.h"
+
 namespace Vector {
 namespace DBC {
 
 /**
  * Signal (SG)
  */
-class Signal
+class VECTOR_DBC_EXPORT Signal
 {
 public:
     Signal();

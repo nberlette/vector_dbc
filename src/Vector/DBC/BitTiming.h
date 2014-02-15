@@ -21,13 +21,17 @@
 
 #pragma once
 
+#include "config.h"
+
+#include "vector_dbc_export.h"
+
 namespace Vector {
 namespace DBC {
 
 /**
  * Bit Timing (BS)
  */
-class BitTiming
+class VECTOR_DBC_EXPORT BitTiming
 {
 public:
     BitTiming();

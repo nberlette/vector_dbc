@@ -21,9 +21,13 @@
 
 #pragma once
 
+#include "config.h"
+
 #include <set>
 #include <string>
 #include <utility>
+
+#include "vector_dbc_export.h"
 
 namespace Vector {
 namespace DBC {
@@ -31,7 +35,7 @@ namespace DBC {
 /**
  * Extended Multiplexor (SG_MUL_VAL)
  */
-class ExtendedMultiplexor
+class VECTOR_DBC_EXPORT ExtendedMultiplexor
 {
 public:
     ExtendedMultiplexor();

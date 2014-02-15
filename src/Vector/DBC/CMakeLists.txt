@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 2.8)
 
+include(GenerateExportHeader)
+
 configure_file(
   config.h.in
   config.h)
 
-include_directories("${PROJECT_BINARY_DIR}")
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(source_files
   Attribute.cpp
@@ -40,7 +42,11 @@ set(header_files
   ValueTable.h
   ValueType.h)
 
+add_compiler_export_flags()
+
 add_library(Vector_DBC SHARED ${source_files})
+
+generate_export_header(Vector_DBC)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
   add_definitions(-std=c++11)
@@ -56,6 +62,10 @@ endif()
 install(
   TARGETS Vector_DBC
   DESTINATION lib)
+
+install(
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/Vector_DBC_export.h
+  DESTINATION include/Vector/DBC)
 
 install(
   FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h ${header_files}

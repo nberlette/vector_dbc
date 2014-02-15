@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include "config.h"
+
 #include <map>
 #include <set>
 #include <string>
@@ -28,13 +30,15 @@
 #include "Attribute.h"
 #include "ValueDescriptions.h"
 
+#include "vector_dbc_export.h"
+
 namespace Vector {
 namespace DBC {
 
 /**
  * Environment Variable (EV)
  */
-class EnvironmentVariable
+class VECTOR_DBC_EXPORT EnvironmentVariable
 {
 public:
     EnvironmentVariable();

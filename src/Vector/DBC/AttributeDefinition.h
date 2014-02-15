@@ -21,10 +21,14 @@
 
 #pragma once
 
+#include "config.h"
+
 #include <string>
 #include <vector>
 
 #include "AttributeValueType.h"
+
+#include "vector_dbc_export.h"
 
 namespace Vector {
 namespace DBC {
@@ -32,7 +36,7 @@ namespace DBC {
 /**
  * Attribute Definition (BA_DEF)
  */
-class AttributeDefinition
+class VECTOR_DBC_EXPORT AttributeDefinition
 {
 public:
     AttributeDefinition();

@@ -21,8 +21,12 @@
 
 #pragma once
 
+#include "config.h"
+
 #include <set>
 #include <string>
+
+#include "vector_dbc_export.h"
 
 namespace Vector {
 namespace DBC {
@@ -30,7 +34,7 @@ namespace DBC {
 /**
  * Signal Group (SIG_GROUP)
  */
-class SignalGroup
+class VECTOR_DBC_EXPORT SignalGroup
 {
 public:
     SignalGroup();
