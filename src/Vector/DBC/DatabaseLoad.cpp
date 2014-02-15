@@ -601,7 +601,10 @@ void Database::readAttributeValue(std::string & line)
         std::string nodeName = mBU[2];
         std::string attributeValue = mBU[3];
         AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
-        Attribute & attribute = nodes[nodeName].attributeValues[attributeName];
+        attributeDefinition.name = attributeName;
+        Node & node = nodes[nodeName];
+        node.name = nodeName;
+        Attribute & attribute = node.attributeValues[attributeName];
         attribute.name = attributeName;
         attribute.valueType = attributeDefinition.valueType;
         switch(attribute.valueType) {
