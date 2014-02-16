@@ -25,3 +25,7 @@ include(CTest)
 include(CPack)
 
 add_subdirectory(src)
+
+install(
+  FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.md
+  DESTINATION share/doc/Vector_DBC)
