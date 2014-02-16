@@ -1,9 +1,9 @@
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
-if(NOT OPTION_USE_CPP11_REGEX)
-  find_package(Boost 1.54 COMPONENTS regex system filesystem unit_test_framework REQUIRED)
+if(OPTION_USE_CPP11_REGEX)
+  find_package(Boost 1.54 COMPONENTS system filesystem unit_test_framework REQUIRED)
 else()
-  find_package(Boost 1.54 COMPONENTS regex system filesystem REQUIRED)
+  find_package(Boost 1.54 COMPONENTS regex system filesystem unit_test_framework REQUIRED)
 endif()
 
 include_directories(${Boost_INCLUDE_DIR})
