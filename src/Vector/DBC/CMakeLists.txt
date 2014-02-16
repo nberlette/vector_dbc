@@ -48,6 +48,7 @@ add_library(Vector_DBC SHARED ${source_files} ${header_files})
 
 if(OPTION_USE_GCOV)
   target_link_libraries(Vector_DBC gcov)
+  add_definitions(-g -O0 -fprofile-arcs -ftest-coverage)
 endif()
 
 generate_export_header(Vector_DBC)
@@ -61,10 +62,6 @@ if(OPTION_USE_CPP11_REGEX)
 else()
   find_package(Boost 1.54 COMPONENTS regex)
   include_directories(${Boost_INCLUDE_DIR})
-endif()
-
-if(OPTION_USE_GCOV)
-  add_definitions(-g -O0 -fprofile-arcs -ftest-coverage)
 endif()
 
 install(
