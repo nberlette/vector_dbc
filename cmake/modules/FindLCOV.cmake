@@ -1,0 +1,9 @@
+include(FindPackageHandleStandardArgs)
+
+find_program(LCOV_EXECUTABLE lcov)
+find_program(LCOV_GENHTML_EXECUTABLE genhtml)
+
+find_package_handle_standard_args(LCOV DEFAULT_MSG LCOV_EXECUTABLE)
+
+mark_as_advanced(LCOV_EXECUTABLE)
+mark_as_advanced(LCOV_GENHTML_EXECUTABLE)
