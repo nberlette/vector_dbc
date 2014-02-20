@@ -50,14 +50,16 @@ bool Database::save(const char * filename)
     /* Version (VERSION) */
     ofs << "VERSION \"" << version << "\"" << endl;
     ofs << endl;
-    ofs << endl;
 
     /* New Symbols (NS) */
-    ofs << "NS_ : " << endl;
-    for (std::set<std::string>::iterator newSymbol=newSymbols.begin(); newSymbol!=newSymbols.end(); ++newSymbol) {
-        ofs << "\t" << *newSymbol << endl;
+    if (newSymbols.size() > 0) {
+        ofs << endl;
+        ofs << "NS_ : " << endl;
+        for (auto newSymbol : newSymbols) {
+            ofs << "\t" << newSymbol << endl;
+        }
+        ofs << endl;
     }
-    ofs << endl;
 
     /* Bit Timing (BS) */
     ofs << "BS_:";
@@ -72,62 +74,62 @@ bool Database::save(const char * filename)
 
     /* Nodes (BU) */
     ofs << "BU_:";
-    for (std::map<std::string, Node>::iterator node=nodes.begin(); node!=nodes.end(); ++node) {
-        ofs << " " << node->first;
+    for (auto node : nodes) {
+        ofs << " " << node.second.name;
     }
-    ofs << endl;
     ofs << endl;
 
     /* Value Tables (VAL_TABLE) */
-    for (std::map<std::string, ValueTable>::iterator valueTable=valueTables.begin(); valueTable!=valueTables.end(); ++valueTable) {
-        ofs << "VAL_TABLE_ " << valueTable->second.name;
-        for (std::map<unsigned int, std::string>::iterator valueDescription=valueTable->second.valueDescriptions.begin(); valueDescription!=valueTable->second.valueDescriptions.end(); ++valueDescription) {
-            ofs << " " << valueDescription->first;
-            ofs << " \"" << valueDescription->second << "\"";
+    for (auto valueTable : valueTables) {
+        ofs << "VAL_TABLE_ " << valueTable.second.name;
+        for (auto valueDescription : valueTable.second.valueDescriptions) {
+            ofs << " " << valueDescription.first;
+            ofs << " \"" << valueDescription.second << "\"";
         }
         ofs << " ;" << endl;
     }
     ofs << endl;
+    ofs << endl;
 
     /* Messages (BO) */
-    for (std::map<unsigned int, Message>::iterator message=messages.begin(); message!=messages.end(); ++message) {
-        ofs << "BO_ " << message->second.id;
-        ofs << " " << message->second.name;
-        ofs << ": " << message->second.size << " ";
-        if (message->second.transmitter.empty()) {
+    for (auto message : messages) {
+        ofs << "BO_ " << message.second.id;
+        ofs << " " << message.second.name;
+        ofs << ": " << message.second.size << " ";
+        if (message.second.transmitter.empty()) {
             ofs << "Vector__XXX";
         } else {
-            ofs << message->second.transmitter;
+            ofs << message.second.transmitter;
         }
         ofs << endl;
 
         /* Signals (SG) */
-        for (std::map<std::string, Signal>::iterator signal=message->second.signals.begin(); signal!=message->second.signals.end(); ++signal) {
-            ofs << " SG_ " << signal->second.name;
-            if (signal->second.multiplexedSignal) {
+        for (auto signal : message.second.signals) {
+            ofs << " SG_ " << signal.second.name;
+            if (signal.second.multiplexedSignal) {
                 ofs << 'm';
-                ofs << signal->second.multiplexerSwitchValue;
+                ofs << signal.second.multiplexerSwitchValue;
             }
-            if (signal->second.multiplexorSwitch) {
+            if (signal.second.multiplexorSwitch) {
                 ofs << 'M';
             }
-            if (signal->second.multiplexedSignal || signal->second.multiplexorSwitch) {
+            if (signal.second.multiplexedSignal || signal.second.multiplexorSwitch) {
                 ofs << ' ';
             }
             ofs << " : ";
-            ofs << signal->second.startBit << '|' << signal->second.size << '@' << char(signal->second.byteOrder) << char(signal->second.valueType);
+            ofs << signal.second.startBit << '|' << signal.second.size << '@' << char(signal.second.byteOrder) << char(signal.second.valueType);
             ofs << ' ';
-            ofs << '(' << signal->second.factor << ',' << signal->second.offset << ')';
+            ofs << '(' << signal.second.factor << ',' << signal.second.offset << ')';
             ofs << ' ';
-            ofs << '[' << signal->second.minimum << '|' << signal->second.maximum << ']';
+            ofs << '[' << signal.second.minimum << '|' << signal.second.maximum << ']';
             ofs << ' ';
-            ofs << '"' << signal->second.unit << '"';
+            ofs << '"' << signal.second.unit << '"';
             ofs << ' ';
-            if (signal->second.receivers.empty()) {
+            if (signal.second.receivers.empty()) {
                 ofs << "Vector__XXX";
             } else {
-                for (std::set<std::string>::iterator receiver=signal->second.receivers.begin(); receiver!=signal->second.receivers.end(); ++receiver) {
-                    ofs << " " << *receiver;
+                for (auto receiver : signal.second.receivers) {
+                    ofs << " " << receiver;
                 }
             }
             ofs << endl;
@@ -135,74 +137,92 @@ bool Database::save(const char * filename)
 
         ofs << endl;
     }
-    ofs << endl;
-    ofs << endl;
 
     /* Message Transmitters (BO_TX_BU) */
-    for (std::map<unsigned int, Message>::iterator message=messages.begin(); message!=messages.end(); ++message) {
-        if (!message->second.transmitters.empty()) {
-            ofs << "BO_TX_BU_ " << message->second.id << " :";
-            for (std::set<std::string>::iterator transmitter=message->second.transmitters.begin(); transmitter!=message->second.transmitters.end(); ++transmitter) {
-                ofs << ' ' << *transmitter;
+    for (auto message : messages) {
+        if (!message.second.transmitters.empty()) {
+            ofs << "BO_TX_BU_ " << message.second.id << " :";
+            for (auto transmitter : message.second.transmitters) {
+                ofs << ' ' << transmitter;
             }
             ofs << ';' << endl;
         }
     }
+    ofs << endl;
 
     /* Environment Variables (EV) */
-    for (std::map<std::string, EnvironmentVariable>::iterator environmentVariable=environmentVariables.begin(); environmentVariable!=environmentVariables.end(); ++environmentVariable) {
-        ofs << "EV_ " << environmentVariable->second.name << " : ";
-        ofs << char(environmentVariable->second.type);
+    for (auto environmentVariable : environmentVariables) {
+        ofs << endl;
+        ofs << "EV_ " << environmentVariable.second.name << ": ";
+        switch (environmentVariable.second.type) {
+        case EnvironmentVariable::Type::Integer:
+        case EnvironmentVariable::Type::String:
+        case EnvironmentVariable::Type::Data:
+            ofs << '0';
+            break;
+        case EnvironmentVariable::Type::Float:
+            ofs << '1';
+            break;
+        }
         ofs << " [";
-        // minimum
+        ofs << environmentVariable.second.minimum;
         ofs << '|';
-        // maximum
+        ofs << environmentVariable.second.maximum;
         ofs << "] \"";
-        ofs << environmentVariable->second.unit;
+        ofs << environmentVariable.second.unit;
         ofs << "\" ";
-        ofs << environmentVariable->second.initialValue;
+        ofs << environmentVariable.second.initialValue;
         ofs << ' ';
-        ofs << environmentVariable->second.id;
+        ofs << environmentVariable.second.id;
         ofs << " DUMMY_NODE_VECTOR";
-        ofs << std::hex << environmentVariable->second.accessType << std::dec;
+        ofs << std::hex;
+        if (environmentVariable.second.type == EnvironmentVariable::Type::String) {
+            ofs << ((unsigned int)(environmentVariable.second.accessType) | 0x8000);
+        } else {
+            ofs << (unsigned int)(environmentVariable.second.accessType);
+        }
+        ofs << std::dec;
         ofs << ' ';
-        if (environmentVariable->second.accessNodes.empty()) {
+        if (environmentVariable.second.accessNodes.empty()) {
             ofs << "VECTOR__XXX";
         } else {
             bool first = true;
-            for (std::set<std::string>::iterator accessNode=environmentVariable->second.accessNodes.begin(); accessNode!=environmentVariable->second.accessNodes.end(); ++accessNode) {
+            for (auto accessNode : environmentVariable.second.accessNodes) {
                 if (first) {
                     first = false;
                 } else {
                     ofs << ',';
                 }
-                ofs << *accessNode;
+                ofs << accessNode;
             }
         }
         ofs << ";" << endl;
     }
 
     /* Environment Variables Data (ENVVAR_DATA) */
-    for (std::map<std::string, EnvironmentVariable>::iterator environmentVariable=environmentVariables.begin(); environmentVariable!=environmentVariables.end(); ++environmentVariable) {
-        ofs << "ENVVAR_DATA_ " << environmentVariable->second.name;
-        ofs << " : " << environmentVariable->second.dataSize;
-        ofs << ";" << endl;
+    for (auto environmentVariable : environmentVariables) {
+        if (environmentVariable.second.type == EnvironmentVariable::Type::Data) {
+            ofs << "ENVVAR_DATA_ " << environmentVariable.second.name;
+            ofs << ": " << environmentVariable.second.dataSize;
+            ofs << ";" << endl;
+        }
     }
+    ofs << endl; // this might go below SGTYPE
 
     /* Signal Types (SGTYPE, obsolete) */
-    for (std::map<std::string, SignalType>::iterator signalType=signalTypes.begin(); signalType!=signalTypes.end(); ++signalType) {
-        ofs << "SGTYPE_ " << signalType->second.name;
-        ofs << " : " << signalType->second.size;
-        ofs << '@' << char(signalType->second.byteOrder);
-        ofs << ' ' << char(signalType->second.valueType);
-        ofs << ' ' << signalType->second.defaultValue;
-        ofs << ", " << signalType->second.valueTable;
+    for (auto signalType : signalTypes) {
+        ofs << "SGTYPE_ " << signalType.second.name;
+        ofs << " : " << signalType.second.size;
+        ofs << '@' << char(signalType.second.byteOrder);
+        ofs << ' ' << char(signalType.second.valueType);
+        ofs << ' ' << signalType.second.defaultValue;
+        ofs << ", " << signalType.second.valueTable;
         ofs << ';' << endl;
     }
-    for (std::map<unsigned int, Message>::iterator message=messages.begin(); message!=messages.end(); ++message) {
-        for (std::map<std::string, Signal>::iterator signal=message->second.signals.begin(); signal!=message->second.signals.end(); ++signal) {
-            if (!signal->second.type.empty()) {
-                ofs << "SGTYPE_ " << message->second.id << ' ' << signal->second.name << " : " << signal->second.type << ";" << endl;
+    for (auto message : messages) {
+        for (auto signal : message.second.signals) {
+            if (!signal.second.type.empty()) {
+                ofs << "SGTYPE_ " << message.second.id << ' ' << signal.second.name << " : " << signal.second.type << ";" << endl;
             }
         }
     }
@@ -211,67 +231,76 @@ bool Database::save(const char * filename)
     if (!comment.empty()) {
         ofs << "CM_ \"" << comment << "\";" << endl;
     }
-    for (std::map<std::string, Node>::iterator node=nodes.begin(); node!=nodes.end(); ++node) {
-        if (!node->second.comment.empty()) {
-            ofs << "CM_ BU_ " << node->second.name << " \"" << node->second.comment << "\";" << endl;
+    for (auto node : nodes) {
+        if (!node.second.comment.empty()) {
+            ofs << "CM_ BU_ " << node.second.name << " \"" << node.second.comment << "\";" << endl;
         }
     }
-    for (std::map<unsigned int, Message>::iterator message=messages.begin(); message!=messages.end(); ++message) {
-        if (!message->second.comment.empty()) {
-            ofs << "CM_ BO_ " << message->second.id << " \"" << message->second.comment << "\";" << endl;
+    for (auto message : messages) {
+        if (!message.second.comment.empty()) {
+            ofs << "CM_ BO_ " << message.second.id << " \"" << message.second.comment << "\";" << endl;
         }
     }
-    for (std::map<unsigned int, Message>::iterator message=messages.begin(); message!=messages.end(); ++message) {
-        for (std::map<std::string, Signal>::iterator signal=message->second.signals.begin(); signal!=message->second.signals.end(); ++signal) {
-            if (!signal->second.comment.empty()) {
-                ofs << "CM_ SG_ " << message->second.id << ' ' << signal->second.name << " \"" << signal->second.comment << "\";" << endl;
+    for (auto message : messages) {
+        for (auto signal : message.second.signals) {
+            if (!signal.second.comment.empty()) {
+                ofs << "CM_ SG_ " << message.second.id << ' ' << signal.second.name << " \"" << signal.second.comment << "\";" << endl;
             }
         }
     }
-    for (std::map<std::string, EnvironmentVariable>::iterator environmentVariable=environmentVariables.begin(); environmentVariable!=environmentVariables.end(); ++environmentVariable) {
-        if (!environmentVariable->second.comment.empty()) {
-            ofs << "CM_ EV_ " << environmentVariable->second.name << " \"" << environmentVariable->second.comment << "\";" << endl;
+    for (auto environmentVariable : environmentVariables) {
+        if (!environmentVariable.second.comment.empty()) {
+            ofs << "CM_ EV_ " << environmentVariable.second.name << " \"" << environmentVariable.second.comment << "\";" << endl;
         }
     }
 
-    /* Attribute Definitions (BA_DEF) */
-    for (std::map<std::string, AttributeDefinition>::iterator attributeDefinition=attributeDefinitions.begin(); attributeDefinition!=attributeDefinitions.end(); ++attributeDefinition) {
-        ofs << "BA_DEF_ ";
-        switch(attributeDefinition->second.objectType) {
-        case AttributeDefinition::ObjectType::Database:
+    /* Attribute Definitions (BA_DEF) and Attribute Definitions at Relations (BA_DEF_REL) */
+    for (auto attributeDefinition : attributeDefinitions) {
+        switch(attributeDefinition.second.objectType) {
+        case AttributeDefinition::ObjectType::Network:
+            ofs << "BA_DEF_ ";
             break;
         case AttributeDefinition::ObjectType::Node:
-            ofs << "BU_ ";
+            ofs << "BA_DEF_ BU_ ";
             break;
         case AttributeDefinition::ObjectType::Message:
-            ofs << "BO_ ";
+            ofs << "BA_DEF_ BO_ ";
             break;
         case AttributeDefinition::ObjectType::Signal:
-            ofs << "SG_ ";
+            ofs << "BA_DEF_ SG_ ";
             break;
         case AttributeDefinition::ObjectType::EnvironmentVariable:
-            ofs << "EV_ ";
+            ofs << "BA_DEF_ EV_ ";
+            break;
+        case AttributeDefinition::ObjectType::ControlUnitEnvironmentVariable:
+            ofs << "BA_DEF_REL_ BU_EV_REL_ ";
+            break;
+        case AttributeDefinition::ObjectType::NodeTxMessage:
+            ofs << "BA_DEF_REL_ BU_BO_REL_ ";
+            break;
+        case AttributeDefinition::ObjectType::NodeMappedRxSignal:
+            ofs << "BA_DEF_REL_ BU_SG_REL_ ";
             break;
         }
-        ofs << " \"" << attributeDefinition->second.name << "\" ";
-        switch(attributeDefinition->second.valueType) {
+        ofs << " \"" << attributeDefinition.second.name << "\" ";
+        switch(attributeDefinition.second.valueType) {
         case AttributeValueType::Int:
             ofs << "INT ";
-            ofs << attributeDefinition->second.minimumIntegerValue;
+            ofs << attributeDefinition.second.minimumIntegerValue;
             ofs << " ";
-            ofs << attributeDefinition->second.maximumIntegerValue;
+            ofs << attributeDefinition.second.maximumIntegerValue;
             break;
         case AttributeValueType::Hex:
             ofs << "HEX ";
-            ofs << attributeDefinition->second.minimumHexValue;
+            ofs << attributeDefinition.second.minimumHexValue;
             ofs << " ";
-            ofs << attributeDefinition->second.maximumHexValue;
+            ofs << attributeDefinition.second.maximumHexValue;
             break;
         case AttributeValueType::Float:
             ofs << "FLOAT ";
-            ofs << attributeDefinition->second.minimumFloatValue;
+            ofs << attributeDefinition.second.minimumFloatValue;
             ofs << " ";
-            ofs << attributeDefinition->second.maximumFloatValue;
+            ofs << attributeDefinition.second.maximumFloatValue;
             break;
         case AttributeValueType::String:
             ofs << "STRING ";
@@ -279,13 +308,13 @@ bool Database::save(const char * filename)
         case AttributeValueType::Enum:
             ofs << "ENUM  ";
             bool first = true;
-            for (std::vector<std::string>::iterator enumValue=attributeDefinition->second.enumValues.begin(); enumValue!=attributeDefinition->second.enumValues.end(); ++enumValue) {
+            for (auto enumValue : attributeDefinition.second.enumValues) {
                 if (first) {
                     first = false;
                 } else {
                     ofs << ',';
                 }
-                ofs << "\"" << *enumValue << "\"";
+                ofs << "\"" << enumValue << "\"";
             }
             break;
         }
@@ -294,169 +323,238 @@ bool Database::save(const char * filename)
 
     /* Sigtype Attr List (?, obsolete) */
 
-    /* Attribute Defaults (BA_DEF_DEF) */
-    for (std::map<std::string, Attribute>::iterator attribute=attributeDefaults.begin(); attribute!=attributeDefaults.end(); ++attribute) {
-        ofs << "BA_DEF_DEF_  \"" << attribute->second.name << "\" ";
-        switch(attribute->second.valueType) {
+    /* Attribute Defaults (BA_DEF_DEF) and Attribute Defaults at Relations (BA_DEF_DEF_REL) */
+    for (auto attribute : attributeDefaults) {
+        AttributeDefinition attributeDefinition = attributeDefinitions[attribute.second.name];
+        switch(attributeDefinition.objectType) {
+        case AttributeDefinition::ObjectType::Network:
+        case AttributeDefinition::ObjectType::Node:
+        case AttributeDefinition::ObjectType::Message:
+        case AttributeDefinition::ObjectType::Signal:
+        case AttributeDefinition::ObjectType::EnvironmentVariable:
+            ofs << "BA_DEF_DEF_";
+            break;
+        case AttributeDefinition::ObjectType::ControlUnitEnvironmentVariable:
+        case AttributeDefinition::ObjectType::NodeTxMessage:
+        case AttributeDefinition::ObjectType::NodeMappedRxSignal:
+            ofs << "BA_DEF_DEF_REL_";
+            break;
+        }
+        ofs << "  \"" << attribute.second.name << "\" ";
+        switch(attribute.second.valueType) {
         case AttributeValueType::Int:
-            ofs << attribute->second.integerValue;
+            ofs << attribute.second.integerValue;
             break;
         case AttributeValueType::Hex:
-            ofs << attribute->second.hexValue;
+            ofs << attribute.second.hexValue;
             break;
         case AttributeValueType::Float:
-            ofs << attribute->second.floatValue;
+            ofs << attribute.second.floatValue;
             break;
         case AttributeValueType::String:
-            ofs << '\"' << attribute->second.stringValue << '\"';
+            ofs << '"' << attribute.second.stringValue << '"';
             break;
         case AttributeValueType::Enum:
-            ofs << '\"' << attribute->second.stringValue << '\"';
+            ofs << '"' << attribute.second.stringValue << '"';
             break;
         }
         ofs << ';' << endl;
     }
 
-    /* Attribute Values (BA) */
-    for (std::map<std::string, Attribute>::iterator attribute=attributeValues.begin(); attribute!=attributeValues.end(); ++attribute) {
-        ofs << "BA_ \"" << attribute->second.name << "\" ";
-        switch(attribute->second.valueType) {
+    /* Attribute Values (BA) for Network */
+    for (auto attribute : attributeValues) {
+        ofs << "BA_ \"" << attribute.second.name << "\" ";
+        switch(attribute.second.valueType) {
         case AttributeValueType::Int:
-            ofs << attribute->second.integerValue;
+            ofs << attribute.second.integerValue;
             break;
         case AttributeValueType::Hex:
-            ofs << attribute->second.hexValue;
+            ofs << attribute.second.hexValue;
             break;
         case AttributeValueType::Float:
-            ofs << attribute->second.floatValue;
+            ofs << attribute.second.floatValue;
             break;
         case AttributeValueType::String:
-            ofs << '\"' << attribute->second.stringValue << '\"';
+            ofs << '"' << attribute.second.stringValue << '"';
             break;
         case AttributeValueType::Enum:
-            ofs << attribute->second.enumValue;
+            ofs << attribute.second.enumValue;
             break;
         }
         ofs << ';' << endl;
     }
-    for (std::map<std::string, Node>::iterator node=nodes.begin(); node!=nodes.end(); ++node) {
-        for (std::map<std::string, Attribute>::iterator attribute=node->second.attributeValues.begin(); attribute!=node->second.attributeValues.end(); ++attribute) {
-            ofs << "BA_ \"" << attribute->second.name << "\" ";
-            ofs << "BU_ " << node->second.name << ' ';
-            switch(attribute->second.valueType) {
+
+    /* Attribute Values (BA) for Nodes (BU) */
+    for (auto node : nodes) {
+        for (auto attribute : node.second.attributeValues) {
+            ofs << "BA_ \"" << attribute.second.name << "\" ";
+            ofs << "BU_ " << node.second.name << ' ';
+            switch(attribute.second.valueType) {
             case AttributeValueType::Int:
-                ofs << attribute->second.integerValue;
+                ofs << attribute.second.integerValue;
                 break;
             case AttributeValueType::Hex:
-                ofs << attribute->second.hexValue;
+                ofs << attribute.second.hexValue;
                 break;
             case AttributeValueType::Float:
-                ofs << attribute->second.floatValue;
+                ofs << attribute.second.floatValue;
                 break;
             case AttributeValueType::String:
-                ofs << '\"' << attribute->second.stringValue << '\"';
+                ofs << '"' << attribute.second.stringValue << '"';
                 break;
             case AttributeValueType::Enum:
-                ofs << attribute->second.enumValue;
+                ofs << attribute.second.enumValue;
                 break;
             }
             ofs << ';' << endl;
         }
     }
-    for (std::map<unsigned int, Message>::iterator message=messages.begin(); message!=messages.end(); ++message) {
-        for (std::map<std::string, Attribute>::iterator attribute=message->second.attributeValues.begin(); attribute!=message->second.attributeValues.end(); ++attribute) {
-            ofs << "BA_ \"" << attribute->second.name << "\" ";
-            ofs << "BO_ " << message->second.id << ' ';
-            switch(attribute->second.valueType) {
+
+    /* Attribute Values (BA) for Messages (BO) */
+    for (auto message : messages) {
+        for (auto attribute : message.second.attributeValues) {
+            ofs << "BA_ \"" << attribute.second.name << "\" ";
+            ofs << "BO_ " << message.second.id << ' ';
+            switch(attribute.second.valueType) {
             case AttributeValueType::Int:
-                ofs << attribute->second.integerValue;
+                ofs << attribute.second.integerValue;
                 break;
             case AttributeValueType::Hex:
-                ofs << attribute->second.hexValue;
+                ofs << attribute.second.hexValue;
                 break;
             case AttributeValueType::Float:
-                ofs << attribute->second.floatValue;
+                ofs << attribute.second.floatValue;
                 break;
             case AttributeValueType::String:
-                ofs << '\"' << attribute->second.stringValue << '\"';
+                ofs << '"' << attribute.second.stringValue << '"';
                 break;
             case AttributeValueType::Enum:
-                ofs << attribute->second.enumValue;
+                ofs << attribute.second.enumValue;
                 break;
             }
             ofs << ';' << endl;
         }
     }
-    for (std::map<unsigned int, Message>::iterator message=messages.begin(); message!=messages.end(); ++message) {
-        for (std::map<std::string, Signal>::iterator signal=message->second.signals.begin(); signal!=message->second.signals.end(); ++signal) {
-            for (std::map<std::string, Attribute>::iterator attribute=signal->second.attributeValues.begin(); attribute!=signal->second.attributeValues.end(); ++attribute) {
-                ofs << "BA_ \"" << attribute->second.name << "\" ";
-                ofs << "SG_ " << message->second.id << ' ' << signal->second.name << ' ';
-                switch(attribute->second.valueType) {
+
+    /* Attribute Values (BA) for Signals (SG) */
+    for (auto message : messages) {
+        for (auto signal : message.second.signals) {
+            for (auto attribute : signal.second.attributeValues) {
+                ofs << "BA_ \"" << attribute.second.name << "\" ";
+                ofs << "SG_ " << message.second.id << ' ' << signal.second.name << ' ';
+                switch(attribute.second.valueType) {
                 case AttributeValueType::Int:
-                    ofs << attribute->second.integerValue;
+                    ofs << attribute.second.integerValue;
                     break;
                 case AttributeValueType::Hex:
-                    ofs << attribute->second.hexValue;
+                    ofs << attribute.second.hexValue;
                     break;
                 case AttributeValueType::Float:
-                    ofs << attribute->second.floatValue;
+                    ofs << attribute.second.floatValue;
                     break;
                 case AttributeValueType::String:
-                    ofs << '\"' << attribute->second.stringValue << '\"';
+                    ofs << '"' << attribute.second.stringValue << '"';
                     break;
                 case AttributeValueType::Enum:
-                    ofs << attribute->second.enumValue;
+                    ofs << attribute.second.enumValue;
                     break;
                 }
                 ofs << ';' << endl;
             }
         }
     }
-    for (std::map<std::string, EnvironmentVariable>::iterator environmentVariable=environmentVariables.begin(); environmentVariable!=environmentVariables.end(); ++environmentVariable) {
-        for (std::map<std::string, Attribute>::iterator attribute=environmentVariable->second.attributeValues.begin(); attribute!=environmentVariable->second.attributeValues.end(); ++attribute) {
-            ofs << "BA_ \"" << attribute->second.name << "\" ";
-            ofs << "EV_ " << environmentVariable->second.name << ' ';
-            switch(attribute->second.valueType) {
+
+    /* Attribute Values (BA) for Environment Variables (EV) */
+    for (auto environmentVariable : environmentVariables) {
+        for (auto attribute : environmentVariable.second.attributeValues) {
+            ofs << "BA_ \"" << attribute.second.name << "\" ";
+            ofs << "EV_ " << environmentVariable.second.name << ' ';
+            switch(attribute.second.valueType) {
             case AttributeValueType::Int:
-                ofs << attribute->second.integerValue;
+                ofs << attribute.second.integerValue;
                 break;
             case AttributeValueType::Hex:
-                ofs << attribute->second.hexValue;
+                ofs << attribute.second.hexValue;
                 break;
             case AttributeValueType::Float:
-                ofs << attribute->second.floatValue;
+                ofs << attribute.second.floatValue;
                 break;
             case AttributeValueType::String:
-                ofs << '\"' << attribute->second.stringValue << '\"';
+                ofs << '"' << attribute.second.stringValue << '"';
                 break;
             case AttributeValueType::Enum:
-                ofs << attribute->second.enumValue;
+                ofs << attribute.second.enumValue;
                 break;
             }
             ofs << ';' << endl;
         }
     }
 
+    /* Attribute Values for Relations (BA_REL) for relation  */
+    for (auto attributeRelation : attributeRelationValues) {
+        ofs << "BA_REL_ \"" << attributeRelation.name << "\" ";
+        switch(attributeRelation.relationType) {
+        case AttributeRelation::RelationType::ControlUnitEnvironmentVariable:
+            ofs << "BU_EV_REL_ ";
+            ofs << attributeRelation.nodeName;
+            ofs << ' ';
+            ofs << attributeRelation.environmentVariableName;
+            break;
+        case AttributeRelation::RelationType::NodeTxMessage:
+            ofs << "BU_BO_REL_ ";
+            ofs << attributeRelation.nodeName;
+            ofs << ' ';
+            ofs << attributeRelation.messageId;
+            break;
+        case AttributeRelation::RelationType::NodeMappedRxSignal:
+            ofs << "BU_SG_REL_ ";
+            ofs << attributeRelation.nodeName;
+            ofs << " SG_ ";
+            ofs << attributeRelation.messageId;
+            ofs << ' ';
+            ofs << attributeRelation.signalName;
+            break;
+        }
+        ofs << ' ';
+        switch(attributeRelation.valueType) {
+        case AttributeValueType::Int:
+            ofs << attributeRelation.integerValue;
+            break;
+        case AttributeValueType::Hex:
+            ofs << attributeRelation.hexValue;
+            break;
+        case AttributeValueType::Float:
+            ofs << attributeRelation.floatValue;
+            break;
+        case AttributeValueType::String:
+            ofs << '"' << attributeRelation.stringValue << '"';
+            break;
+        case AttributeValueType::Enum:
+            ofs << attributeRelation.enumValue;
+            break;
+        }
+        ofs << ';' << endl;
+    }
+
     /* Value Descriptions (VAL) */
-    for (std::map<unsigned int, Message>::iterator message=messages.begin(); message!=messages.end(); ++message) {
-        for (std::map<std::string, Signal>::iterator signal=message->second.signals.begin(); signal!=message->second.signals.end(); ++signal) {
-            if (!signal->second.valueDescriptions.empty()) {
-                ofs << "VAL_ " << message->first << ' ' << signal->first;
-                for (std::map<unsigned int, std::string>::iterator valueDescription=signal->second.valueDescriptions.begin(); valueDescription!=signal->second.valueDescriptions.end(); ++valueDescription) {
-                    ofs << " " << valueDescription->first;
-                    ofs << " \"" << valueDescription->second << "\"";
+    for (auto message : messages) {
+        for (auto signal : message.second.signals) {
+            if (!signal.second.valueDescriptions.empty()) {
+                ofs << "VAL_ " << message.second.id << ' ' << signal.second.name;
+                for (auto valueDescription : signal.second.valueDescriptions) {
+                    ofs << " " << valueDescription.first;
+                    ofs << " \"" << valueDescription.second << "\"";
                 }
                 ofs << " ;" << endl;
             }
         }
     }
-    for (std::map<std::string, EnvironmentVariable>::iterator environmentVariable=environmentVariables.begin(); environmentVariable!=environmentVariables.end(); ++environmentVariable) {
-        if (!environmentVariable->second.valueDescriptions.empty()) {
-            ofs << "VAL_ " << environmentVariable->first;
-            for (std::map<unsigned int, std::string>::iterator valueDescription=environmentVariable->second.valueDescriptions.begin(); valueDescription!=environmentVariable->second.valueDescriptions.end(); ++valueDescription) {
-                ofs << " " << valueDescription->first;
-                ofs << " \"" << valueDescription->second << "\"";
+    for (auto environmentVariable : environmentVariables) {
+        if (!environmentVariable.second.valueDescriptions.empty()) {
+            ofs << "VAL_ " << environmentVariable.second.name;
+            for (auto valueDescription : environmentVariable.second.valueDescriptions) {
+                ofs << " " << valueDescription.first;
+                ofs << " \"" << valueDescription.second << "\"";
             }
             ofs << " ;" << endl;
         }
@@ -469,58 +567,58 @@ bool Database::save(const char * filename)
     /* Filter (FILTER, obsolete) */
 
     /* Signal Type Refs (SGTYPE, obsolete) */
-    for (std::map<unsigned int, Message>::iterator message=messages.begin(); message!=messages.end(); ++message) {
-        for (std::map<std::string, Signal>::iterator signal=message->second.signals.begin(); signal!=message->second.signals.end(); ++signal) {
-            if (!signal->second.type.empty()) {
-                ofs << "SGTYPE_ " << message->second.id << ' ' << signal->second.name;
-                ofs << " : " << signal->second.type << ';' << endl;
+    for (auto message : messages) {
+        for (auto signal : message.second.signals) {
+            if (!signal.second.type.empty()) {
+                ofs << "SGTYPE_ " << message.second.id << ' ' << signal.second.name;
+                ofs << " : " << signal.second.type << ';' << endl;
             }
         }
     }
 
     /* Signal Groups (SIG_GROUP) */
-    for (std::map<unsigned int, Message>::iterator message=messages.begin(); message!=messages.end(); ++message) {
-        for (std::map<std::string, SignalGroup>::iterator signalGroup=message->second.signalGroups.begin(); signalGroup!=message->second.signalGroups.end(); ++signalGroup) {
-            ofs << "SIG_GROUP_ " << message->second.id << ' ' << signalGroup->second.name;
-            ofs << ' ' << signalGroup->second.repetitions;
+    for (auto message : messages) {
+        for (auto signalGroup : message.second.signalGroups) {
+            ofs << "SIG_GROUP_ " << message.second.id << ' ' << signalGroup.second.name;
+            ofs << ' ' << signalGroup.second.repetitions;
             bool first = true;
-            for (std::set<std::string>::iterator signal=signalGroup->second.signals.begin(); signal!=signalGroup->second.signals.end(); ++signal) {
+            for (auto signal : signalGroup.second.signals) {
                 if (first) {
                     first = false;
                 } else {
                     ofs << ',';
                 }
-                ofs << *signal;
+                ofs << signal;
             }
             ofs << ';' << endl;
         }
     }
 
     /* Signal Extended Value Type (SIG_VALTYPE, obsolete) */
-    for (std::map<unsigned int, Message>::iterator message=messages.begin(); message!=messages.end(); ++message) {
-        for (std::map<std::string, Signal>::iterator signal=message->second.signals.begin(); signal!=message->second.signals.end(); ++signal) {
-            if (signal->second.extendedValueType != Signal::ExtendedValueType::Undefined) {
-                ofs << "SIG_VALTYPE_ " << message->second.id << ' ' << signal->second.name;
-                ofs << " : " << char(signal->second.extendedValueType);
+    for (auto message : messages) {
+        for (auto signal : message.second.signals) {
+            if (signal.second.extendedValueType  !=  Signal::ExtendedValueType::Undefined) {
+                ofs << "SIG_VALTYPE_ " << message.second.id << ' ' << signal.second.name;
+                ofs << " : " << char(signal.second.extendedValueType);
                 ofs << endl;
             }
         }
     }
 
     /* Extended Multiplexing (SG_MUL_VAL) */
-    for (std::map<unsigned int, Message>::iterator message=messages.begin(); message!=messages.end(); ++message) {
-        for (std::map<std::string, Signal>::iterator signal=message->second.signals.begin(); signal!=message->second.signals.end(); ++signal) {
-            for (std::map<std::string, ExtendedMultiplexor>::iterator extendedMultiplexor=signal->second.extendedMultiplexors.begin(); extendedMultiplexor!=signal->second.extendedMultiplexors.end(); ++extendedMultiplexor) {
-                ofs << "SG_MUL_VAL_ " << message->second.id << ' ' << signal->second.name;
-                ofs << ' ' << extendedMultiplexor->second.switchName;
+    for (auto message : messages) {
+        for (auto signal : message.second.signals) {
+            for (auto extendedMultiplexor : signal.second.extendedMultiplexors) {
+                ofs << "SG_MUL_VAL_ " << message.second.id << ' ' << signal.second.name;
+                ofs << ' ' << extendedMultiplexor.second.switchName;
                 bool first = true;
-                for (std::set<ExtendedMultiplexor::ValueRange>::iterator valueRange=extendedMultiplexor->second.valueRanges.begin(); valueRange!=extendedMultiplexor->second.valueRanges.end(); ++valueRange) {
+                for (auto valueRange : extendedMultiplexor.second.valueRanges) {
                     if (first) {
                         first = false;
                     } else {
                         ofs << ", ";
                     }
-                    ofs << valueRange->first << '-' << valueRange->second;
+                    ofs << valueRange.first << '-' << valueRange.second;
                 }
                 ofs << ';' << endl;
             }
@@ -528,6 +626,7 @@ bool Database::save(const char * filename)
     }
 
     /* close stream */
+    ofs << endl;
     ofs.close();
 
     return true;

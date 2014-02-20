@@ -45,6 +45,10 @@ namespace DBC {
 
 void Database::chomp(std::string & line)
 {
+    if (line.length() == 0) {
+        return;
+    }
+
     for(;;) {
         char back = line.back();
         if ((back == '\r') || (back == '\n')) {
@@ -225,7 +229,7 @@ void Database::readMessage(std::ifstream & ifs, std::string & line)
     regex re("^BO_ ([[:digit:]]+) ([[:alnum:]_-]+) ?: ([[:digit:]]+) ([[:alnum:]_-]+)$");
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
-        Message & message =  messages[messageId];
+        Message & message = messages[messageId];
         message.id = messageId;
         message.name = m[2];
         message.size = stoul(m[3]);
@@ -273,7 +277,7 @@ void Database::readMessageTransmitter(std::string & line)
 void Database::readEnvironmentVariable(std::string & line)
 {
     smatch m;
-    regex re("^EV_ ([[:alnum:]_-]+) : ([[:digit:]]+) .([[:digit:].+-]+),([[:digit:].+-]+). \"(.*)\" ([[:digit:].+-]+) ([[:digit:]]+) DUMMY_NODE_VECTOR([[:digit:]]+) (.+) ;$");
+    regex re("^EV_ ([[:alnum:]_-]+) ?: ([[:digit:]]+) \\[([[:digit:].+-]+)\\|([[:digit:].+-]+)\\] \"(.*)\" ([[:digit:].+-]+) ([[:digit:]]+) DUMMY_NODE_VECTOR([[:digit:]]+) (.+) ?;$");
     if (regex_search(line, m, re)) {
         std::string envVarName = m[1];
         EnvironmentVariable & environmentVariable = environmentVariables[envVarName];
@@ -286,9 +290,6 @@ void Database::readEnvironmentVariable(std::string & line)
         case '1':
             environmentVariable.type = EnvironmentVariable::Type::Float;
             break;
-        case '2':
-            environmentVariable.type = EnvironmentVariable::Type::String;
-            break;
         default:
             std::cerr << line << std::endl;
         }
@@ -297,7 +298,27 @@ void Database::readEnvironmentVariable(std::string & line)
         environmentVariable.unit = m[5];
         environmentVariable.initialValue = stod(m[6]);
         environmentVariable.id = stoul(m[7]);
-        environmentVariable.accessType = stoul(m[8], nullptr, 16);
+        unsigned int accessType = stoul(m[8], nullptr, 16);
+        if (accessType & 0x8000) {
+            accessType &= ~0x8000;
+            environmentVariable.type = EnvironmentVariable::Type::String;
+        }
+        switch(accessType) {
+        case 0:
+            environmentVariable.accessType = EnvironmentVariable::AccessType::Unrestricted;
+            break;
+        case 1:
+            environmentVariable.accessType = EnvironmentVariable::AccessType::Read;
+            break;
+        case 2:
+            environmentVariable.accessType = EnvironmentVariable::AccessType::Write;
+            break;
+        case 3:
+            environmentVariable.accessType = EnvironmentVariable::AccessType::ReadWrite;
+            break;
+        default:
+            std::cerr << line << std::endl;
+        }
         std::istringstream iss(m[9]);
         while(iss.good()) {
             std::string accessNode;
@@ -314,11 +335,12 @@ void Database::readEnvironmentVariable(std::string & line)
 void Database::readEnvironmentVariableData(std::string & line)
 {
     smatch m;
-    regex re("^ENVVAR_DATA_ ([[:alnum:]_-]+) : ([[:digit:]]+);$");
+    regex re("^ENVVAR_DATA_ ([[:alnum:]_-]+) ?: ([[:digit:]]+);$");
     if (regex_search(line, m, re)) {
         std::string envVarName = m[1];
         EnvironmentVariable & environmentVariable = environmentVariables[envVarName];
         environmentVariable.name = envVarName;
+        environmentVariable.type = EnvironmentVariable::Type::Data;
         environmentVariable.dataSize = stoul(m[2]);
         return;
     }
@@ -484,7 +506,7 @@ void Database::readAttributeDefinition(std::string & line)
         AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
         attributeDefinition.name = attributeName;
         if (objectType == "") {
-            attributeDefinition.objectType = AttributeDefinition::ObjectType::Database;
+            attributeDefinition.objectType = AttributeDefinition::ObjectType::Network;
         } else
         if (objectType == "BU_") {
             attributeDefinition.objectType = AttributeDefinition::ObjectType::Node;
@@ -546,6 +568,75 @@ void Database::readAttributeDefinition(std::string & line)
     std::cerr << line << std::endl;
 }
 
+/* Attribute Definitions at Relations (BA_DEF_REL) */
+void Database::readAttributeDefinitionRelation(std::string & line)
+{
+    smatch m;
+    regex re("^BA_DEF_REL_ ([[:alnum:]_]*) +\"([[:alnum:]_-]+)\" ([[:alnum:]_]+) +(.*);$");
+    if (regex_search(line, m, re)) {
+        std::string objectType = m[1];
+        std::string attributeName = m[2];
+        std::string attributeValueType = m[3];
+        std::istringstream iss(m[4]);
+        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
+        attributeDefinition.name = attributeName;
+        if (objectType == "BU_EV_REL_") {
+            attributeDefinition.objectType = AttributeDefinition::ObjectType::ControlUnitEnvironmentVariable;
+        } else
+        if (objectType == "BU_BO_REL_") {
+            attributeDefinition.objectType = AttributeDefinition::ObjectType::NodeTxMessage;
+        } else
+        if (objectType == "BU_SG_REL_") {
+            attributeDefinition.objectType = AttributeDefinition::ObjectType::NodeMappedRxSignal;
+        } else {
+            std::cerr << line << std::endl;
+        }
+
+        if (attributeValueType == "INT") {
+            attributeDefinition.valueType = AttributeValueType::Int;
+            std::string value;
+            iss >> value;
+            attributeDefinition.minimumIntegerValue = stoul(value);
+            iss >> value;
+            attributeDefinition.maximumIntegerValue = stoul(value);
+        } else
+        if (attributeValueType == "HEX") {
+            attributeDefinition.valueType = AttributeValueType::Hex;
+            std::string value;
+            iss >> value;
+            attributeDefinition.minimumHexValue = stoul(value);
+            iss >> value;
+            attributeDefinition.maximumHexValue = stoul(value);
+        } else
+        if (attributeValueType == "FLOAT") {
+            attributeDefinition.valueType = AttributeValueType::Float;
+            std::string value;
+            iss >> value;
+            attributeDefinition.minimumFloatValue = stod(value);
+            iss >> value;
+            attributeDefinition.maximumFloatValue = stod(value);
+        } else
+        if (attributeValueType == "STRING") {
+            attributeDefinition.valueType = AttributeValueType::String;
+        } else
+        if (attributeValueType == "ENUM") {
+            attributeDefinition.valueType = AttributeValueType::Enum;
+            while(iss.good()) {
+                std::string value;
+                std::getline(iss, value, ',');
+                value.erase(0, 1);
+                value.pop_back();
+                attributeDefinition.enumValues.push_back(value);
+            }
+        } else {
+            std::cerr << line << std::endl;
+        }
+        return;
+    }
+
+    std::cerr << line << std::endl;
+}
+
 /* Sigtype Attr List (?, obsolete) */
 
 /* Attribute Defaults (BA_DEF_DEF) */
@@ -553,6 +644,48 @@ void Database::readAttributeDefault(std::string & line)
 {
     smatch m;
     regex re("^BA_DEF_DEF_ +\"([[:alnum:]_-]+)\" (.+);$");
+    if (regex_search(line, m, re)) {
+        std::string attributeName = m[1];
+        std::string attributeValue = m[2];
+        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
+        Attribute & attributeDefault = attributeDefaults[attributeName];
+        attributeDefault.name = attributeName;
+        attributeDefault.valueType = attributeDefinition.valueType;
+        attributeDefault.stringValue = attributeValue;
+        switch(attributeDefinition.valueType) {
+        case AttributeValueType::Int:
+            attributeDefault.integerValue = stoul(attributeValue);
+            break;
+        case AttributeValueType::Hex:
+            attributeDefault.hexValue = stoul(attributeValue);
+            break;
+        case AttributeValueType::Float:
+            attributeDefault.floatValue = stod(attributeValue);
+            break;
+        case AttributeValueType::String:
+            attributeValue.erase(0, 1);
+            attributeValue.pop_back();
+            attributeDefault.stringValue = attributeValue;
+            break;
+        case AttributeValueType::Enum:
+            attributeValue.erase(0, 1);
+            attributeValue.pop_back();
+            attributeDefault.stringValue = attributeValue;
+            break;
+        default:
+            std::cerr << line << std::endl;
+        }
+        return;
+    }
+
+    std::cerr << line << std::endl;
+}
+
+/* Attribute Defaults at Relations (BA_DEF_DEF_REL) */
+void Database::readAttributeDefaultRelation(std::string & line)
+{
+    smatch m;
+    regex re("^BA_DEF_DEF_REL_ +\"([[:alnum:]_-]+)\" (.+);$");
     if (regex_search(line, m, re)) {
         std::string attributeName = m[1];
         std::string attributeValue = m[2];
@@ -774,6 +907,134 @@ void Database::readAttributeValue(std::string & line)
     std::cerr << line << std::endl;
 }
 
+/* Attribute Values at Relations (BA_REL) */
+void Database::readAttributeRelationValue(std::string & line)
+{
+    // for relation "Control Unit - Env. Variable" (BU_EV_REL)
+    smatch mBU_EV_REL;
+    regex reBU_EV_REL("^BA_REL_ \"([[:alnum:]_-]+)\" BU_EV_REL_ ([[:alnum:]_-]+) ([[:alnum:]_-]+) (.+);$");
+    if (regex_search(line, mBU_EV_REL, reBU_EV_REL)) {
+        std::string attributeName = mBU_EV_REL[1];
+        std::string nodeName = mBU_EV_REL[2];
+        std::string envVarName = mBU_EV_REL[3];
+        std::string attributeValue = mBU_EV_REL[4];
+        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
+        AttributeRelation attributeRelation;
+        attributeRelation.relationType = AttributeRelation::RelationType::ControlUnitEnvironmentVariable;
+        attributeRelation.name = attributeName;
+        attributeRelation.nodeName = nodeName;
+        attributeRelation.environmentVariableName = envVarName;
+        attributeRelation.valueType = attributeDefinition.valueType;
+        switch(attributeRelation.valueType) {
+        case AttributeValueType::Int:
+            attributeRelation.integerValue = stoul(attributeValue);
+            break;
+        case AttributeValueType::Hex:
+            attributeRelation.hexValue = stoul(attributeValue);
+            break;
+        case AttributeValueType::Float:
+            attributeRelation.floatValue = stod(attributeValue);
+            break;
+        case AttributeValueType::String:
+            attributeValue.erase(0, 1);
+            attributeValue.pop_back();
+            attributeRelation.stringValue = attributeValue;
+            break;
+        case AttributeValueType::Enum:
+            attributeRelation.enumValue = stoul(attributeValue);
+            break;
+        default:
+            std::cerr << line << std::endl;
+        }
+        attributeRelationValues.insert(attributeRelation);
+        return;
+    }
+
+    // for relation "Node - Tx Message" (BU_BO_REL)
+    smatch mBU_BO_REL;
+    regex reBU_BO_REL("^BA_REL_ \"([[:alnum:]_-]+)\" BU_BO_REL_ ([[:alnum:]_-]+) ([[:digit:]]+) (.+);$");
+    if (regex_search(line, mBU_BO_REL, reBU_BO_REL)) {
+        std::string attributeName = mBU_BO_REL[1];
+        std::string nodeName = mBU_BO_REL[2];
+        unsigned int messageId = stoul(mBU_BO_REL[3]);
+        std::string attributeValue = mBU_BO_REL[4];
+        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
+        AttributeRelation attributeRelation;
+        attributeRelation.relationType = AttributeRelation::RelationType::NodeTxMessage;
+        attributeRelation.name = attributeName;
+        attributeRelation.nodeName = nodeName;
+        attributeRelation.messageId = messageId;
+        attributeRelation.valueType = attributeDefinition.valueType;
+        switch(attributeRelation.valueType) {
+        case AttributeValueType::Int:
+            attributeRelation.integerValue = stoul(attributeValue);
+            break;
+        case AttributeValueType::Hex:
+            attributeRelation.hexValue = stoul(attributeValue);
+            break;
+        case AttributeValueType::Float:
+            attributeRelation.floatValue = stod(attributeValue);
+            break;
+        case AttributeValueType::String:
+            attributeValue.erase(0, 1);
+            attributeValue.pop_back();
+            attributeRelation.stringValue = attributeValue;
+            break;
+        case AttributeValueType::Enum:
+            attributeRelation.enumValue = stoul(attributeValue);
+            break;
+        default:
+            std::cerr << line << std::endl;
+        }
+        attributeRelationValues.insert(attributeRelation);
+        return;
+    }
+
+    // for relation "Node - Mapped Rx Signal" (BU_SG_REL)
+    smatch mBU_SG_REL;
+    regex reBU_SG_REL("^BA_REL_ \"([[:alnum:]_-]+)\" BU_SG_REL_ ([[:alnum:]_-]+) SG_ ([[:digit:]]+) ([[:alnum:]_-]+) (.+);$");
+    if (regex_search(line, mBU_SG_REL, reBU_SG_REL)) {
+        std::string attributeName = mBU_SG_REL[1];
+        std::string nodeName = mBU_SG_REL[2];
+        unsigned int messageId = stoul(mBU_SG_REL[3]);
+        std::string signalName = mBU_SG_REL[4];
+        std::string attributeValue = mBU_SG_REL[5];
+        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
+        AttributeRelation attributeRelation;
+        attributeRelation.relationType = AttributeRelation::RelationType::NodeMappedRxSignal;
+        attributeRelation.name = attributeName;
+        attributeRelation.nodeName = nodeName;
+        attributeRelation.messageId = messageId;
+        attributeRelation.signalName = signalName;
+        attributeRelation.valueType = attributeDefinition.valueType;
+        switch(attributeRelation.valueType) {
+        case AttributeValueType::Int:
+            attributeRelation.integerValue = stoul(attributeValue);
+            break;
+        case AttributeValueType::Hex:
+            attributeRelation.hexValue = stoul(attributeValue);
+            break;
+        case AttributeValueType::Float:
+            attributeRelation.floatValue = stod(attributeValue);
+            break;
+        case AttributeValueType::String:
+            attributeValue.erase(0, 1);
+            attributeValue.pop_back();
+            attributeRelation.stringValue = attributeValue;
+            break;
+        case AttributeValueType::Enum:
+            attributeRelation.enumValue = stoul(attributeValue);
+            break;
+        default:
+            std::cerr << line << std::endl;
+        }
+        attributeRelationValues.insert(attributeRelation);
+        return;
+    }
+
+    std::cerr << line << std::endl;
+}
+
 /* Value Descriptions (VAL) */
 void Database::readValueDescription(std::string & line)
 {
@@ -939,8 +1200,9 @@ bool Database::load(const char * filename)
         std::string line;
         std::getline(ifs, line);
         chomp(line);
+
         smatch m;
-        regex re("^([[:alnum:]_]+) ");
+        regex re("^([[:alnum:]_]+):? ");
         if (regex_search(line, m, re)) {
             std::string name = m[1];
 
@@ -1016,6 +1278,12 @@ bool Database::load(const char * filename)
                 goto next;
             }
 
+            /* Attribute Definitions at Relations (BA_DEF_REL) */
+            if (name == "BA_DEF_REL_") {
+                readAttributeDefinitionRelation(line);
+                goto next;
+            }
+
             /* Sigtype Attr List (?, obsolete) */
 
             /* Attribute Defaults (BA_DEF_DEF) */
@@ -1024,11 +1292,26 @@ bool Database::load(const char * filename)
                 goto next;
             }
 
+            /* Attribute Defaults at Relations (BA_DEF_DEF_REL) */
+            if (name == "BA_DEF_DEF_REL_") {
+                readAttributeDefaultRelation(line);
+                goto next;
+            }
+
             /* Attribute Values (BA) */
             if (name == "BA_") {
                 readAttributeValue(line);
                 goto next;
             }
+
+            /* Attribute Values at Relations (BA_REL) */
+            // @todo invalid operator<
+#if 0
+            if (name == "BA_REL_") {
+                readAttributeRelationValue(line);
+                goto next;
+            }
+#endif
 
             /* Value Descriptions (VAL) */
             if (name == "VAL_") {

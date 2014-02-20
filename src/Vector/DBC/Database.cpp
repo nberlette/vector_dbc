@@ -36,7 +36,8 @@ Database::Database() :
     comment(),
     attributeDefinitions(),
     attributeDefaults(),
-    attributeValues()
+    attributeValues(),
+    attributeRelationValues()
 {
     /* nothing to do here */
 }

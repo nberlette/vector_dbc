@@ -44,7 +44,7 @@ class VECTOR_DBC_EXPORT Message
 public:
     Message();
 
-    /** Identifier */
+    /** Identifier (with bit 31 set this is extended CAN frame) */
     unsigned int id;
 
     /** Name */

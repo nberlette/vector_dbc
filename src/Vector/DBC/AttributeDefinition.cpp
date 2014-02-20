@@ -26,7 +26,7 @@ namespace DBC {
 
 AttributeDefinition::AttributeDefinition() :
     name(),
-    objectType(AttributeDefinition::ObjectType::Database),
+    objectType(AttributeDefinition::ObjectType::Network),
     valueType(AttributeValueType::Int),
     minimumIntegerValue(0),
     maximumIntegerValue(0),

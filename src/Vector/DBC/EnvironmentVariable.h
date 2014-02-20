@@ -48,9 +48,10 @@ public:
 
     /** Type */
     enum class Type : char {
-        Integer = '0', /**< Integer */
-        Float = '1', /**< Float */
-        String = '2' /**< String */
+        Integer, /**< Integer */
+        Float, /**< Float */
+        String, /**< String */
+        Data /**< Data */
     };
 
     /** Type */
@@ -72,16 +73,15 @@ public:
     unsigned int id;
 
     /** Access Type */
-    enum class AccessType : unsigned int {
+    enum class AccessType {
         Unrestricted = 0, /**< Unrestricted */
         Read = 1, /**< Read */
         Write = 2, /**< Write */
-        ReadWrite = 3, /**< Read and Write */
-        String = 0x8000 /**< String */
+        ReadWrite = 3 /**< Read and Write */
     };
 
     /** Access Type */
-    unsigned int accessType;
+    AccessType accessType;
 
     /** Access Nodes */
     std::set<std::string> accessNodes;

@@ -46,11 +46,14 @@ public:
 
     /** Object Type */
     enum class ObjectType {
-        Database, /**< Database */
+        Network, /**< Network */
         Node, /**< Node */
         Message, /**< Message */
         Signal, /**< Signal */
-        EnvironmentVariable /**< Environment Variable */
+        EnvironmentVariable, /**< Environment Variable */
+        ControlUnitEnvironmentVariable, /**< Control Unit - Env. Variable */
+        NodeTxMessage, /**< Node - Tx Message */
+        NodeMappedRxSignal /**< Node - Mapped Rx Signal */
     };
 
     /** Object Type */

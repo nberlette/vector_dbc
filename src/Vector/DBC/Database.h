@@ -29,6 +29,7 @@
 
 #include "Attribute.h"
 #include "AttributeDefinition.h"
+#include "AttributeRelation.h"
 #include "BitTiming.h"
 #include "EnvironmentVariable.h"
 #include "Message.h"
@@ -117,26 +118,35 @@ public:
     std::map<std::string, SignalType> signalTypes;
 
     /** Comments (CM) */
-    std::string comment; // for database
+    std::string comment; // for network
     // moved to Node (BU) for nodes
     // moved to Message (BO) for messages
     // moved to Signal (SG) for signals
     // moved to Environment Variable (EV) for environment variables
 
-    /** Attribute Definitions (BA_DEF) */
+    /**
+     * Attribute Definitions (BA_DEF) and
+     * Attribute Definitions for Relations (BA_DEF_REL)
+     */
     std::map<std::string, AttributeDefinition> attributeDefinitions;
 
     /* Sigtype Attr List (?, obsolete) */
 
-    /** Attribute Defaults (BA_DEF_DEF) */
+    /**
+     * Attribute Defaults (BA_DEF_DEF) and
+     * Attribute Defaults for Relations (BA_DEF_DEF_REL)
+     */
     std::map<std::string, Attribute> attributeDefaults;
 
     /** Attribute Values (BA) */
-    std::map<std::string, Attribute> attributeValues; // for database
+    std::map<std::string, Attribute> attributeValues; // for network
     // moved to Node (BU) for nodes
     // moved to Message (BO) for messages
     // moved to Signal (SG) for signals
     // moved to Environment Variable (EV) for environment variables
+
+    /** Attribute Values on Relations (BA_REF) */
+    std::set<AttributeRelation> attributeRelationValues;
 
     /* Value Descriptions (VAL) */
     // moved to Signals (BO) for signals
@@ -203,13 +213,22 @@ private:
     /* Attribute Definitions (BA_DEF) */
     void readAttributeDefinition(std::string & line);
 
+    /* Attribute Definitions at Relations (BA_DEF_REL) */
+    void readAttributeDefinitionRelation(std::string & line);
+
     /* Sigtype Attr List (?, obsolete) */
 
     /* Attribute Defaults (BA_DEF_DEF) */
     void readAttributeDefault(std::string & line);
 
+    /* Attribute Defaults at Relations (BA_DEF_DEF_REL) */
+    void readAttributeDefaultRelation(std::string & line);
+
     /* Attribute Values (BA) */
     void readAttributeValue(std::string & line);
+
+    /* Attribute Values at Relations (BA_REL) */
+    void readAttributeRelationValue(std::string & line);
 
     /* Value Descriptions (VAL) */
     void readValueDescription(std::string & line);

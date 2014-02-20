@@ -6,7 +6,9 @@
 int main()
 {
     Vector::DBC::Database database;
-    database.load(CMAKE_CURRENT_SOURCE_DIR "/data/Database.dbc");
+    if (!database.load(CMAKE_CURRENT_SOURCE_DIR "/data/Database.dbc")) {
+        return EXIT_FAILURE;
+    }
 
     /* loop over messages */
     for (auto message : database.messages) {

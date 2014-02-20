@@ -33,7 +33,8 @@ namespace Vector {
 namespace DBC {
 
 /**
- * Attribute
+ * Attribute Value (BA) and
+ * Attribute Default (BA_DEF_DEF)
  */
 class VECTOR_DBC_EXPORT Attribute
 {

@@ -19,27 +19,28 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "EnvironmentVariable.h"
+#include "AttributeRelation.h"
 
 namespace Vector {
 namespace DBC {
 
-EnvironmentVariable::EnvironmentVariable() :
-    name(),
-    type(EnvironmentVariable::Type::Integer),
-    minimum(0.0),
-    maximum(0.0),
-    unit(),
-    initialValue(0.0),
-    id(0),
-    accessType(EnvironmentVariable::AccessType::Unrestricted),
-    accessNodes(),
-    valueDescriptions(),
-    dataSize(0),
-    comment(),
-    attributeValues()
+AttributeRelation::AttributeRelation() :
+    Attribute(),
+    relationType(AttributeRelation::RelationType::ControlUnitEnvironmentVariable),
+    nodeName(),
+    messageId(0),
+    signalName()
 {
     /* nothing to do here */
+}
+
+bool AttributeRelation::operator<(const AttributeRelation & rhs) const
+{
+    if(relationType < rhs.relationType)
+        return true;
+    if(name < rhs.name)
+        return true;
+    return false;
 }
 
 }

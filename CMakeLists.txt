@@ -15,11 +15,36 @@ option(OPTION_RUN_DOXYGEN "Run Doxygen" ON)
 option(OPTION_RUN_CCCC "Run CCCC" OFF)
 option(OPTION_RUN_CPPCHECK "Run Cppcheck" OFF)
 
-# coverage analysis
+# dynamic tests
+option(OPTION_RUN_EXAMPLES "Run examples" ON)
+option(OPTION_RUN_TESTS "Run tests" ON)
 option(OPTION_USE_GCOV_LCOV "Use gcov and run lcov" OFF)
+
+# package
+set(CPACK_PACKAGE_CONTACT "Tobias Lorenz <tobias.lorenz@gmx.net>")
+set(CPACK_PACKAGE_VENDOR "Tobias Lorenz <tobias.lorenz@gmx.net>")
+set(CPACK_PACKAGE_VERSION 1.0.0)
+set(CPACK_VERSION_MAJOR 1)
+set(CPACK_VERSION_MINOR 1)
+set(CPACK_VERSION_PATCH 1)
+set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.GPL)
+set(CPACK_RESOURCE_FILE_README ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
+set(CPACK_NSIS_CONTACT "Tobias Lorenz <tobias.lorenz@gmx.net>")
+set(CPACK_NSIS_MUI_ICON ${CMAKE_CURRENT_SOURCE_DIR}/icon.ico)
+set(CPACK_NSIS_MUI_UNICON ${CMAKE_CURRENT_SOURCE_DIR}/icon.ico)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 set(CMAKE_INSTALL_PREFIX /)
+
+# Boost (needed for dynamic tests)
+if(WIN32)
+  set(BOOST_ROOT c:/local/boost_1_54_0)
+  set(BOOST_INCLUDEDIR ${BOOST_ROOT})
+  set(BOOST_LIBRARYDIR ${BOOST_ROOT}/lib32-msvc-11.0)
+  set(Boost_USE_STATIC_LIBS ON) # only find static libs
+  set(Boost_USE_MULTITHREADED ON)
+  set(Boost_USE_STATIC_RUNTIME OFF)
+endif()
 
 include(CTest)
 include(CPack)
@@ -27,5 +52,5 @@ include(CPack)
 add_subdirectory(src)
 
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.md
+  FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.GPL
   DESTINATION share/doc/Vector_DBC)

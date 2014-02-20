@@ -19,28 +19,48 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "EnvironmentVariable.h"
+#pragma once
+
+#include "config.h"
+
+#include <map>
+#include <string>
+
+#include "Attribute.h"
+
+#include "vector_dbc_export.h"
 
 namespace Vector {
 namespace DBC {
 
-EnvironmentVariable::EnvironmentVariable() :
-    name(),
-    type(EnvironmentVariable::Type::Integer),
-    minimum(0.0),
-    maximum(0.0),
-    unit(),
-    initialValue(0.0),
-    id(0),
-    accessType(EnvironmentVariable::AccessType::Unrestricted),
-    accessNodes(),
-    valueDescriptions(),
-    dataSize(0),
-    comment(),
-    attributeValues()
-{
-    /* nothing to do here */
-}
+class VECTOR_DBC_EXPORT AttributeRelation : public Attribute {
+public:
+    AttributeRelation();
+
+    /** Relation Type */
+    enum class RelationType {
+        ControlUnitEnvironmentVariable, /**< Control Unit - Env. Variable */
+        NodeTxMessage, /**< Node - Tx Message */
+        NodeMappedRxSignal /**< Node - Mapped Rx Signal */
+    };
+
+    /** Relation Type */
+    RelationType relationType;
+
+    /** Node Name */
+    std::string nodeName;
+
+    /** Environment Variable Name */
+    std::string environmentVariableName;
+
+    /** Message Identifier */
+    unsigned int messageId;
+
+    /** Signal Name */
+    std::string signalName;
+
+    bool operator<(const AttributeRelation & rhs) const;
+};
 
 }
 }

@@ -11,6 +11,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 set(source_files
   Attribute.cpp
   AttributeDefinition.cpp
+  AttributeRelation.cpp
   BitTiming.cpp
   Database.cpp
   DatabaseLoad.cpp
@@ -27,6 +28,7 @@ set(source_files
 set(header_files
   Attribute.h
   AttributeDefinition.h
+  AttributeRelation.h
   AttributeValueType.h
   BitTiming.h
   ByteOrder.h
@@ -62,6 +64,8 @@ if(OPTION_USE_CPP11_REGEX)
 else()
   find_package(Boost 1.54 COMPONENTS regex)
   include_directories(${Boost_INCLUDE_DIR})
+  link_directories(${Boost_LIBRARY_DIRS})
+  target_link_libraries(Vector_DBC ${Boost_REGEX_LIBRARY})
 endif()
 
 install(
