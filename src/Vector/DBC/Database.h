@@ -25,6 +25,7 @@
 
 #include <map>
 #include <set>
+#include <stack>
 #include <string>
 
 #include "Attribute.h"
@@ -156,7 +157,7 @@ public:
 
     /* Categories (CAT, obsolete) */
 
-    /* Filter (FILTER, obsolete) */
+    /* Filters (FILTER, obsolete) */
 
     /* Signal Type Refs (SGTYPE, obsolete) */
     // moved to Signal (SG)
@@ -164,92 +165,229 @@ public:
     /* Signal Groups (SIG_GROUP) */
     // moved to Message (BO)
 
-    /* Signal Extended Value Type (SIG_VALTYPE, obsolete) */
+    /* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
     // moved to Signal (SG)
 
-    /* Extended Multiplexing */
+    /* Extended Multiplexors (SG_MUL_VAL) */
     // moved to Signal (SG)
 
 private:
-    /* remove windows line endings */
+    /** Remove windows/unix/mac line endings */
     void chomp(std::string & line);
 
-    /* Version (VERSION) */
+    /** Read Version (VERSION) */
     void readVersion(std::string & line);
 
-    /* New Symbols (NS) */
+    /** Write Version (VERSION) */
+    void writeVersion(std::ofstream & ofs);
+
+    /** Read New Symbols (NS) */
     void readNewSymbols(std::ifstream & ifs, std::string & line);
 
-    /* Bit Timing (BS) */
+    /** Write New Symbols (NS) */
+    void writeNewSymbols(std::ofstream & ofs);
+
+    /** Read Bit Timing (BS) */
     void readBitTiming(std::string & line);
 
-    /* Nodes (BU) */
+    /** Write Bit Timing (BS) */
+    void writeBitTiming(std::ofstream & ofs);
+
+    /** Read Nodes (BU) */
     void readNodes(std::string & line);
 
-    /* Value Tables (VAL_TABLE) */
+    /** Write Nodes (BU) */
+    void writeNodes(std::ofstream & ofs);
+
+    /** Read Value Table (VAL_TABLE) */
     void readValueTable(std::string & line);
 
-    /* Signals (SG) */
+    /** Write Value Tables (VAL_TABLE) */
+    void writeValueTables(std::ofstream & ofs);
+
+    /** Read Signal (SG) */
     void readSignal(Message & message, std::string & line);
 
-    /* Messages (BO) */
+    /* Write Signals (SG) */
+    void writeSignals(std::ofstream & ofs, Message & message);
+
+    /** Read Message (BO) */
     void readMessage(std::ifstream & ifs, std::string & line);
 
-    /* Message Transmitters (BO_TX_BU) */
+    /** Write Messages (BO) */
+    void writeMessages(std::ofstream & ofs);
+
+    /** Read Message Transmitter (BO_TX_BU) */
     void readMessageTransmitter(std::string & line);
 
-    /* Environment Variables (EV) */
+    /** Write Message Transmitters (BO_TX_BU) */
+    void writeMessageTransmitters(std::ofstream & ofs);
+
+    /** Read Environment Variable (EV) */
     void readEnvironmentVariable(std::string & line);
 
-    /* Environment Variables Data (ENVVAR_DATA) */
+    /** Write Environment Variables (EV) */
+    void writeEnvironmentVariables(std::ofstream & ofs);
+
+    /** Read Environment Variable Data (ENVVAR_DATA) */
     void readEnvironmentVariableData(std::string & line);
 
-    /* Signal Types (SGTYPE, obsolete) */
+    /** Write Environment Variable Data (ENVVAR_DATA) */
+    void writeEnvironmentVariableData(std::ofstream & ofs);
+
+    /** Read Signal Type (SGTYPE, obsolete) */
     void readSignalType(std::string & line);
 
-    /* Comments (CM) */
+    /** Write Signal Types (SGTYPE, obsolete) */
+    void writeSignalTypes(std::ofstream & ofs);
+
+    /** Read Comment (CM) for Network */
+    bool readCommentNetwork(std::stack<size_t> & lineBreaks, std::string & line);
+
+    /** Read Comment (CM) for Node (BU) */
+    bool readCommentNode(std::stack<size_t> & lineBreaks, std::string & line);
+
+    /** Read Comment (CM) for Message (BO) */
+    bool readCommentMessage(std::stack<size_t> & lineBreaks, std::string & line);
+
+    /** Read Comment (CM) for Signal (SG) */
+    bool readCommentSignal(std::stack<size_t> & lineBreaks, std::string & line);
+
+    /** Read Comment (CM) for Environment Variable (EV) */
+    bool readCommentEnvironmentVariable(std::stack<size_t> & lineBreaks, std::string & line);
+
+    /** Read Comment (CM) */
     void readComment(std::ifstream & ifs, std::string & line);
 
-    /* Attribute Definitions (BA_DEF) */
+    /** Write Comments (CM) for Networks */
+    void writeCommentsNetworks(std::ofstream & ofs);
+
+    /** Write Comments (CM) for Node (BU) */
+    void writeCommentsNodes(std::ofstream & ofs);
+
+    /** Write Comments (CM) for Message (BO) */
+    void writeCommentsMessages(std::ofstream & ofs);
+
+    /** Write Comments (CM) for Signal (SG) */
+    void writeCommentsSignals(std::ofstream & ofs);
+
+    /** Write Comments (CM) for Environment Variable (EV) */
+    void writeCommentsEnvironmentVariables(std::ofstream & ofs);
+
+    /** Write Comments (CM) */
+    void writeComments(std::ofstream & ofs);
+
+    /** Read Attribute Definition (BA_DEF) */
     void readAttributeDefinition(std::string & line);
 
-    /* Attribute Definitions at Relations (BA_DEF_REL) */
+    /** Read Attribute Definition at Relation (BA_DEF_REL) */
     void readAttributeDefinitionRelation(std::string & line);
 
-    /* Sigtype Attr List (?, obsolete) */
+    /** Write Attribute Definitions (BA_DEF) and Attribute Definitions at Relations (BA_DEF_REL) */
+    void writeAttributeDefinitions(std::ofstream & ofs);
 
-    /* Attribute Defaults (BA_DEF_DEF) */
+    /* Read Sigtype Attr List (?, obsolete) */
+
+    /* Write Sigtype Attr Lists (?, obsolete) */
+
+    /** Read Attribute Default (BA_DEF_DEF) */
     void readAttributeDefault(std::string & line);
 
-    /* Attribute Defaults at Relations (BA_DEF_DEF_REL) */
+    /** Read Attribute Default at Relation (BA_DEF_DEF_REL) */
     void readAttributeDefaultRelation(std::string & line);
 
-    /* Attribute Values (BA) */
+    /** Write Attribute Defaults (BA_DEF_DEF) and Attribute Defaults at Relations (BA_DEF_DEF_REL) */
+    void writeAttributeDefaults(std::ofstream & ofs);
+
+    /** Read Attribute Value (BA) for Network */
+    bool readAttributeValueNetwork(std::string & line);
+
+    /** Read Attribute Value (BA) for Node (BU) */
+    bool readAttributeValueNode(std::string & line);
+
+    /** Read Attribute Value (BA) for Message (BO) */
+    bool readAttributeValueMessage(std::string & line);
+
+    /** Read Attribute Value (BA) for Signal (SG) */
+    bool readAttributeValueSignal(std::string & line);
+
+    /** Read Attribute Value (BA) for Environment Variable (EV) */
+    bool readAttributeValueEnvironmentVariable(std::string & line);
+
+    /** Read Attribute Value (BA) */
     void readAttributeValue(std::string & line);
 
-    /* Attribute Values at Relations (BA_REL) */
+    /** Write Attribute Values (BA) for Networks */
+    void writeAttributeValuesNetworks(std::ofstream & ofs);
+
+    /** Write Attribute Values (BA) for Nodes (BU) */
+    void writeAttributeValuesNodes(std::ofstream & ofs);
+
+    /** Write Attribute Values (BA) for Messages (BO) */
+    void writeAttributeValuesMessages(std::ofstream & ofs);
+
+    /** Write Attribute Values (BA) for Signals (SG) */
+    void writeAttributeValuesSignals(std::ofstream & ofs);
+
+    /** Write Attribute Values (BA) for Environment Variables (EV) */
+    void writeAttributeValuesEnvironmentVariables(std::ofstream & ofs);
+
+    /** Read Attribute Value at Relation (BA_REL) */
     void readAttributeRelationValue(std::string & line);
 
-    /* Value Descriptions (VAL) */
+    /** Write Attribute Values at Relations (BA_REL) */
+    void writeAttributeRelationValues(std::ofstream & ofs);
+
+    /* Read Value Description (VAL) for Signal (SG) */
+    bool readValueDescriptionSignal(std::string & line);
+
+    /* Read Value Description (VAL) for Environment Variable (EV) */
+    bool readValueDescriptionEnvironmentVariable(std::string & line);
+
+    /** Read Value Description (VAL) */
     void readValueDescription(std::string & line);
 
-    /* Category Definitions (?, obsolete) */
+    /* Write Value Descriptions (VAL) for Signals (SG) */
+    void writeValueDescriptionsSignals(std::ofstream & ofs);
 
-    /* Categories (?, obsolete) */
+    /* Write Value Descriptions (VAL) for Environment Variables (EV) */
+    void writeValueDescriptionsEnvironmentVariables(std::ofstream & ofs);
 
-    /* Filter (?, obsolete) */
+    /* Read Category Definition (?, obsolete) */
 
-    /* Signal Type Refs (SGTYPE, obsolete) */
+    /* Write Category Definitions (?, obsolete) */
+
+    /* Read Category (?, obsolete) */
+
+    /* Write Categories (?, obsolete) */
+
+    /* Read Filter (?, obsolete) */
+
+    /* Write Filters (?, obsolete) */
+
+    /* Read Signal Type Ref (SGTYPE, obsolete) */
     // see above readSignalType
 
-    /* Signal Groups (SIG_GROUP) */
+    /* Write Signal Type Refs (SGTYPE, obsolete) */
+    // see above writeSignalTypes
+
+    /** Read Signal Group (SIG_GROUP) */
     void readSignalGroup(std::string & line);
 
-    /* Signal Extended Value Type (SIG_VALTYPE, obsolete) */
+    /** Write Signal Groups (SIG_GROUP) */
+    void writeSignalGroups(std::ofstream & ofs);
+
+    /** Read Signal Extended Value Type (SIG_VALTYPE, obsolete) */
     void readSignalExtendedValueType(std::string & line);
 
-    /* Extended Multiplexing (SG_MUL_VAL) */
+    /** Write Signal Extended Value Types (SIG_VALTYPE, obsolete) */
+    void writeSignalExtendedValueTypes(std::ofstream & ofs);
+
+    /** Read Extended Multiplexor (SG_MUL_VAL) */
     void readExtendedMultiplexor(std::string & line);
+
+    /** Write Extended Multiplexors (SG_MUL_VAL) */
+    void writeExtendedMultiplexors(std::ofstream & ofs);
 };
 
 }

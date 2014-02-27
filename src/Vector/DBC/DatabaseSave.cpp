@@ -32,26 +32,19 @@ namespace DBC {
 #define constexpr static const
 #endif
 
+/* this is the standard line ending for this file format */
 constexpr char endl[] = "\r\n";
 
-bool Database::save(const char * filename)
+/* Version (VERSION) */
+void Database::writeVersion(std::ofstream & ofs)
 {
-    std::ofstream ofs;
-
-    std::setlocale(LC_ALL, "C");
-
-    /* open stream */
-    ofs.open(filename, std::ofstream::out | std::ofstream::trunc);
-    if (!ofs.is_open()) {
-        return false;
-    }
-    ofs.precision(16);
-
-    /* Version (VERSION) */
     ofs << "VERSION \"" << version << "\"" << endl;
     ofs << endl;
+}
 
-    /* New Symbols (NS) */
+/* New Symbols (NS) */
+void Database::writeNewSymbols(std::ofstream & ofs)
+{
     if (newSymbols.size() > 0) {
         ofs << endl;
         ofs << "NS_ : " << endl;
@@ -60,8 +53,11 @@ bool Database::save(const char * filename)
         }
         ofs << endl;
     }
+}
 
-    /* Bit Timing (BS) */
+/* Bit Timing (BS) */
+void Database::writeBitTiming(std::ofstream & ofs)
+{
     ofs << "BS_:";
     if (bitTiming.baudrate || bitTiming.btr1 || bitTiming.btr2) {
         ofs << ' ' << bitTiming.baudrate;
@@ -71,15 +67,21 @@ bool Database::save(const char * filename)
     }
     ofs << endl;
     ofs << endl;
+}
 
-    /* Nodes (BU) */
+/* Nodes (BU) */
+void Database::writeNodes(std::ofstream & ofs)
+{
     ofs << "BU_:";
     for (auto node : nodes) {
         ofs << " " << node.second.name;
     }
     ofs << endl;
+}
 
-    /* Value Tables (VAL_TABLE) */
+/* Value Tables (VAL_TABLE) */
+void Database::writeValueTables(std::ofstream & ofs)
+{
     for (auto valueTable : valueTables) {
         ofs << "VAL_TABLE_ " << valueTable.second.name;
         for (auto valueDescription : valueTable.second.valueDescriptions) {
@@ -90,8 +92,57 @@ bool Database::save(const char * filename)
     }
     ofs << endl;
     ofs << endl;
+}
 
-    /* Messages (BO) */
+/* Signals (SG) */
+void Database::writeSignals(std::ofstream & ofs, Message & message)
+{
+    for (auto signal : message.signals) {
+        /* Name */
+        ofs << " SG_ " << signal.second.name;
+
+        /* Multiplexed Signal */
+        if (signal.second.multiplexedSignal) {
+            ofs << 'm' << signal.second.multiplexerSwitchValue;
+        }
+
+        /* Multiplexor Switch, Multiplexor Signal */
+        if (signal.second.multiplexorSwitch) {
+            ofs << 'M';
+        }
+
+        if (signal.second.multiplexedSignal || signal.second.multiplexorSwitch) {
+            ofs << ' ';
+        }
+        ofs << " : ";
+
+        /* Start Bit, Size, Byte Order, Value Type */
+        ofs << signal.second.startBit << '|' << signal.second.size << '@' << char(signal.second.byteOrder) << char(signal.second.valueType);
+
+        /* Factor, Offset */
+        ofs << " (" << signal.second.factor << ',' << signal.second.offset << ')';
+
+        /* Minimum, Maximum */
+        ofs << " [" << signal.second.minimum << '|' << signal.second.maximum << ']';
+
+        /* Unit */
+        ofs << " \"" << signal.second.unit << "\" ";
+
+        /* Receivers */
+        if (signal.second.receivers.empty()) {
+            ofs << "Vector__XXX";
+        } else {
+            for (auto receiver : signal.second.receivers) {
+                ofs << " " << receiver;
+            }
+        }
+        ofs << endl;
+    }
+}
+
+/* Messages (BO) */
+void Database::writeMessages(std::ofstream & ofs)
+{
     for (auto message : messages) {
         ofs << "BO_ " << message.second.id;
         ofs << " " << message.second.name;
@@ -104,41 +155,15 @@ bool Database::save(const char * filename)
         ofs << endl;
 
         /* Signals (SG) */
-        for (auto signal : message.second.signals) {
-            ofs << " SG_ " << signal.second.name;
-            if (signal.second.multiplexedSignal) {
-                ofs << 'm';
-                ofs << signal.second.multiplexerSwitchValue;
-            }
-            if (signal.second.multiplexorSwitch) {
-                ofs << 'M';
-            }
-            if (signal.second.multiplexedSignal || signal.second.multiplexorSwitch) {
-                ofs << ' ';
-            }
-            ofs << " : ";
-            ofs << signal.second.startBit << '|' << signal.second.size << '@' << char(signal.second.byteOrder) << char(signal.second.valueType);
-            ofs << ' ';
-            ofs << '(' << signal.second.factor << ',' << signal.second.offset << ')';
-            ofs << ' ';
-            ofs << '[' << signal.second.minimum << '|' << signal.second.maximum << ']';
-            ofs << ' ';
-            ofs << '"' << signal.second.unit << '"';
-            ofs << ' ';
-            if (signal.second.receivers.empty()) {
-                ofs << "Vector__XXX";
-            } else {
-                for (auto receiver : signal.second.receivers) {
-                    ofs << " " << receiver;
-                }
-            }
-            ofs << endl;
-        }
+        writeSignals(ofs, message.second);
 
         ofs << endl;
     }
+}
 
-    /* Message Transmitters (BO_TX_BU) */
+/* Message Transmitters (BO_TX_BU) */
+void Database::writeMessageTransmitters(std::ofstream & ofs)
+{
     for (auto message : messages) {
         if (!message.second.transmitters.empty()) {
             ofs << "BO_TX_BU_ " << message.second.id << " :";
@@ -149,31 +174,49 @@ bool Database::save(const char * filename)
         }
     }
     ofs << endl;
+}
 
-    /* Environment Variables (EV) */
+/* Environment Variables (EV) */
+void Database::writeEnvironmentVariables(std::ofstream & ofs)
+{
     for (auto environmentVariable : environmentVariables) {
         ofs << endl;
         ofs << "EV_ " << environmentVariable.second.name << ": ";
+
+        /* Type */
         switch (environmentVariable.second.type) {
+        // Integer, String, Data
         case EnvironmentVariable::Type::Integer:
         case EnvironmentVariable::Type::String:
         case EnvironmentVariable::Type::Data:
             ofs << '0';
             break;
+        // Float
         case EnvironmentVariable::Type::Float:
             ofs << '1';
             break;
         }
+
+        /* Minimum, Maximum */
         ofs << " [";
         ofs << environmentVariable.second.minimum;
         ofs << '|';
         ofs << environmentVariable.second.maximum;
-        ofs << "] \"";
+        ofs << ']';
+
+        /* Unit */
+        ofs << " \"";
         ofs << environmentVariable.second.unit;
         ofs << "\" ";
+
+        /* Initial Value */
         ofs << environmentVariable.second.initialValue;
         ofs << ' ';
+
+        /* ID */
         ofs << environmentVariable.second.id;
+
+        /* Access Type */
         ofs << " DUMMY_NODE_VECTOR";
         ofs << std::hex;
         if (environmentVariable.second.type == EnvironmentVariable::Type::String) {
@@ -183,6 +226,8 @@ bool Database::save(const char * filename)
         }
         ofs << std::dec;
         ofs << ' ';
+
+        /* Access Nodes */
         if (environmentVariable.second.accessNodes.empty()) {
             ofs << "VECTOR__XXX";
         } else {
@@ -198,8 +243,11 @@ bool Database::save(const char * filename)
         }
         ofs << ";" << endl;
     }
+}
 
-    /* Environment Variables Data (ENVVAR_DATA) */
+/* Environment Variables Data (ENVVAR_DATA) */
+void Database::writeEnvironmentVariableData(std::ofstream & ofs)
+{
     for (auto environmentVariable : environmentVariables) {
         if (environmentVariable.second.type == EnvironmentVariable::Type::Data) {
             ofs << "ENVVAR_DATA_ " << environmentVariable.second.name;
@@ -208,8 +256,11 @@ bool Database::save(const char * filename)
         }
     }
     ofs << endl; // this might go below SGTYPE
+}
 
-    /* Signal Types (SGTYPE, obsolete) */
+/* Signal Types (SGTYPE, obsolete) */
+void Database::writeSignalTypes(std::ofstream & ofs)
+{
     for (auto signalType : signalTypes) {
         ofs << "SGTYPE_ " << signalType.second.name;
         ofs << " : " << signalType.second.size;
@@ -226,21 +277,39 @@ bool Database::save(const char * filename)
             }
         }
     }
+}
 
-    /* Comments (CM) */
+/* Comments (CM) for Networks */
+void Database::writeCommentsNetworks(std::ofstream & ofs)
+{
     if (!comment.empty()) {
         ofs << "CM_ \"" << comment << "\";" << endl;
     }
+}
+
+/* Comments (CM) for Node (BU) */
+void Database::writeCommentsNodes(std::ofstream & ofs)
+{
     for (auto node : nodes) {
         if (!node.second.comment.empty()) {
             ofs << "CM_ BU_ " << node.second.name << " \"" << node.second.comment << "\";" << endl;
         }
     }
+}
+
+/* Comments (CM) for Message (BO) */
+void Database::writeCommentsMessages(std::ofstream & ofs)
+{
     for (auto message : messages) {
         if (!message.second.comment.empty()) {
             ofs << "CM_ BO_ " << message.second.id << " \"" << message.second.comment << "\";" << endl;
         }
     }
+}
+
+/* Comments (CM) for Signal (SG) */
+void Database::writeCommentsSignals(std::ofstream & ofs)
+{
     for (auto message : messages) {
         for (auto signal : message.second.signals) {
             if (!signal.second.comment.empty()) {
@@ -248,14 +317,23 @@ bool Database::save(const char * filename)
             }
         }
     }
+}
+
+/* Comments (CM) for Environment Variable (EV) */
+void Database::writeCommentsEnvironmentVariables(std::ofstream & ofs)
+{
     for (auto environmentVariable : environmentVariables) {
         if (!environmentVariable.second.comment.empty()) {
             ofs << "CM_ EV_ " << environmentVariable.second.name << " \"" << environmentVariable.second.comment << "\";" << endl;
         }
     }
+}
 
-    /* Attribute Definitions (BA_DEF) and Attribute Definitions at Relations (BA_DEF_REL) */
+/* Attribute Definitions (BA_DEF) and Attribute Definitions at Relations (BA_DEF_REL) */
+void Database::writeAttributeDefinitions(std::ofstream & ofs)
+{
     for (auto attributeDefinition : attributeDefinitions) {
+        /* Object Type */
         switch(attributeDefinition.second.objectType) {
         case AttributeDefinition::ObjectType::Network:
             ofs << "BA_DEF_ ";
@@ -282,29 +360,42 @@ bool Database::save(const char * filename)
             ofs << "BA_DEF_REL_ BU_SG_REL_ ";
             break;
         }
+
+        /* Name */
         ofs << " \"" << attributeDefinition.second.name << "\" ";
+
+        /* Value Type */
         switch(attributeDefinition.second.valueType) {
+        // integer
         case AttributeValueType::Int:
             ofs << "INT ";
             ofs << attributeDefinition.second.minimumIntegerValue;
             ofs << " ";
             ofs << attributeDefinition.second.maximumIntegerValue;
             break;
+
+        // hexadecimal
         case AttributeValueType::Hex:
             ofs << "HEX ";
             ofs << attributeDefinition.second.minimumHexValue;
             ofs << " ";
             ofs << attributeDefinition.second.maximumHexValue;
             break;
+
+        // float
         case AttributeValueType::Float:
             ofs << "FLOAT ";
             ofs << attributeDefinition.second.minimumFloatValue;
             ofs << " ";
             ofs << attributeDefinition.second.maximumFloatValue;
             break;
+
+        // string
         case AttributeValueType::String:
             ofs << "STRING ";
             break;
+
+        // enumeration
         case AttributeValueType::Enum:
             ofs << "ENUM  ";
             bool first = true;
@@ -318,14 +409,20 @@ bool Database::save(const char * filename)
             }
             break;
         }
+
         ofs << ";" << endl;
     }
+}
 
-    /* Sigtype Attr List (?, obsolete) */
+/* Sigtype Attr Lists (?, obsolete) */
 
-    /* Attribute Defaults (BA_DEF_DEF) and Attribute Defaults at Relations (BA_DEF_DEF_REL) */
+/* Attribute Defaults (BA_DEF_DEF) and Attribute Defaults at Relations (BA_DEF_DEF_REL) */
+void Database::writeAttributeDefaults(std::ofstream & ofs)
+{
     for (auto attribute : attributeDefaults) {
         AttributeDefinition attributeDefinition = attributeDefinitions[attribute.second.name];
+
+        /* Object Type */
         switch(attributeDefinition.objectType) {
         case AttributeDefinition::ObjectType::Network:
         case AttributeDefinition::ObjectType::Node:
@@ -340,7 +437,11 @@ bool Database::save(const char * filename)
             ofs << "BA_DEF_DEF_REL_";
             break;
         }
+
+        /* Name */
         ofs << "  \"" << attribute.second.name << "\" ";
+
+        /* Value */
         switch(attribute.second.valueType) {
         case AttributeValueType::Int:
             ofs << attribute.second.integerValue;
@@ -360,10 +461,16 @@ bool Database::save(const char * filename)
         }
         ofs << ';' << endl;
     }
+}
 
-    /* Attribute Values (BA) for Network */
+/* Attribute Values (BA) for Network */
+void Database::writeAttributeValuesNetworks(std::ofstream & ofs)
+{
     for (auto attribute : attributeValues) {
+        /* Name */
         ofs << "BA_ \"" << attribute.second.name << "\" ";
+
+        /* Value */
         switch(attribute.second.valueType) {
         case AttributeValueType::Int:
             ofs << attribute.second.integerValue;
@@ -383,12 +490,20 @@ bool Database::save(const char * filename)
         }
         ofs << ';' << endl;
     }
+}
 
-    /* Attribute Values (BA) for Nodes (BU) */
+/* Attribute Values (BA) for Nodes (BU) */
+void Database::writeAttributeValuesNodes(std::ofstream & ofs)
+{
     for (auto node : nodes) {
         for (auto attribute : node.second.attributeValues) {
+            /* Name */
             ofs << "BA_ \"" << attribute.second.name << "\" ";
+
+            /* Node Name */
             ofs << "BU_ " << node.second.name << ' ';
+
+            /* Value */
             switch(attribute.second.valueType) {
             case AttributeValueType::Int:
                 ofs << attribute.second.integerValue;
@@ -409,12 +524,20 @@ bool Database::save(const char * filename)
             ofs << ';' << endl;
         }
     }
+}
 
-    /* Attribute Values (BA) for Messages (BO) */
+/* Attribute Values (BA) for Messages (BO) */
+void Database::writeAttributeValuesMessages(std::ofstream & ofs)
+{
     for (auto message : messages) {
         for (auto attribute : message.second.attributeValues) {
+            /* Name */
             ofs << "BA_ \"" << attribute.second.name << "\" ";
+
+            /* Message Name */
             ofs << "BO_ " << message.second.id << ' ';
+
+            /* Value */
             switch(attribute.second.valueType) {
             case AttributeValueType::Int:
                 ofs << attribute.second.integerValue;
@@ -435,13 +558,21 @@ bool Database::save(const char * filename)
             ofs << ';' << endl;
         }
     }
+}
 
-    /* Attribute Values (BA) for Signals (SG) */
+/* Attribute Values (BA) for Signals (SG) */
+void Database::writeAttributeValuesSignals(std::ofstream & ofs)
+{
     for (auto message : messages) {
         for (auto signal : message.second.signals) {
             for (auto attribute : signal.second.attributeValues) {
+                /* Name */
                 ofs << "BA_ \"" << attribute.second.name << "\" ";
+
+                /* Message Identifier, Signal Name */
                 ofs << "SG_ " << message.second.id << ' ' << signal.second.name << ' ';
+
+                /* Value */
                 switch(attribute.second.valueType) {
                 case AttributeValueType::Int:
                     ofs << attribute.second.integerValue;
@@ -463,12 +594,20 @@ bool Database::save(const char * filename)
             }
         }
     }
+}
 
-    /* Attribute Values (BA) for Environment Variables (EV) */
+/* Attribute Values (BA) for Environment Variables (EV) */
+void Database::writeAttributeValuesEnvironmentVariables(std::ofstream & ofs)
+{
     for (auto environmentVariable : environmentVariables) {
         for (auto attribute : environmentVariable.second.attributeValues) {
+            /* Name */
             ofs << "BA_ \"" << attribute.second.name << "\" ";
+
+            /* Environment Variable Name */
             ofs << "EV_ " << environmentVariable.second.name << ' ';
+
+            /* Value */
             switch(attribute.second.valueType) {
             case AttributeValueType::Int:
                 ofs << attribute.second.integerValue;
@@ -489,10 +628,16 @@ bool Database::save(const char * filename)
             ofs << ';' << endl;
         }
     }
+}
 
-    /* Attribute Values for Relations (BA_REL) for relation  */
+/* Attribute Values at Relations (BA_REL)  */
+void Database::writeAttributeRelationValues(std::ofstream & ofs)
+{
     for (auto attributeRelation : attributeRelationValues) {
+        /* Name */
         ofs << "BA_REL_ \"" << attributeRelation.name << "\" ";
+
+        /* Relation Type */
         switch(attributeRelation.relationType) {
         case AttributeRelation::RelationType::ControlUnitEnvironmentVariable:
             ofs << "BU_EV_REL_ ";
@@ -516,27 +661,41 @@ bool Database::save(const char * filename)
             break;
         }
         ofs << ' ';
+
+        /* Value Type */
         switch(attributeRelation.valueType) {
+        // integer
         case AttributeValueType::Int:
             ofs << attributeRelation.integerValue;
             break;
+
+        // hexadecimal
         case AttributeValueType::Hex:
             ofs << attributeRelation.hexValue;
             break;
+
+        // float
         case AttributeValueType::Float:
             ofs << attributeRelation.floatValue;
             break;
+
+        // string
         case AttributeValueType::String:
             ofs << '"' << attributeRelation.stringValue << '"';
             break;
+
+        // enumeration
         case AttributeValueType::Enum:
             ofs << attributeRelation.enumValue;
             break;
         }
         ofs << ';' << endl;
     }
+}
 
-    /* Value Descriptions (VAL) */
+/* Value Descriptions (VAL) for Signals (SG) */
+void Database::writeValueDescriptionsSignals(std::ofstream & ofs)
+{
     for (auto message : messages) {
         for (auto signal : message.second.signals) {
             if (!signal.second.valueDescriptions.empty()) {
@@ -549,6 +708,11 @@ bool Database::save(const char * filename)
             }
         }
     }
+}
+
+/* Value Descriptions (VAL) for Environment Variables (EV) */
+void Database::writeValueDescriptionsEnvironmentVariables(std::ofstream & ofs)
+{
     for (auto environmentVariable : environmentVariables) {
         if (!environmentVariable.second.valueDescriptions.empty()) {
             ofs << "VAL_ " << environmentVariable.second.name;
@@ -559,24 +723,19 @@ bool Database::save(const char * filename)
             ofs << " ;" << endl;
         }
     }
+}
 
-    /* Category Definitions (CAT_DEF, obsolete) */
+/* Category Definitions (CAT_DEF, obsolete) */
 
-    /* Categories (CAT, obsolete) */
+/* Categories (CAT, obsolete) */
 
-    /* Filter (FILTER, obsolete) */
+/* Filters (FILTER, obsolete) */
 
-    /* Signal Type Refs (SGTYPE, obsolete) */
-    for (auto message : messages) {
-        for (auto signal : message.second.signals) {
-            if (!signal.second.type.empty()) {
-                ofs << "SGTYPE_ " << message.second.id << ' ' << signal.second.name;
-                ofs << " : " << signal.second.type << ';' << endl;
-            }
-        }
-    }
+/* Signal Type Refs (SGTYPE, obsolete) */
 
-    /* Signal Groups (SIG_GROUP) */
+/* Signal Groups (SIG_GROUP) */
+void Database::writeSignalGroups(std::ofstream & ofs)
+{
     for (auto message : messages) {
         for (auto signalGroup : message.second.signalGroups) {
             ofs << "SIG_GROUP_ " << message.second.id << ' ' << signalGroup.second.name;
@@ -593,8 +752,11 @@ bool Database::save(const char * filename)
             ofs << ';' << endl;
         }
     }
+}
 
-    /* Signal Extended Value Type (SIG_VALTYPE, obsolete) */
+/* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
+void Database::writeSignalExtendedValueTypes(std::ofstream & ofs)
+{
     for (auto message : messages) {
         for (auto signal : message.second.signals) {
             if (signal.second.extendedValueType  !=  Signal::ExtendedValueType::Undefined) {
@@ -604,13 +766,21 @@ bool Database::save(const char * filename)
             }
         }
     }
+}
 
-    /* Extended Multiplexing (SG_MUL_VAL) */
+/* Extended Multiplexors (SG_MUL_VAL) */
+void Database::writeExtendedMultiplexors(std::ofstream & ofs)
+{
     for (auto message : messages) {
         for (auto signal : message.second.signals) {
             for (auto extendedMultiplexor : signal.second.extendedMultiplexors) {
+                /* Identifier, Name */
                 ofs << "SG_MUL_VAL_ " << message.second.id << ' ' << signal.second.name;
+
+                /* Switch Name */
                 ofs << ' ' << extendedMultiplexor.second.switchName;
+
+                /* Value Ranges */
                 bool first = true;
                 for (auto valueRange : extendedMultiplexor.second.valueRanges) {
                     if (first) {
@@ -624,6 +794,96 @@ bool Database::save(const char * filename)
             }
         }
     }
+}
+
+bool Database::save(const char * filename)
+{
+    std::ofstream ofs;
+
+    std::setlocale(LC_ALL, "C");
+
+    /* open stream */
+    ofs.open(filename, std::ofstream::out | std::ofstream::trunc);
+    if (!ofs.is_open()) {
+        return false;
+    }
+    ofs.precision(16);
+
+    /* Version (VERSION) */
+    writeVersion(ofs);
+
+    /* New Symbols (NS) */
+    writeNewSymbols(ofs);
+
+    /* Bit Timing (BS) */
+    writeBitTiming(ofs);
+
+    /* Nodes (BU) */
+    writeNodes(ofs);
+
+    /* Value Tables (VAL_TABLE) */
+    writeValueTables(ofs);
+
+    /* Messages (BO) */
+    writeMessages(ofs);
+
+    /* Message Transmitters (BO_TX_BU) */
+    writeMessageTransmitters(ofs);
+
+    /* Environment Variables (EV) */
+    writeEnvironmentVariables(ofs);
+
+    /* Environment Variable Data (ENVVAR_DATA) */
+    writeEnvironmentVariableData(ofs);
+
+    /* Signal Types (SGTYPE, obsolete) */
+    writeSignalTypes(ofs);
+
+    /* Comments (CM) */
+    writeCommentsNetworks(ofs);
+    writeCommentsNodes(ofs);
+    writeCommentsMessages(ofs);
+    writeCommentsSignals(ofs);
+    writeCommentsEnvironmentVariables(ofs);
+
+    /* Attribute Definitions (BA_DEF) and Attribute Definitions at Relations (BA_DEF_REL) */
+    writeAttributeDefinitions(ofs);
+
+    /* Sigtype Attr Lists (?, obsolete) */
+
+    /* Attribute Defaults (BA_DEF_DEF) and Attribute Defaults at Relations (BA_DEF_DEF_REL) */
+    writeAttributeDefaults(ofs);
+
+    /* Attribute Values (BA) */
+    writeAttributeValuesNetworks(ofs);
+    writeAttributeValuesNodes(ofs);
+    writeAttributeValuesMessages(ofs);
+    writeAttributeValuesSignals(ofs);
+    writeAttributeValuesEnvironmentVariables(ofs);
+
+    /* Attribute Values at Relations (BA_REL) */
+    writeAttributeRelationValues(ofs);
+
+    /* Value Descriptions (VAL) */
+    writeValueDescriptionsSignals(ofs);
+    writeValueDescriptionsEnvironmentVariables(ofs);
+
+    /* Category Definitions (CAT_DEF, obsolete) */
+
+    /* Categories (CAT, obsolete) */
+
+    /* Filters (FILTER, obsolete) */
+
+    /* Signal Type Refs (SGTYPE, obsolete) */
+
+    /* Signal Groups (SIG_GROUP) */
+    writeSignalGroups(ofs);
+
+    /* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
+    writeSignalExtendedValueTypes(ofs);
+
+    /* Extended Multiplexors (SG_MUL_VAL) */
+    writeExtendedMultiplexors(ofs);
 
     /* close stream */
     ofs << endl;

@@ -34,7 +34,8 @@ namespace DBC {
 
 /**
  * Attribute Value (BA) and
- * Attribute Default (BA_DEF_DEF)
+ * Attribute Default (BA_DEF_DEF) and
+ * Attribute Default Value on Relation (BA_DEF_DEF_REL)
  */
 class VECTOR_DBC_EXPORT Attribute
 {

@@ -55,7 +55,6 @@
  *   "Signal" [ URL="@ref Vector::DBC::Signal", style=bold ];
  *   "SignalGroup" [ URL="@ref Vector::DBC::SignalGroup" ];
  *   "SignalType" [ URL="@ref Vector::DBC::SignalType" ];
- *   "ValueDescriptions" [ URL="@ref Vector::DBC::ValueDescriptions" ];
  *   "ValueTable" [ URL="@ref Vector::DBC::ValueTable" ];
  *
  *   "Database" -> "BitTiming" [ label="bitTiming" ];
@@ -70,7 +69,6 @@
  *   "Database" -> "AttributeRelation" [ label="attributeRelationValues" ];
  *
  *   "EnvironmentVariable" -> "Node" [ label="accessNodes", style=dotted ];
- *   "EnvironmentVariable" -> "ValueDescriptions" [ label="valueDescriptions" ];
  *   "EnvironmentVariable" -> "Attribute" [ label="attributeValues" ];
  *
  *   "ExtendedMultiplexor" -> "Signal" [ label="switchName", style=dotted ];
@@ -90,7 +88,6 @@
  *   "AttributeRelation" -> "Signal" [ label="signalName", style=dotted ];
  *
  *   "Signal" -> "Node" [ label="receivers", style=dotted ];
- *   "Signal" -> "ValueDescriptions" [ label="valueDescriptions" ];
  *   "Signal" -> "SignalType" [ label="type", style=dotted ];
  *   "Signal" -> "Attribute" [ label="attributeValues" ];
  *   "Signal" -> "ExtendedMultiplexor" [ label="extendedMultiplexors" ];
@@ -98,8 +95,6 @@
  *   "SignalGroup" -> "Signal" [ label="signals", style=dotted ];
  *
  *   "SignalType" -> "ValueTable" [ label="valueTable", style=dotted ];
- *
- *   "ValueTable" -> "ValueDescriptions" [ label="valueDescriptions" ];
  * }
  * @enddot
  */

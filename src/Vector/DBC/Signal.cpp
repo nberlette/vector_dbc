@@ -26,22 +26,40 @@ namespace DBC {
 
 Signal::Signal() :
     name(),
+
+    /* multiplexer indicator */
     multiplexedSignal(false),
     multiplexerSwitchValue(0),
     multiplexorSwitch(false),
+
+    /* position */
     startBit(0),
     size(0),
     byteOrder(ByteOrder::BigEndian),
     valueType(ValueType::Unsigned),
-    factor(0.0), offset(0.0),
-    minimum(0.0), maximum(0.0),
+
+    /* raw/physical conversion */
+    factor(0.0),
+    offset(0.0),
+    minimum(0.0),
+    maximum(0.0),
+
+    /* unit */
     unit(),
+
+    /* receivers */
     receivers(),
+
+    /* value type and description */
     extendedValueType(Signal::ExtendedValueType::Undefined),
     valueDescriptions(),
     type(),
+
+    /* comments and attributes */
     comment(),
     attributeValues(),
+
+    /* extended multiplexors */
     extendedMultiplexors()
 {
     /* nothing to do here */

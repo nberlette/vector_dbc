@@ -43,12 +43,15 @@
 namespace Vector {
 namespace DBC {
 
+/* Removes windows/unix/mac line endings. */
 void Database::chomp(std::string & line)
 {
+    /* don't do anything if line is empty */
     if (line.length() == 0) {
         return;
     }
 
+    /* remove trailing \r and \n characters */
     for(;;) {
         char back = line.back();
         if ((back == '\r') || (back == '\n')) {
@@ -69,6 +72,7 @@ void Database::readVersion(std::string & line)
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
@@ -106,6 +110,7 @@ void Database::readBitTiming(std::string & line)
         }
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
@@ -132,8 +137,12 @@ void Database::readValueTable(std::string & line)
     if (regex_search(line, m, re)) {
         std::string valueTableName = m[1];
         ValueTable & valueTable = valueTables[valueTableName];
+
+        /* Name */
         valueTable.name = valueTableName;
         ValueDescriptions & valueDescriptions = valueTable.valueDescriptions;
+
+        /* Value Description Pairs */
         std::istringstream iss(m[2]);
         while (iss.good()) {
             std::string value;
@@ -153,6 +162,7 @@ void Database::readValueTable(std::string & line)
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
@@ -164,19 +174,31 @@ void Database::readSignal(Message & message, std::string & line)
     if (regex_search(line, m, re)) {
         std::string signalName = m[1];
         Signal & signal = message.signals[signalName];
+
+        /* Name */
         signal.name = signalName;
 
+        /* Multiplexed Signal */
         signal.multiplexedSignal = (m[2] == 'm');
+
+        /* Multiplexer Switch Value */
         std::string multiplexerSwitchValue = m[3];
         if (multiplexerSwitchValue.empty()) {
             signal.multiplexerSwitchValue = 0;
         } else {
             signal.multiplexerSwitchValue = stoul(multiplexerSwitchValue);
         }
+
+        /* Multiplexor Switch */
         signal.multiplexorSwitch = (m[4] == 'M');
 
+        /* Start Bit */
         signal.startBit = stoul(m[5]);
+
+        /* Size */
         signal.size = stoul(m[6]);
+
+        /* Byte Order */
         std::string byteOrder = m[7];
         switch(byteOrder.front()) {
         case '0':
@@ -188,6 +210,8 @@ void Database::readSignal(Message & message, std::string & line)
         default:
             std::cerr << line << std::endl;
         }
+
+        /* Value Type */
         std::string valueType = m[8];
         switch(valueType.front()) {
         case '+':
@@ -200,14 +224,18 @@ void Database::readSignal(Message & message, std::string & line)
             std::cerr << line << std::endl;
         }
 
+        /* Factor, Offset */
         signal.factor = stod(m[9]);
         signal.offset = stod(m[10]);
 
+        /* Minimum, Maximum */
         signal.minimum = stod(m[11]);
         signal.maximum = stod(m[12]);
 
+        /* Unit */
         signal.unit = m[13];
 
+        /* Receivers */
         std::istringstream iss(m[14]);
         while (iss.good()) {
             std::string node;
@@ -219,6 +247,7 @@ void Database::readSignal(Message & message, std::string & line)
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
@@ -230,9 +259,17 @@ void Database::readMessage(std::ifstream & ifs, std::string & line)
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
         Message & message = messages[messageId];
+
+        /* Identifier */
         message.id = messageId;
+
+        /* Name */
         message.name = m[2];
+
+        /* Size */
         message.size = stoul(m[3]);
+
+        /* Transmitter */
         std::string transmitter = m[4];
         if (transmitter != "Vector__XXX") {
             message.transmitter = transmitter;
@@ -250,6 +287,7 @@ void Database::readMessage(std::ifstream & ifs, std::string & line)
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
@@ -261,6 +299,11 @@ void Database::readMessageTransmitter(std::string & line)
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
         Message & message = messages[messageId];
+
+        /* Message Identifier */
+        message.id = messageId;
+
+        /* Transmitters */
         std::istringstream iss(m[2]);
         while(iss.good()) {
             std::string transmitter;
@@ -270,6 +313,7 @@ void Database::readMessageTransmitter(std::string & line)
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
@@ -281,7 +325,11 @@ void Database::readEnvironmentVariable(std::string & line)
     if (regex_search(line, m, re)) {
         std::string envVarName = m[1];
         EnvironmentVariable & environmentVariable = environmentVariables[envVarName];
+
+        /* Name */
         environmentVariable.name = envVarName;
+
+        /* Type */
         std::string envVarType = m[2];
         switch(envVarType.front()) {
         case '0':
@@ -293,11 +341,21 @@ void Database::readEnvironmentVariable(std::string & line)
         default:
             std::cerr << line << std::endl;
         }
+
+        /* Minimum, Maximum */
         environmentVariable.minimum = stod(m[3]);
         environmentVariable.maximum = stod(m[4]);
+
+        /* Unit */
         environmentVariable.unit = m[5];
+
+        /* Initial Value */
         environmentVariable.initialValue = stod(m[6]);
+
+        /* Identifier */
         environmentVariable.id = stoul(m[7]);
+
+        /* Access Type */
         unsigned int accessType = stoul(m[8], nullptr, 16);
         if (accessType & 0x8000) {
             accessType &= ~0x8000;
@@ -319,6 +377,8 @@ void Database::readEnvironmentVariable(std::string & line)
         default:
             std::cerr << line << std::endl;
         }
+
+        /* Access Nodes */
         std::istringstream iss(m[9]);
         while(iss.good()) {
             std::string accessNode;
@@ -328,10 +388,11 @@ void Database::readEnvironmentVariable(std::string & line)
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
-/* Environment Variables Data (ENVVAR_DATA) */
+/* Environment Variable Data (ENVVAR_DATA) */
 void Database::readEnvironmentVariableData(std::string & line)
 {
     smatch m;
@@ -339,12 +400,19 @@ void Database::readEnvironmentVariableData(std::string & line)
     if (regex_search(line, m, re)) {
         std::string envVarName = m[1];
         EnvironmentVariable & environmentVariable = environmentVariables[envVarName];
+
+        /* Name */
         environmentVariable.name = envVarName;
+
+        /* Type */
         environmentVariable.type = EnvironmentVariable::Type::Data;
+
+        /* Data Size */
         environmentVariable.dataSize = stoul(m[2]);
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
@@ -357,8 +425,14 @@ void Database::readSignalType(std::string & line)
     if (regex_search(line, mST, reST)) {
         std::string signalTypeName = mST[1];
         SignalType & signalType = signalTypes[signalTypeName];
+
+        /* Name */
         signalType.name = signalTypeName;
+
+        /* Size */
         signalType.size = stoul(mST[2]);
+
+        /* Byte Order */
         std::string byteOrder = mST[3];
         switch(byteOrder.front()) {
         case '0':
@@ -370,6 +444,8 @@ void Database::readSignalType(std::string & line)
         default:
             std::cerr << line << std::endl;
         }
+
+        /* Value Type */
         std::string valueType = mST[4];
         switch(valueType.front()) {
         case '+':
@@ -381,12 +457,22 @@ void Database::readSignalType(std::string & line)
         default:
             std::cerr << line << std::endl;
         }
+
+        /* Factor, Offset */
         signalType.factor = stod(mST[5]);
         signalType.offset = stod(mST[6]);
+
+        /* Minimum, Maximum */
         signalType.minimum = stod(mST[7]);
         signalType.maximum = stod(mST[8]);
+
+        /* Unit */
         signalType.unit = mST[9];
+
+        /* Default Value */
         signalType.defaultValue = stod(mST[10]);
+
+        /* Value Table */
         signalType.valueTable = mST[11];
         return;
     }
@@ -402,7 +488,108 @@ void Database::readSignalType(std::string & line)
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
+}
+
+/* Comments (CM) for Networks */
+bool Database::readCommentNetwork(std::stack<size_t> & lineBreaks, std::string & line)
+{
+    smatch m;
+    regex re("^CM_ \"(.*)\";$");
+    if (regex_search(line, m, re)) {
+        std::string comment2 = m[1];
+        while(!lineBreaks.empty()) {
+            comment2.insert(lineBreaks.top(), "\r\n");
+            lineBreaks.pop();
+        }
+        comment = comment2;
+        return true;
+    }
+
+    /* format doesn't match */
+    return false;
+}
+
+/* Comments (CM) for Nodes (BU) */
+bool Database::readCommentNode(std::stack<size_t> & lineBreaks, std::string & line)
+{
+    smatch mBU;
+    regex reBU("^CM_ BU_ ([[:alnum:]_-]+) \"(.+)\";$");
+    if (regex_search(line, mBU, reBU)) {
+        std::string nodeName = mBU[1];
+        std::string comment2 = mBU[2];
+        while(!lineBreaks.empty()) {
+            comment2.insert(lineBreaks.top(), "\r\n");
+            lineBreaks.pop();
+        }
+        nodes[nodeName].comment = comment2;
+        return true;
+    }
+
+    /* format doesn't match */
+    return false;
+}
+
+/* Comments (CM) for Messages (BO) */
+bool Database::readCommentMessage(std::stack<size_t> & lineBreaks, std::string & line)
+{
+    smatch mBO;
+    regex reBO("^CM_ BO_ ([[:digit:]]+) \"(.+)\";$");
+    if (regex_search(line, mBO, reBO)) {
+        unsigned int messageId = stoul(mBO[1]);
+        std::string comment2 = mBO[2];
+        while(!lineBreaks.empty()) {
+            comment2.insert(lineBreaks.top(), "\r\n");
+            lineBreaks.pop();
+        }
+        messages[messageId].comment = comment2;
+        return true;
+    }
+
+    /* format doesn't match */
+    return false;
+}
+
+/* Comments (CM) for Signals (SG) */
+bool Database::readCommentSignal(std::stack<size_t> & lineBreaks, std::string & line)
+{
+    smatch mSG;
+    regex reSG("^CM_ SG_ ([[:digit:]]+) ([[:alnum:]_-]+) \"(.+)\";$");
+    if (regex_search(line, mSG, reSG)) {
+        unsigned int messageId = stoul(mSG[1]);
+        std::string signalName = mSG[2];
+        std::string comment2 = mSG[3];
+        while(!lineBreaks.empty()) {
+            comment2.insert(lineBreaks.top(), "\r\n");
+            lineBreaks.pop();
+        }
+        messages[messageId].signals[signalName].comment = comment2;
+        return true;
+    }
+
+    /* format doesn't match */
+    return false;
+}
+
+/* Comments (CM) for Environment Variables (EV) */
+bool Database::readCommentEnvironmentVariable(std::stack<size_t> & lineBreaks, std::string & line)
+{
+    smatch mEV;
+    regex reEV("^CM_ EV_ ([[:alnum:]_-]+) \"(.+)\";$");
+    if (regex_search(line, mEV, reEV)) {
+        std::string envVarName = mEV[1];
+        std::string comment2 = mEV[2];
+        while(!lineBreaks.empty()) {
+            comment2.insert(lineBreaks.top(), "\r\n");
+            lineBreaks.pop();
+        }
+        environmentVariables[envVarName].comment = comment2;
+        return true;
+    }
+
+    /* format doesn't match */
+    return false;
 }
 
 /* Comments (CM) */
@@ -421,75 +608,31 @@ void Database::readComment(std::ifstream & ifs, std::string & line)
     }
 
     // for nodes (BU)
-    smatch mBU;
-    regex reBU("^CM_ BU_ ([[:alnum:]_-]+) \"(.+)\";$");
-    if (regex_search(line, mBU, reBU)) {
-        std::string nodeName = mBU[1];
-        std::string comment2 = mBU[2];
-        while(!lineBreaks.empty()) {
-            comment2.insert(lineBreaks.top(), "\r\n");
-            lineBreaks.pop();
-        }
-        nodes[nodeName].comment = comment2;
+    if (readCommentNode(lineBreaks, line)) {
         return;
     }
 
     // for messages (BO)
-    smatch mBO;
-    regex reBO("^CM_ BO_ ([[:digit:]]+) \"(.+)\";$");
-    if (regex_search(line, mBO, reBO)) {
-        unsigned int messageId = stoul(mBO[1]);
-        std::string comment2 = mBO[2];
-        while(!lineBreaks.empty()) {
-            comment2.insert(lineBreaks.top(), "\r\n");
-            lineBreaks.pop();
-        }
-        messages[messageId].comment = comment2;
+    if (readCommentMessage(lineBreaks, line)) {
         return;
     }
 
     // for signals (SG)
-    smatch mSG;
-    regex reSG("^CM_ SG_ ([[:digit:]]+) ([[:alnum:]_-]+) \"(.+)\";$");
-    if (regex_search(line, mSG, reSG)) {
-        unsigned int messageId = stoul(mBO[1]);
-        std::string signalName = mSG[2];
-        std::string comment2 = mSG[3];
-        while(!lineBreaks.empty()) {
-            comment2.insert(lineBreaks.top(), "\r\n");
-            lineBreaks.pop();
-        }
-        messages[messageId].signals[signalName].comment = comment2;
+    if (readCommentSignal(lineBreaks, line)) {
         return;
     }
 
     // for environment variables (EV)
-    smatch mEV;
-    regex reEV("^CM_ EV_ ([[:alnum:]_-]+) \"(.+)\";$");
-    if (regex_search(line, mEV, reEV)) {
-        std::string envVarName = mEV[1];
-        std::string comment2 = mEV[2];
-        while(!lineBreaks.empty()) {
-            comment2.insert(lineBreaks.top(), "\r\n");
-            lineBreaks.pop();
-        }
-        environmentVariables[envVarName].comment = comment2;
+    if (readCommentEnvironmentVariable(lineBreaks, line)) {
         return;
     }
 
-    // for database
-    smatch m;
-    regex re("^CM_ \"(.*)\";$");
-    if (regex_search(line, m, re)) {
-        std::string comment2 = m[1];
-        while(!lineBreaks.empty()) {
-            comment2.insert(lineBreaks.top(), "\r\n");
-            lineBreaks.pop();
-        }
-        comment = comment2;
+    // for network
+    if (readCommentNetwork(lineBreaks, line)) {
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
@@ -505,24 +648,33 @@ void Database::readAttributeDefinition(std::string & line)
         std::istringstream iss(m[4]);
         AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
         attributeDefinition.name = attributeName;
+
+        // for network
         if (objectType == "") {
             attributeDefinition.objectType = AttributeDefinition::ObjectType::Network;
         } else
+        // for node
         if (objectType == "BU_") {
             attributeDefinition.objectType = AttributeDefinition::ObjectType::Node;
         } else
+        // for message
         if (objectType == "BO_") {
             attributeDefinition.objectType = AttributeDefinition::ObjectType::Message;
         } else
+        // for signal
         if (objectType == "SG_") {
             attributeDefinition.objectType = AttributeDefinition::ObjectType::Signal;
         } else
+        // for environment variable
         if (objectType == "EV_") {
             attributeDefinition.objectType = AttributeDefinition::ObjectType::EnvironmentVariable;
-        } else {
+        } else
+        // format doesn't match
+        {
             std::cerr << line << std::endl;
         }
 
+        // for integer
         if (attributeValueType == "INT") {
             attributeDefinition.valueType = AttributeValueType::Int;
             std::string value;
@@ -531,6 +683,7 @@ void Database::readAttributeDefinition(std::string & line)
             iss >> value;
             attributeDefinition.maximumIntegerValue = stoul(value);
         } else
+        // for hexadecimal
         if (attributeValueType == "HEX") {
             attributeDefinition.valueType = AttributeValueType::Hex;
             std::string value;
@@ -539,6 +692,7 @@ void Database::readAttributeDefinition(std::string & line)
             iss >> value;
             attributeDefinition.maximumHexValue = stoul(value);
         } else
+        // for float
         if (attributeValueType == "FLOAT") {
             attributeDefinition.valueType = AttributeValueType::Float;
             std::string value;
@@ -547,9 +701,11 @@ void Database::readAttributeDefinition(std::string & line)
             iss >> value;
             attributeDefinition.maximumFloatValue = stod(value);
         } else
+        // for string
         if (attributeValueType == "STRING") {
             attributeDefinition.valueType = AttributeValueType::String;
         } else
+        // for enumeration
         if (attributeValueType == "ENUM") {
             attributeDefinition.valueType = AttributeValueType::Enum;
             while(iss.good()) {
@@ -559,12 +715,15 @@ void Database::readAttributeDefinition(std::string & line)
                 value.pop_back();
                 attributeDefinition.enumValues.push_back(value);
             }
-        } else {
+        } else
+        // format doesn't match
+        {
             std::cerr << line << std::endl;
         }
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
@@ -580,18 +739,27 @@ void Database::readAttributeDefinitionRelation(std::string & line)
         std::istringstream iss(m[4]);
         AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
         attributeDefinition.name = attributeName;
+
+        // Control Unit - Env. Variable
         if (objectType == "BU_EV_REL_") {
             attributeDefinition.objectType = AttributeDefinition::ObjectType::ControlUnitEnvironmentVariable;
         } else
+
+        // Node - Tx Message
         if (objectType == "BU_BO_REL_") {
             attributeDefinition.objectType = AttributeDefinition::ObjectType::NodeTxMessage;
         } else
+
+        // Node - Mapped Rx Signal
         if (objectType == "BU_SG_REL_") {
             attributeDefinition.objectType = AttributeDefinition::ObjectType::NodeMappedRxSignal;
-        } else {
+        } else
+        // format doesn't match
+        {
             std::cerr << line << std::endl;
         }
 
+        // Integer
         if (attributeValueType == "INT") {
             attributeDefinition.valueType = AttributeValueType::Int;
             std::string value;
@@ -600,6 +768,8 @@ void Database::readAttributeDefinitionRelation(std::string & line)
             iss >> value;
             attributeDefinition.maximumIntegerValue = stoul(value);
         } else
+
+        // Hexadecimal
         if (attributeValueType == "HEX") {
             attributeDefinition.valueType = AttributeValueType::Hex;
             std::string value;
@@ -608,6 +778,8 @@ void Database::readAttributeDefinitionRelation(std::string & line)
             iss >> value;
             attributeDefinition.maximumHexValue = stoul(value);
         } else
+
+        // Float
         if (attributeValueType == "FLOAT") {
             attributeDefinition.valueType = AttributeValueType::Float;
             std::string value;
@@ -616,9 +788,13 @@ void Database::readAttributeDefinitionRelation(std::string & line)
             iss >> value;
             attributeDefinition.maximumFloatValue = stod(value);
         } else
+
+        // String
         if (attributeValueType == "STRING") {
             attributeDefinition.valueType = AttributeValueType::String;
         } else
+
+        // Enumeration
         if (attributeValueType == "ENUM") {
             attributeDefinition.valueType = AttributeValueType::Enum;
             while(iss.good()) {
@@ -628,16 +804,19 @@ void Database::readAttributeDefinitionRelation(std::string & line)
                 value.pop_back();
                 attributeDefinition.enumValues.push_back(value);
             }
-        } else {
+        } else
+        // format doesn't match
+        {
             std::cerr << line << std::endl;
         }
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
-/* Sigtype Attr List (?, obsolete) */
+/* Sigtype Attr Lists (?, obsolete) */
 
 /* Attribute Defaults (BA_DEF_DEF) */
 void Database::readAttributeDefault(std::string & line)
@@ -649,8 +828,14 @@ void Database::readAttributeDefault(std::string & line)
         std::string attributeValue = m[2];
         AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
         Attribute & attributeDefault = attributeDefaults[attributeName];
+
+        /* Name */
         attributeDefault.name = attributeName;
+
+        /* Value Type */
         attributeDefault.valueType = attributeDefinition.valueType;
+
+        /* Value */
         attributeDefault.stringValue = attributeValue;
         switch(attributeDefinition.valueType) {
         case AttributeValueType::Int:
@@ -678,6 +863,7 @@ void Database::readAttributeDefault(std::string & line)
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
@@ -691,8 +877,14 @@ void Database::readAttributeDefaultRelation(std::string & line)
         std::string attributeValue = m[2];
         AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
         Attribute & attributeDefault = attributeDefaults[attributeName];
+
+        /* Name */
         attributeDefault.name = attributeName;
+
+        /* Value Type */
         attributeDefault.valueType = attributeDefinition.valueType;
+
+        /* Value */
         attributeDefault.stringValue = attributeValue;
         switch(attributeDefinition.valueType) {
         case AttributeValueType::Int:
@@ -720,13 +912,59 @@ void Database::readAttributeDefaultRelation(std::string & line)
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
-/* Attribute Values (BA) */
-void Database::readAttributeValue(std::string & line)
+/** Attribute Values (BA) for Network */
+bool Database::readAttributeValueNetwork(std::string & line)
 {
-    // for nodes (BU)
+    smatch m;
+    regex re("^BA_ \"([[:alnum:]_-]+)\" (.+);$");
+    if (regex_search(line, m, re)) {
+        std::string attributeName = m[1];
+        std::string attributeValue = m[2];
+        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
+        Attribute & attribute = attributeValues[attributeName];
+
+        /* Name */
+        attribute.name = attributeName;
+
+        /* Value Type */
+        attribute.valueType = attributeDefinition.valueType;
+
+        /* Value */
+        switch(attribute.valueType) {
+        case AttributeValueType::Int:
+            attribute.integerValue = stoul(attributeValue);
+            break;
+        case AttributeValueType::Hex:
+            attribute.hexValue = stoul(attributeValue);
+            break;
+        case AttributeValueType::Float:
+            attribute.floatValue = stod(attributeValue);
+            break;
+        case AttributeValueType::String:
+            attributeValue.erase(0, 1);
+            attributeValue.pop_back();
+            attribute.stringValue = attributeValue;
+            break;
+        case AttributeValueType::Enum:
+            attribute.enumValue = stoul(attributeValue);
+            break;
+        default:
+            std::cerr << line << std::endl;
+        }
+        return true;
+    }
+
+    /* format doesn't match */
+    return false;
+}
+
+/** Attribute Values (BA) for Node (BU) */
+bool Database::readAttributeValueNode(std::string & line)
+{
     smatch mBU;
     regex reBU("^BA_ \"([[:alnum:]_-]+)\" BU_ ([[:alnum:]_-]+) (.+);$");
     if (regex_search(line, mBU, reBU)) {
@@ -738,8 +976,14 @@ void Database::readAttributeValue(std::string & line)
         Node & node = nodes[nodeName];
         node.name = nodeName;
         Attribute & attribute = node.attributeValues[attributeName];
+
+        /* Name */
         attribute.name = attributeName;
+
+        /* Value Type */
         attribute.valueType = attributeDefinition.valueType;
+
+        /* Value */
         switch(attribute.valueType) {
         case AttributeValueType::Int:
             attribute.integerValue = stoul(attributeValue);
@@ -761,10 +1005,16 @@ void Database::readAttributeValue(std::string & line)
         default:
             std::cerr << line << std::endl;
         }
-        return;
+        return true;
     }
 
-    // for messages (BO)
+    /* format doesn't match */
+    return false;
+}
+
+/** Attribute Values (BA) for Message (BO) */
+bool Database::readAttributeValueMessage(std::string & line)
+{
     smatch mBO;
     regex reBO("^BA_ \"([[:alnum:]_-]+)\" BO_ ([[:digit:]]+) (.+);$");
     if (regex_search(line, mBO, reBO)) {
@@ -773,8 +1023,14 @@ void Database::readAttributeValue(std::string & line)
         std::string attributeValue = mBO[3];
         AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
         Attribute & attribute = messages[messageId].attributeValues[attributeName];
+
+        /* Name */
         attribute.name = attributeName;
+
+        /* Value Type */
         attribute.valueType = attributeDefinition.valueType;
+
+        /* Value */
         switch(attribute.valueType) {
         case AttributeValueType::Int:
             attribute.integerValue = stoul(attributeValue);
@@ -796,10 +1052,16 @@ void Database::readAttributeValue(std::string & line)
         default:
             std::cerr << line << std::endl;
         }
-        return;
+        return true;
     }
 
-    // for signals (SG)
+    /* format doesn't match */
+    return false;
+}
+
+/** Attribute Values (BA) for Signal (SG) */
+bool Database::readAttributeValueSignal(std::string & line)
+{
     smatch mSG;
     regex reSG("^BA_ \"([[:alnum:]_-]+)\" SG_ ([[:digit:]]+) ([[:alnum:]_-]+) (.+);$");
     if (regex_search(line, mSG, reSG)) {
@@ -809,8 +1071,14 @@ void Database::readAttributeValue(std::string & line)
         std::string attributeValue = mSG[4];
         AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
         Attribute & attribute = messages[messageId].signals[signalName].attributeValues[attributeName];
+
+        /* Name */
         attribute.name = attributeName;
+
+        /* Value Type */
         attribute.valueType = attributeDefinition.valueType;
+
+        /* Value */
         switch(attribute.valueType) {
         case AttributeValueType::Int:
             attribute.integerValue = stoul(attributeValue);
@@ -832,10 +1100,16 @@ void Database::readAttributeValue(std::string & line)
         default:
             std::cerr << line << std::endl;
         }
-        return;
+        return true;
     }
 
-    // for environment variables (EV)
+    /* format doesn't match */
+    return false;
+}
+
+/** Attribute Values (BA) for Environment Variable (EV) */
+bool Database::readAttributeValueEnvironmentVariable(std::string & line)
+{
     smatch mEV;
     regex reEV("^BA_ \"([[:alnum:]_-]+)\" EV_ ([[:alnum:]_-]+) (.+);$");
     if (regex_search(line, mEV, reEV)) {
@@ -844,8 +1118,14 @@ void Database::readAttributeValue(std::string & line)
         std::string attributeValue = mEV[3];
         AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
         Attribute & attribute = environmentVariables[envVarName].attributeValues[attributeName];
+
+        /* Name */
         attribute.name = attributeName;
+
+        /* Value Type */
         attribute.valueType = attributeDefinition.valueType;
+
+        /* Value */
         switch(attribute.valueType) {
         case AttributeValueType::Int:
             attribute.integerValue = stoul(attributeValue);
@@ -867,161 +1147,111 @@ void Database::readAttributeValue(std::string & line)
         default:
             std::cerr << line << std::endl;
         }
+        return true;
+    }
+
+    /* format doesn't match */
+    return false;
+}
+
+/* Attribute Values (BA) */
+void Database::readAttributeValue(std::string & line)
+{
+    // for nodes (BU)
+    if (readAttributeValueNode(line)) {
+        return;
+    }
+
+    // for messages (BO)
+    if (readAttributeValueMessage(line)) {
+        return;
+    }
+
+    // for signals (SG)
+    if (readAttributeValueSignal(line)) {
+        return;
+    }
+
+    // for environment variables (EV)
+    if (readAttributeValueEnvironmentVariable(line)) {
         return;
     }
 
     // for database
-    smatch m;
-    regex re("^BA_ \"([[:alnum:]_-]+)\" (.+);$");
-    if (regex_search(line, m, re)) {
-        std::string attributeName = m[1];
-        std::string attributeValue = m[2];
-        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
-        Attribute & attribute = attributeValues[attributeName];
-        attribute.name = attributeName;
-        attribute.valueType = attributeDefinition.valueType;
-        switch(attribute.valueType) {
-        case AttributeValueType::Int:
-            attribute.integerValue = stoul(attributeValue);
-            break;
-        case AttributeValueType::Hex:
-            attribute.hexValue = stoul(attributeValue);
-            break;
-        case AttributeValueType::Float:
-            attribute.floatValue = stod(attributeValue);
-            break;
-        case AttributeValueType::String:
-            attributeValue.erase(0, 1);
-            attributeValue.pop_back();
-            attribute.stringValue = attributeValue;
-            break;
-        case AttributeValueType::Enum:
-            attribute.enumValue = stoul(attributeValue);
-            break;
-        default:
-            std::cerr << line << std::endl;
-        }
+    if (readAttributeValueNetwork(line)) {
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
 /* Attribute Values at Relations (BA_REL) */
 void Database::readAttributeRelationValue(std::string & line)
 {
+    bool found = false;
+    AttributeRelation attributeRelation;
+    std::string attributeValue;
+
     // for relation "Control Unit - Env. Variable" (BU_EV_REL)
     smatch mBU_EV_REL;
     regex reBU_EV_REL("^BA_REL_ \"([[:alnum:]_-]+)\" BU_EV_REL_ ([[:alnum:]_-]+) ([[:alnum:]_-]+) (.+);$");
-    if (regex_search(line, mBU_EV_REL, reBU_EV_REL)) {
-        std::string attributeName = mBU_EV_REL[1];
-        std::string nodeName = mBU_EV_REL[2];
-        std::string envVarName = mBU_EV_REL[3];
-        std::string attributeValue = mBU_EV_REL[4];
-        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
-        AttributeRelation attributeRelation;
-        attributeRelation.relationType = AttributeRelation::RelationType::ControlUnitEnvironmentVariable;
-        attributeRelation.name = attributeName;
-        attributeRelation.nodeName = nodeName;
-        attributeRelation.environmentVariableName = envVarName;
-        attributeRelation.valueType = attributeDefinition.valueType;
-        switch(attributeRelation.valueType) {
-        case AttributeValueType::Int:
-            attributeRelation.integerValue = stoul(attributeValue);
-            break;
-        case AttributeValueType::Hex:
-            attributeRelation.hexValue = stoul(attributeValue);
-            break;
-        case AttributeValueType::Float:
-            attributeRelation.floatValue = stod(attributeValue);
-            break;
-        case AttributeValueType::String:
-            attributeValue.erase(0, 1);
-            attributeValue.pop_back();
-            attributeRelation.stringValue = attributeValue;
-            break;
-        case AttributeValueType::Enum:
-            attributeRelation.enumValue = stoul(attributeValue);
-            break;
-        default:
-            std::cerr << line << std::endl;
-        }
-        attributeRelationValues.insert(attributeRelation);
-        return;
+    if (!found && regex_search(line, mBU_EV_REL, reBU_EV_REL)) {
+        attributeRelation.name = mBU_EV_REL[1];
+        attributeRelation.nodeName = mBU_EV_REL[2];
+        attributeRelation.environmentVariableName = mBU_EV_REL[3];
+        attributeValue = mBU_EV_REL[4];
+        found = true;
     }
 
     // for relation "Node - Tx Message" (BU_BO_REL)
     smatch mBU_BO_REL;
     regex reBU_BO_REL("^BA_REL_ \"([[:alnum:]_-]+)\" BU_BO_REL_ ([[:alnum:]_-]+) ([[:digit:]]+) (.+);$");
-    if (regex_search(line, mBU_BO_REL, reBU_BO_REL)) {
-        std::string attributeName = mBU_BO_REL[1];
-        std::string nodeName = mBU_BO_REL[2];
-        unsigned int messageId = stoul(mBU_BO_REL[3]);
-        std::string attributeValue = mBU_BO_REL[4];
-        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
-        AttributeRelation attributeRelation;
-        attributeRelation.relationType = AttributeRelation::RelationType::NodeTxMessage;
-        attributeRelation.name = attributeName;
-        attributeRelation.nodeName = nodeName;
-        attributeRelation.messageId = messageId;
-        attributeRelation.valueType = attributeDefinition.valueType;
-        switch(attributeRelation.valueType) {
-        case AttributeValueType::Int:
-            attributeRelation.integerValue = stoul(attributeValue);
-            break;
-        case AttributeValueType::Hex:
-            attributeRelation.hexValue = stoul(attributeValue);
-            break;
-        case AttributeValueType::Float:
-            attributeRelation.floatValue = stod(attributeValue);
-            break;
-        case AttributeValueType::String:
-            attributeValue.erase(0, 1);
-            attributeValue.pop_back();
-            attributeRelation.stringValue = attributeValue;
-            break;
-        case AttributeValueType::Enum:
-            attributeRelation.enumValue = stoul(attributeValue);
-            break;
-        default:
-            std::cerr << line << std::endl;
-        }
-        attributeRelationValues.insert(attributeRelation);
-        return;
+    if (!found && regex_search(line, mBU_BO_REL, reBU_BO_REL)) {
+        attributeRelation.name = mBU_BO_REL[1];
+        attributeRelation.nodeName = mBU_BO_REL[2];
+        attributeRelation.messageId = stoul(mBU_BO_REL[3]);
+        attributeValue = mBU_BO_REL[4];
+        found = true;
     }
 
     // for relation "Node - Mapped Rx Signal" (BU_SG_REL)
     smatch mBU_SG_REL;
     regex reBU_SG_REL("^BA_REL_ \"([[:alnum:]_-]+)\" BU_SG_REL_ ([[:alnum:]_-]+) SG_ ([[:digit:]]+) ([[:alnum:]_-]+) (.+);$");
-    if (regex_search(line, mBU_SG_REL, reBU_SG_REL)) {
-        std::string attributeName = mBU_SG_REL[1];
-        std::string nodeName = mBU_SG_REL[2];
-        unsigned int messageId = stoul(mBU_SG_REL[3]);
-        std::string signalName = mBU_SG_REL[4];
-        std::string attributeValue = mBU_SG_REL[5];
-        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
-        AttributeRelation attributeRelation;
-        attributeRelation.relationType = AttributeRelation::RelationType::NodeMappedRxSignal;
-        attributeRelation.name = attributeName;
-        attributeRelation.nodeName = nodeName;
-        attributeRelation.messageId = messageId;
-        attributeRelation.signalName = signalName;
+    if (!found && regex_search(line, mBU_SG_REL, reBU_SG_REL)) {
+        attributeRelation.name = mBU_SG_REL[1];
+        attributeRelation.nodeName = mBU_SG_REL[2];
+        attributeRelation.messageId = stoul(mBU_SG_REL[3]);
+        attributeRelation.signalName = mBU_SG_REL[4];
+        attributeValue = mBU_SG_REL[5];
+        found = true;
+    }
+
+    if (found) {
+        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeRelation.name];
+        attributeRelation.relationType = AttributeRelation::RelationType::ControlUnitEnvironmentVariable;
         attributeRelation.valueType = attributeDefinition.valueType;
         switch(attributeRelation.valueType) {
+        // Integer
         case AttributeValueType::Int:
             attributeRelation.integerValue = stoul(attributeValue);
             break;
+        // Hexadecimal
         case AttributeValueType::Hex:
             attributeRelation.hexValue = stoul(attributeValue);
             break;
+        // Float
         case AttributeValueType::Float:
             attributeRelation.floatValue = stod(attributeValue);
             break;
+        // String
         case AttributeValueType::String:
             attributeValue.erase(0, 1);
             attributeValue.pop_back();
             attributeRelation.stringValue = attributeValue;
             break;
+
+        // Enumeration
         case AttributeValueType::Enum:
             attributeRelation.enumValue = stoul(attributeValue);
             break;
@@ -1032,19 +1262,21 @@ void Database::readAttributeRelationValue(std::string & line)
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
-/* Value Descriptions (VAL) */
-void Database::readValueDescription(std::string & line)
+/* Value Descriptions (VAL) for Signals (SG) */
+bool Database::readValueDescriptionSignal(std::string & line)
 {
-    // for signal
     smatch mS;
     regex reSig("^VAL_ ([[:digit:]]+) ([[:alnum:]_-]+) (.*) ;$");
     if (regex_search(line, mS, reSig)) {
         unsigned int messageId = stoul(mS[1]);
         std::string signalName = mS[2];
         ValueDescriptions & valueDescriptions = messages[messageId].signals[signalName].valueDescriptions;
+
+        /* Value Description Pairs */
         std::istringstream iss(mS[3]);
         while (iss.good()) {
             std::string value;
@@ -1061,15 +1293,23 @@ void Database::readValueDescription(std::string & line)
             description.pop_back();
             valueDescriptions[stoul(value)] = description;
         }
-        return;
+        return true;
     }
 
-    // for environment variable
+    /* format doesn't match */
+    return false;
+}
+
+/* Value Descriptions (VAL) for Environment Variables (EV) */
+bool Database::readValueDescriptionEnvironmentVariable(std::string & line)
+{
     smatch mEV;
     regex reEnvVar("^VAL_ ([[:alnum:]_-]+) (.*) ;$");
     if (regex_search(line, mEV, reEnvVar)) {
         std::string envVarName = mEV[1];
         ValueDescriptions & valueDescriptions = environmentVariables[envVarName].valueDescriptions;
+
+        /* Value Description Pairs */
         std::istringstream iss(mEV[2]);
         while (iss.good()) {
             std::string value;
@@ -1086,9 +1326,27 @@ void Database::readValueDescription(std::string & line)
             description.pop_back();
             valueDescriptions[stoul(value)] = description;
         }
+        return true;
+    }
+
+    /* format doesn't match */
+    return false;
+}
+
+/* Value Descriptions (VAL) */
+void Database::readValueDescription(std::string & line)
+{
+    // for signal
+    if (readValueDescriptionSignal(line)) {
         return;
     }
 
+    // for environment variable
+    if (readValueDescriptionEnvironmentVariable(line)) {
+        return;
+    }
+
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
@@ -1096,7 +1354,7 @@ void Database::readValueDescription(std::string & line)
 
 /* Categories (?, obsolete) */
 
-/* Filter (?, obsolete) */
+/* Filters (?, obsolete) */
 
 /* Signal Type Refs (SGTYPE, obsolete) */
 // see above readSignalType
@@ -1110,9 +1368,17 @@ void Database::readSignalGroup(std::string & line)
         unsigned int messageId = stoul(m[1]);
         std::string signalGroupName = m[2];
         SignalGroup & signalGroup = messages[messageId].signalGroups[signalGroupName];
+
+        /* Message Identifier */
         signalGroup.messageId = messageId;
+
+        /* Name */
         signalGroup.name = signalGroupName;
+
+        /* Repetitions */
         signalGroup.repetitions = stoul(m[3]);
+
+        /* Signals */
         std::istringstream iss(m[4]);
         while (iss.good()) {
             std::string signalName;
@@ -1120,10 +1386,12 @@ void Database::readSignalGroup(std::string & line)
             signalGroup.signals.insert(signalName);
         }
     }
+
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
-/* Signal Extended Value Type (SIG_VALTYPE, obsolete) */
+/* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
 void Database::readSignalExtendedValueType(std::string & line)
 {
     smatch m;
@@ -1131,14 +1399,19 @@ void Database::readSignalExtendedValueType(std::string & line)
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
         std::string signalName = m[2];
+
+        /* Extended Value Type */
         unsigned int signalExtendedValueType = stoul(m[3]);
         switch(signalExtendedValueType) {
+        // Integer
         case 0:
             messages[messageId].signals[signalName].extendedValueType = Signal::ExtendedValueType::Integer;
             break;
+        // Float
         case 1:
             messages[messageId].signals[signalName].extendedValueType = Signal::ExtendedValueType::Float;
             break;
+        // Double
         case 2:
             messages[messageId].signals[signalName].extendedValueType = Signal::ExtendedValueType::Double;
             break;
@@ -1148,10 +1421,11 @@ void Database::readSignalExtendedValueType(std::string & line)
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
-/* Extended Multiplexing (SG_MUL_VAL) */
+/* Extended Multiplexors (SG_MUL_VAL) */
 void Database::readExtendedMultiplexor(std::string & line)
 {
     smatch m;
@@ -1161,7 +1435,11 @@ void Database::readExtendedMultiplexor(std::string & line)
         std::string multiplexedSignalName = m[2];
         std::string switchName = m[3];
         ExtendedMultiplexor & extendedMultiplexor = messages[messageId].signals[multiplexedSignalName].extendedMultiplexors[switchName];
+
+        /* Switch Name */
         extendedMultiplexor.switchName = switchName;
+
+        /* Multiplexor Value Range */
         std::istringstream iss(m[4]);
         while(iss.good()) {
             std::string multiplexorValueRange;
@@ -1180,6 +1458,7 @@ void Database::readExtendedMultiplexor(std::string & line)
         return;
     }
 
+    /* format doesn't match */
     std::cerr << line << std::endl;
 }
 
@@ -1187,6 +1466,7 @@ bool Database::load(const char * filename)
 {
     std::ifstream ifs;
 
+    /* use english decimal points for floating numbers */
     std::setlocale(LC_ALL, "C");
 
     /* open stream */
@@ -1209,121 +1489,100 @@ bool Database::load(const char * filename)
             /* Version (VERSION) */
             if (name == "VERSION") {
                 readVersion(line);
-                goto next;
-            }
+            } else
 
             /* New Symbols (NS) */
             if (name == "NS_") {
                 readNewSymbols(ifs, line);
-                goto next;
-            }
+            } else
 
             /* Bit Timing (BS) */
             if (name == "BS_") {
                 readBitTiming(line);
-                goto next;
-            }
+            } else
 
             /* Nodes (BU) */
             if (name == "BU_") {
                 readNodes(line);
-                goto next;
-            }
+            } else
 
             /* Value Tables (VAL_TABLE) */
             if (name == "VAL_TABLE_") {
                 readValueTable(line);
-                goto next;
-            }
+            } else
 
             /* Messages (BO) */
             if (name == "BO_") {
                 readMessage(ifs, line);
-                goto next;
-            }
+            } else
 
             /* Message Transmitters (BO_TX_BU) */
             if (name == "BO_TX_BU_") {
                 readMessageTransmitter(line);
-                goto next;
-            }
+            } else
 
             /* Environment Variables (EV) */
             if (name == "EV_") {
                 readEnvironmentVariable(line);
-                goto next;
-            }
+            } else
 
-            /* Environment Variables Data (ENVVAR_DATA) */
+            /* Environment Variable Data (ENVVAR_DATA) */
             if (name == "ENVVAR_DATA_") {
                 readEnvironmentVariableData(line);
-                goto next;
-            }
+            } else
 
             /* Signal Types (SGTYPE, obsolete) */
             if (name == "SGTYPE_") {
                 readSignalType(line);
-                goto next;
-            }
+            } else
 
             /* Comments (CM) */
             if (name == "CM_") {
                 readComment(ifs, line);
-                goto next;
-            }
+            } else
 
             /* Attribute Definitions (BA_DEF) */
             if (name == "BA_DEF_") {
                 readAttributeDefinition(line);
-                goto next;
-            }
+            } else
 
             /* Attribute Definitions at Relations (BA_DEF_REL) */
             if (name == "BA_DEF_REL_") {
                 readAttributeDefinitionRelation(line);
-                goto next;
-            }
+            } else
 
-            /* Sigtype Attr List (?, obsolete) */
+            /* Sigtype Attr Lists (?, obsolete) */
 
             /* Attribute Defaults (BA_DEF_DEF) */
             if (name == "BA_DEF_DEF_") {
                 readAttributeDefault(line);
-                goto next;
-            }
+            } else
 
             /* Attribute Defaults at Relations (BA_DEF_DEF_REL) */
             if (name == "BA_DEF_DEF_REL_") {
                 readAttributeDefaultRelation(line);
-                goto next;
-            }
+            } else
 
             /* Attribute Values (BA) */
             if (name == "BA_") {
                 readAttributeValue(line);
-                goto next;
-            }
+            } else
 
             /* Attribute Values at Relations (BA_REL) */
-            // @todo invalid operator<
-#if 0
             if (name == "BA_REL_") {
                 readAttributeRelationValue(line);
-                goto next;
-            }
-#endif
+            } else
 
             /* Value Descriptions (VAL) */
             if (name == "VAL_") {
                 readValueDescription(line);
-                goto next;
-            }
+            } else
 
             /* Category Definitions (CAT_DEF, obsolete) */
 
             /* Categories (CAT, obsolete) */
 
-            /* Filter (FILTER, obsolete) */
+            /* Filters (FILTER, obsolete) */
 
             /* Signal Type Refs (SGTYPE, obsolete) */
             // see above readSignalType
@@ -1331,30 +1590,27 @@ bool Database::load(const char * filename)
             /* Signal Groups (SIG_GROUP) */
             if (name == "SIG_GROUP_") {
                 readSignalGroup(line);
-                goto next;
-            }
+            } else
 
-            /* Signal Extended Value Type (SIG_VALTYPE, obsolete) */
+            /* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
             if (name == "SIG_VALTYPE_") {
                 readSignalExtendedValueType(line);
-                goto next;
-            }
+            } else
 
-            /* Extended Multiplexing (SG_MUL_VAL) */
+            /* Extended Multiplexors (SG_MUL_VAL) */
             if (name == "SG_MUL_VAL_") {
                 readExtendedMultiplexor(line);
-                goto next;
-            }
+            } else
 
             /* not supported */
-            std::cerr << name << " not supported" << std::endl;
-            next: ;
+            {
+                std::cerr << name << " not supported" << std::endl;
+            }
         }
     }
 
     /* close stream */
     ifs.close();
-
     return true;
 }
 

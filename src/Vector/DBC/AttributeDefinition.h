@@ -34,7 +34,8 @@ namespace Vector {
 namespace DBC {
 
 /**
- * Attribute Definition (BA_DEF)
+ * Attribute Definition (BA_DEF) and
+ * Attribute Definition for Relations (BA_DEF_REL)
  */
 class VECTOR_DBC_EXPORT AttributeDefinition
 {

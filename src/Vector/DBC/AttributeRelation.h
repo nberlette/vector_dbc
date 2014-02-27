@@ -33,6 +33,9 @@
 namespace Vector {
 namespace DBC {
 
+/**
+ * Attribute Value on Relation (BA_REL)
+ */
 class VECTOR_DBC_EXPORT AttributeRelation : public Attribute {
 public:
     AttributeRelation();
@@ -59,7 +62,7 @@ public:
     /** Signal Name */
     std::string signalName;
 
-    bool operator<(const AttributeRelation & rhs) const;
+    bool operator < (const AttributeRelation & rhs) const;
 };
 
 }

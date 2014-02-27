@@ -34,7 +34,7 @@ AttributeRelation::AttributeRelation() :
     /* nothing to do here */
 }
 
-bool AttributeRelation::operator<(const AttributeRelation & rhs) const
+bool AttributeRelation::operator < (const AttributeRelation & rhs) const
 {
     if(relationType < rhs.relationType)
         return true;
