@@ -33,7 +33,7 @@ NS_ :
 
 BS_:
 
-BU_: Node_1
+BU_: Node_3 Node_2 Node_1
 VAL_TABLE_ Value_Table 1 "Description for the value '0x1'" 0 "Description for the value '0x0'" ;
 
 
@@ -43,13 +43,25 @@ BO_ 1 Standard_Message_1: 8 Node_1
 BO_ 2147483649 Extended_Message_1: 8 Node_1
  SG_ Signal_2 : 0|8@1- (1,0) [0|0] ""  Node_1
 
+BO_TX_BU_ 1 : Node_2,Node_1;
+BO_TX_BU_ 2147483649 : Node_2,Node_1;
 
 
-EV_ Variable_1: 0 [0|1] "" 0 1 DUMMY_NODE_VECTOR0  Node_1;
+EV_ Variable_3_Data: 0 [0|0] "" 0 1 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Variable_2_String: 0 [0|1] "" 0 2 DUMMY_NODE_VECTOR8000 Vector__XXX;
+
+EV_ Variable_0_Integer: 0 [0|1] "" 0 3 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Variable_1_Float: 1 [0|1] "" 0 4 DUMMY_NODE_VECTOR0  Node_1;
+ENVVAR_DATA_ Variable_3_Data: 0;
 
 CM_ "Comment";
 CM_ BU_ Node_1 "Comment";
-CM_ EV_ Variable_1 "Comment";
+CM_ EV_ Variable_3_Data "Comment";
+CM_ EV_ Variable_2_String "Comment";
+CM_ EV_ Variable_0_Integer "Comment";
+CM_ EV_ Variable_1_Float "Comment";
 BA_DEF_ EV_  "AttrDef_EnvironmentalVariable" INT 0 1;
 BA_DEF_ SG_  "AttrDef_Signal" INT 0 1;
 BA_DEF_ BO_  "AttrDef_Message" INT 0 1;
@@ -58,15 +70,29 @@ BA_DEF_  "AttrDef_Network" INT 0 1;
 BA_DEF_REL_ BU_SG_REL_  "AttrDef_Node_MappedRxSignal" INT 0 1;
 BA_DEF_REL_ BU_BO_REL_  "AttrDef_Node_TxMessage" INT 0 1;
 BA_DEF_REL_ BU_EV_REL_  "AttrDef_ControlUnit_EnvVariable" INT 0 1;
-BA_DEF_DEF_REL_ "AttrDef_Node_MappedRxSignal" 0;
-BA_DEF_DEF_REL_ "AttrDef_Node_TxMessage" 0;
-BA_DEF_DEF_REL_ "AttrDef_ControlUnit_EnvVariable" 0;
 BA_DEF_DEF_  "AttrDef_EnvironmentalVariable" 0;
 BA_DEF_DEF_  "AttrDef_Signal" 0;
 BA_DEF_DEF_  "AttrDef_Message" 0;
 BA_DEF_DEF_  "AttrDef_Node" 0;
 BA_DEF_DEF_  "AttrDef_Network" 0;
+BA_DEF_DEF_REL_ "AttrDef_Node_MappedRxSignal" 0;
+BA_DEF_DEF_REL_ "AttrDef_Node_TxMessage" 0;
+BA_DEF_DEF_REL_ "AttrDef_ControlUnit_EnvVariable" 0;
+BA_ "AttrDef_Network" 1;
 BA_ "AttrDef_Node" BU_ Node_1 1;
-BA_ "AttrDef_EnvironmentalVariable" EV_ Variable_1 1;
-VAL_ Variable_1 1 "Description for the value '0x1'" 0 "Description for the value '0x0'" ;
+BA_ "AttrDef_Message" BO_ 1 1;
+BA_ "AttrDef_Message" BO_ 2147483649 1;
+BA_ "AttrDef_Signal" SG_ 1 Signal_1 1;
+BA_ "AttrDef_Signal" SG_ 2147483649 Signal_2 1;
+BA_ "AttrDef_EnvironmentalVariable" EV_ Variable_3_Data 1;
+BA_ "AttrDef_EnvironmentalVariable" EV_ Variable_2_String 1;
+BA_ "AttrDef_EnvironmentalVariable" EV_ Variable_0_Integer 1;
+BA_ "AttrDef_EnvironmentalVariable" EV_ Variable_1_Float 1;
+BA_REL_ "AttrDef_Node_MappedRxSignal" BU_SG_REL_ Node_1 SG_ 1 Signal_1 1;
+BA_REL_ "AttrDef_Node_MappedRxSignal" BU_SG_REL_ Node_1 SG_ 2147483649 Signal_2 1;
+BA_REL_ "AttrDef_Node_TxMessage" BU_BO_REL_ Node_1 1 1;
+BA_REL_ "AttrDef_Node_TxMessage" BU_BO_REL_ Node_1 2147483649 1;
+BA_REL_ "AttrDef_ControlUnit_EnvVariable" BU_EV_REL_ Node_1 Variable_1_Float 1;
+VAL_ 1 Signal_1 1 "Description for the value '0x1'" 0 "Description for the value '0x0'" ;
+VAL_ Variable_0_Integer 1 "Description for the value '0x1'" 0 "Description for the value '0x0'" ;
 
