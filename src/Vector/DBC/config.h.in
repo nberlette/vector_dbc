@@ -1,1 +1,6 @@
 #pragma once
+
+/* nonstandard extension used: enum '...' used in qualified name */
+#ifdef _WINDOWS
+#pragma warning (disable: 4482))
+#endif
