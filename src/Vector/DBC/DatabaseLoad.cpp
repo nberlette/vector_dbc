@@ -40,6 +40,30 @@
 #define regex_search boost::regex_search
 #endif
 
+/* unsigned integer */
+#define REGEX_UINT "([[:digit:]]+)"
+
+/* double (not strict, invalid values may still occur: "..E+-e..1-23e" ) */
+#define REGEX_DOUBLE "([[:digit:]\\.\\+\\-eE]+)"
+
+/* name (C identifier plus '-' for Environment Variables name) */
+#define REGEX_NAME "([[:alpha:]_][[:alnum:]_\\-]*)"
+
+/* Optional text between "" */
+#define REGEX_STRING "\"([^\"]*)\""
+
+/* Start of line */
+#define REGEX_SOL "^[[:space:]]*"
+
+/* End of line */
+#define REGEX_EOL "[[:space:]]*$"
+
+/* End of line with ; delimiter */
+#define REGEX_EOL_DELIM "[[:space:]]*;" REGEX_EOL
+
+/* Not greedy to exclude trailing whitespace */
+#define REGEX_TO_END      "(.+?)"
+
 namespace Vector {
 namespace DBC {
 
@@ -47,7 +71,7 @@ namespace DBC {
 void Database::chomp(std::string & line)
 {
     /* don't do anything if line is empty */
-    if (line.length() == 0) {
+    if (line.empty()) {
         return;
     }
 
@@ -66,7 +90,7 @@ void Database::chomp(std::string & line)
 void Database::readVersion(std::string & line)
 {
     smatch m;
-    regex re("^VERSION \"(.*)\"$");
+    regex re(REGEX_SOL "VERSION " REGEX_STRING REGEX_EOL);
     if (regex_search(line, m, re)) {
         version = m[1];
         return;
@@ -86,7 +110,7 @@ void Database::readNewSymbols(std::ifstream & ifs, std::string & line)
             return;
 
         smatch m;
-        regex re("^[[:space:]]+([[:alnum:]_]+)$");
+        regex re(REGEX_SOL REGEX_NAME REGEX_EOL);
         if (regex_search(line, m, re)) {
             newSymbols.insert(m[1]);
         }
@@ -101,7 +125,7 @@ void Database::readBitTiming(std::string & line)
         return;
     } else {
         smatch m;
-        regex re("^BS_: ([[:digit:]]+):([[:digit:]]+):([[:digit:]]+);$");
+        regex re(REGEX_SOL "BS_:[[:space:]]+" REGEX_UINT ":" REGEX_UINT ":" REGEX_UINT REGEX_EOL);
         if (regex_search(line, m, re)) {
             bitTiming.baudrate = stoul(m[1]);
             bitTiming.btr1 = stoul(m[2]);
@@ -133,7 +157,7 @@ void Database::readNodes(std::string & line)
 void Database::readValueTable(std::string & line)
 {
     smatch m;
-    regex re("^VAL_TABLE_ ([[:alnum:]_-]+) (.*) ;$");
+    regex re(REGEX_SOL "VAL_TABLE_[[:space:]]+" REGEX_NAME "[[:space:]]+" REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string valueTableName = m[1];
         ValueTable & valueTable = valueTables[valueTableName];
@@ -170,7 +194,7 @@ void Database::readValueTable(std::string & line)
 void Database::readSignal(Message & message, std::string & line)
 {
     smatch m;
-    regex re("^ SG_ ([[:alnum:]_-]+) ([m]*)([[:digit:]]*)([M]*): ([[:digit:]]+).([[:digit:]]+)@([01])([+-]) .([[:digit:].+-]+),([[:digit:].+-]+). .([[:digit:].+-]+).([[:digit:].+-]+). \"(.*)\" +(.*)$");
+    regex re(REGEX_SOL "SG_[[:space:]]+" REGEX_NAME "[[:space:]]*((m[[:digit:]]+)|M)?[[:space:]]*:[[:space:]]*" REGEX_UINT "\\|" REGEX_UINT "@([01])([+-])[[:space:]]+\\(" REGEX_DOUBLE "," REGEX_DOUBLE "\\)[[:space:]]+\\[" REGEX_DOUBLE "\\|" REGEX_DOUBLE "\\][[:space:]]+" REGEX_STRING "[[:space:]]+" REGEX_TO_END REGEX_EOL);
     if (regex_search(line, m, re)) {
         std::string signalName = m[1];
         Signal & signal = message.signals[signalName];
@@ -179,10 +203,11 @@ void Database::readSignal(Message & message, std::string & line)
         signal.name = signalName;
 
         /* Multiplexed Signal */
-        signal.multiplexedSignal = (m[2] == 'm');
+        std::string temp = m[2];
+        signal.multiplexedSignal = (!temp.empty()) && (temp[0] == 'm');
 
         /* Multiplexer Switch Value */
-        std::string multiplexerSwitchValue = m[3];
+        std::string multiplexerSwitchValue = (temp.size() > 1) ? temp.substr(1) : "";
         if (multiplexerSwitchValue.empty()) {
             signal.multiplexerSwitchValue = 0;
         } else {
@@ -190,16 +215,16 @@ void Database::readSignal(Message & message, std::string & line)
         }
 
         /* Multiplexor Switch */
-        signal.multiplexorSwitch = (m[4] == 'M');
+        signal.multiplexorSwitch = (!temp.empty()) && (temp[0] == 'M');
 
         /* Start Bit */
-        signal.startBit = stoul(m[5]);
+        signal.startBit = stoul(m[4]);
 
         /* Size */
-        signal.size = stoul(m[6]);
+        signal.size = stoul(m[5]);
 
         /* Byte Order */
-        std::string byteOrder = m[7];
+        std::string byteOrder = m[6];
         switch(byteOrder.front()) {
         case '0':
             signal.byteOrder = ByteOrder::BigEndian;
@@ -212,7 +237,7 @@ void Database::readSignal(Message & message, std::string & line)
         }
 
         /* Value Type */
-        std::string valueType = m[8];
+        std::string valueType = m[7];
         switch(valueType.front()) {
         case '+':
             signal.valueType = ValueType::Unsigned;
@@ -225,18 +250,18 @@ void Database::readSignal(Message & message, std::string & line)
         }
 
         /* Factor, Offset */
-        signal.factor = stod(m[9]);
-        signal.offset = stod(m[10]);
+        signal.factor = stod(m[8]);
+        signal.offset = stod(m[9]);
 
         /* Minimum, Maximum */
-        signal.minimum = stod(m[11]);
-        signal.maximum = stod(m[12]);
+        signal.minimum = stod(m[10]);
+        signal.maximum = stod(m[11]);
 
         /* Unit */
-        signal.unit = m[13];
+        signal.unit = m[12];
 
         /* Receivers */
-        std::istringstream iss(m[14]);
+        std::istringstream iss(m[13]);
         while (iss.good()) {
             std::string node;
             iss >> node;
@@ -255,7 +280,7 @@ void Database::readSignal(Message & message, std::string & line)
 void Database::readMessage(std::ifstream & ifs, std::string & line)
 {
     smatch m;
-    regex re("^BO_ ([[:digit:]]+) ([[:alnum:]_-]+) ?: ([[:digit:]]+) ([[:alnum:]_-]+)$");
+    regex re(REGEX_SOL "BO_[[:space:]]+" REGEX_UINT "[[:space:]]+" REGEX_NAME "[[:space:]]*:[[:space:]]*" REGEX_UINT "[[:space:]]+" REGEX_NAME REGEX_EOL);
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
         Message & message = messages[messageId];
@@ -295,7 +320,7 @@ void Database::readMessage(std::ifstream & ifs, std::string & line)
 void Database::readMessageTransmitter(std::string & line)
 {
     smatch m;
-    regex re("^BO_TX_BU_ ([[:digit:]]+) : (.+);$");
+    regex re(REGEX_SOL "BO_TX_BU_[[:space:]]+" REGEX_UINT "[[:space:]]*:[[:space:]]*" REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
         Message & message = messages[messageId];
@@ -321,7 +346,7 @@ void Database::readMessageTransmitter(std::string & line)
 void Database::readEnvironmentVariable(std::string & line)
 {
     smatch m;
-    regex re("^EV_ ([[:alnum:]_-]+) ?: ([[:digit:]]+) \\[([[:digit:].+-]+)\\|([[:digit:].+-]+)\\] \"(.*)\" ([[:digit:].+-]+) ([[:digit:]]+) DUMMY_NODE_VECTOR([[:digit:]]+) (.+) ?;$");
+    regex re(REGEX_SOL "EV_[[:space:]]+" REGEX_NAME "[[:space:]]*:[[:space:]]*([012])[[:space:]]+\\[" REGEX_DOUBLE "\\|" REGEX_DOUBLE "\\][[:space:]]+" REGEX_STRING "[[:space:]]+" REGEX_DOUBLE "[[:space:]]+" REGEX_UINT "[[:space:]]+DUMMY_NODE_VECTOR([0123])[[:space:]]+" REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string envVarName = m[1];
         EnvironmentVariable & environmentVariable = environmentVariables[envVarName];
@@ -396,7 +421,7 @@ void Database::readEnvironmentVariable(std::string & line)
 void Database::readEnvironmentVariableData(std::string & line)
 {
     smatch m;
-    regex re("^ENVVAR_DATA_ ([[:alnum:]_-]+) ?: ([[:digit:]]+);$");
+    regex re(REGEX_SOL "ENVVAR_DATA_[[:space:]]+" REGEX_NAME "[[:space:]]*:[[:space:]]*" REGEX_UINT REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string envVarName = m[1];
         EnvironmentVariable & environmentVariable = environmentVariables[envVarName];
@@ -420,20 +445,20 @@ void Database::readEnvironmentVariableData(std::string & line)
 void Database::readSignalType(std::string & line)
 {
     // Signal Type
-    smatch mST;
-    regex reST("^SGTYPE_ ([[:alnum:]_-]+) : ([[:digit:]]+)@([01])([+-]) ([[:digit:]]+).([[:digit:]]+)@([01])([+-]) .([[:digit:].+-]+),([[:digit:].+-]+). \"(.*)\" , ([[:alnum:]_-]+);$");
-    if (regex_search(line, mST, reST)) {
-        std::string signalTypeName = mST[1];
+    smatch m;
+    regex re(REGEX_SOL "SGTYPE_[[:space:]]+" REGEX_NAME "[[:space:]]*:[[:space:]]*" REGEX_UINT "@([01])([+-])[[:space:]]+\\(" REGEX_DOUBLE "," REGEX_DOUBLE "\\)[[:space:]]+\\[" REGEX_DOUBLE "\\|" REGEX_DOUBLE "\\][[:space:]]+" REGEX_STRING "[[:space:]]+" REGEX_DOUBLE "[[:space:]]*,[[:space:]]*" REGEX_NAME REGEX_EOL_DELIM);
+    if (regex_search(line, m, re)) {
+        std::string signalTypeName = m[1];
         SignalType & signalType = signalTypes[signalTypeName];
 
         /* Name */
         signalType.name = signalTypeName;
 
         /* Size */
-        signalType.size = stoul(mST[2]);
+        signalType.size = stoul(m[2]);
 
         /* Byte Order */
-        std::string byteOrder = mST[3];
+        std::string byteOrder = m[3];
         switch(byteOrder.front()) {
         case '0':
             signalType.byteOrder = ByteOrder::BigEndian;
@@ -446,7 +471,7 @@ void Database::readSignalType(std::string & line)
         }
 
         /* Value Type */
-        std::string valueType = mST[4];
+        std::string valueType = m[4];
         switch(valueType.front()) {
         case '+':
             signalType.valueType = ValueType::Unsigned;
@@ -459,27 +484,27 @@ void Database::readSignalType(std::string & line)
         }
 
         /* Factor, Offset */
-        signalType.factor = stod(mST[5]);
-        signalType.offset = stod(mST[6]);
+        signalType.factor = stod(m[5]);
+        signalType.offset = stod(m[6]);
 
         /* Minimum, Maximum */
-        signalType.minimum = stod(mST[7]);
-        signalType.maximum = stod(mST[8]);
+        signalType.minimum = stod(m[7]);
+        signalType.maximum = stod(m[8]);
 
         /* Unit */
-        signalType.unit = mST[9];
+        signalType.unit = m[9];
 
         /* Default Value */
-        signalType.defaultValue = stod(mST[10]);
+        signalType.defaultValue = stod(m[10]);
 
         /* Value Table */
-        signalType.valueTable = mST[11];
+        signalType.valueTable = m[11];
         return;
     }
 
     // Signal Type Ref
     smatch mSTR;
-    regex reSTR("^SGTYPE_ ([[:digit:]]+) ([[:alnum:]_-]+) : ([[:alnum:]_-]+);$");
+    regex reSTR(REGEX_SOL "SGTYPE_[[:space:]]+" REGEX_UINT "[[:space:]]+" REGEX_NAME "[[:space:]]*:[[:space:]]*" REGEX_NAME REGEX_EOL_DELIM);
     if (regex_search(line, mSTR, reSTR)) {
         unsigned int messageId = stoul(mSTR[1]);
         std::string signalName = mSTR[2];
@@ -496,7 +521,7 @@ void Database::readSignalType(std::string & line)
 bool Database::readCommentNetwork(std::stack<size_t> & lineBreaks, std::string & line)
 {
     smatch m;
-    regex re("^CM_ \"(.*)\";$");
+    regex re(REGEX_SOL "CM_[[:space:]]+" REGEX_STRING REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string comment2 = m[1];
         while(!lineBreaks.empty()) {
@@ -514,11 +539,11 @@ bool Database::readCommentNetwork(std::stack<size_t> & lineBreaks, std::string &
 /* Comments (CM) for Nodes (BU) */
 bool Database::readCommentNode(std::stack<size_t> & lineBreaks, std::string & line)
 {
-    smatch mBU;
-    regex reBU("^CM_ BU_ ([[:alnum:]_-]+) \"(.+)\";$");
-    if (regex_search(line, mBU, reBU)) {
-        std::string nodeName = mBU[1];
-        std::string comment2 = mBU[2];
+    smatch m;
+    regex re(REGEX_SOL "CM_[[:space:]]+BU_[[:space:]]+" REGEX_NAME "[[:space:]]+" REGEX_STRING REGEX_EOL_DELIM);
+    if (regex_search(line, m, re)) {
+        std::string nodeName = m[1];
+        std::string comment2 = m[2];
         while(!lineBreaks.empty()) {
             comment2.insert(lineBreaks.top(), "\r\n");
             lineBreaks.pop();
@@ -534,11 +559,11 @@ bool Database::readCommentNode(std::stack<size_t> & lineBreaks, std::string & li
 /* Comments (CM) for Messages (BO) */
 bool Database::readCommentMessage(std::stack<size_t> & lineBreaks, std::string & line)
 {
-    smatch mBO;
-    regex reBO("^CM_ BO_ ([[:digit:]]+) \"(.+)\";$");
-    if (regex_search(line, mBO, reBO)) {
-        unsigned int messageId = stoul(mBO[1]);
-        std::string comment2 = mBO[2];
+    smatch m;
+    regex re(REGEX_SOL "CM_[[:space:]]+BO_[[:space:]]+" REGEX_UINT "[[:space:]]+" REGEX_STRING REGEX_EOL_DELIM);
+    if (regex_search(line, m, re)) {
+        unsigned int messageId = stoul(m[1]);
+        std::string comment2 = m[2];
         while(!lineBreaks.empty()) {
             comment2.insert(lineBreaks.top(), "\r\n");
             lineBreaks.pop();
@@ -554,12 +579,12 @@ bool Database::readCommentMessage(std::stack<size_t> & lineBreaks, std::string &
 /* Comments (CM) for Signals (SG) */
 bool Database::readCommentSignal(std::stack<size_t> & lineBreaks, std::string & line)
 {
-    smatch mSG;
-    regex reSG("^CM_ SG_ ([[:digit:]]+) ([[:alnum:]_-]+) \"(.+)\";$");
-    if (regex_search(line, mSG, reSG)) {
-        unsigned int messageId = stoul(mSG[1]);
-        std::string signalName = mSG[2];
-        std::string comment2 = mSG[3];
+    smatch m;
+    regex re(REGEX_SOL "CM_[[:space:]]+SG_[[:space:]]+" REGEX_UINT "[[:space:]]+" REGEX_NAME "[[:space:]]+" REGEX_STRING REGEX_EOL_DELIM);
+    if (regex_search(line, m, re)) {
+        unsigned int messageId = stoul(m[1]);
+        std::string signalName = m[2];
+        std::string comment2 = m[3];
         while(!lineBreaks.empty()) {
             comment2.insert(lineBreaks.top(), "\r\n");
             lineBreaks.pop();
@@ -575,11 +600,11 @@ bool Database::readCommentSignal(std::stack<size_t> & lineBreaks, std::string & 
 /* Comments (CM) for Environment Variables (EV) */
 bool Database::readCommentEnvironmentVariable(std::stack<size_t> & lineBreaks, std::string & line)
 {
-    smatch mEV;
-    regex reEV("^CM_ EV_ ([[:alnum:]_-]+) \"(.+)\";$");
-    if (regex_search(line, mEV, reEV)) {
-        std::string envVarName = mEV[1];
-        std::string comment2 = mEV[2];
+    smatch m;
+    regex re(REGEX_SOL "CM_[[:space:]]+EV_[[:space:]]+" REGEX_NAME "[[:space:]]+" REGEX_STRING REGEX_EOL_DELIM);
+    if (regex_search(line, m, re)) {
+        std::string envVarName = m[1];
+        std::string comment2 = m[2];
         while(!lineBreaks.empty()) {
             comment2.insert(lineBreaks.top(), "\r\n");
             lineBreaks.pop();
@@ -640,7 +665,7 @@ void Database::readComment(std::ifstream & ifs, std::string & line)
 void Database::readAttributeDefinition(std::string & line)
 {
     smatch m;
-    regex re("^BA_DEF_ ([[:alnum:]_]*) +\"([[:alnum:]_-]+)\" ([[:alnum:]_]+) +(.*);$");
+    regex re(REGEX_SOL "BA_DEF_[[:space:]]+(BU_|BO_|SG_|EV_)?[[:space:]]*\"" REGEX_NAME "\"[[:space:]]+(INT|HEX|FLOAT|STRING|ENUM)[[:space:]]*(.*)" REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string objectType = m[1];
         std::string attributeName = m[2];
@@ -822,7 +847,7 @@ void Database::readAttributeDefinitionRelation(std::string & line)
 void Database::readAttributeDefault(std::string & line)
 {
     smatch m;
-    regex re("^BA_DEF_DEF_ +\"([[:alnum:]_-]+)\" (.+);$");
+    regex re(REGEX_SOL "BA_DEF_DEF_[[:space:]]+\"" REGEX_NAME "\"[[:space:]]+(.+)" REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string attributeName = m[1];
         std::string attributeValue = m[2];
@@ -916,11 +941,11 @@ void Database::readAttributeDefaultRelation(std::string & line)
     std::cerr << line << std::endl;
 }
 
-/** Attribute Values (BA) for Network */
+/* Attribute Values (BA) for Network */
 bool Database::readAttributeValueNetwork(std::string & line)
 {
     smatch m;
-    regex re("^BA_ \"([[:alnum:]_-]+)\" (.+);$");
+    regex re(REGEX_SOL "BA_[[:space:]]+\"" REGEX_NAME "\"[[:space:]]+" REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string attributeName = m[1];
         std::string attributeValue = m[2];
@@ -962,15 +987,15 @@ bool Database::readAttributeValueNetwork(std::string & line)
     return false;
 }
 
-/** Attribute Values (BA) for Node (BU) */
+/* Attribute Values (BA) for Node (BU) */
 bool Database::readAttributeValueNode(std::string & line)
 {
-    smatch mBU;
-    regex reBU("^BA_ \"([[:alnum:]_-]+)\" BU_ ([[:alnum:]_-]+) (.+);$");
-    if (regex_search(line, mBU, reBU)) {
-        std::string attributeName = mBU[1];
-        std::string nodeName = mBU[2];
-        std::string attributeValue = mBU[3];
+    smatch m;
+    regex re(REGEX_SOL "BA_[[:space:]]+\"" REGEX_NAME "\"[[:space:]]+BU_[[:space:]]+" REGEX_NAME "[[:space:]]+" REGEX_TO_END REGEX_EOL_DELIM);
+    if (regex_search(line, m, re)) {
+        std::string attributeName = m[1];
+        std::string nodeName = m[2];
+        std::string attributeValue = m[3];
         AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
         attributeDefinition.name = attributeName;
         Node & node = nodes[nodeName];
@@ -1012,15 +1037,15 @@ bool Database::readAttributeValueNode(std::string & line)
     return false;
 }
 
-/** Attribute Values (BA) for Message (BO) */
+/* Attribute Values (BA) for Message (BO) */
 bool Database::readAttributeValueMessage(std::string & line)
 {
-    smatch mBO;
-    regex reBO("^BA_ \"([[:alnum:]_-]+)\" BO_ ([[:digit:]]+) (.+);$");
-    if (regex_search(line, mBO, reBO)) {
-        std::string attributeName = mBO[1];
-        unsigned int messageId = stoul(mBO[2]);
-        std::string attributeValue = mBO[3];
+    smatch m;
+    regex re(REGEX_SOL "BA_[[:space:]]+\"" REGEX_NAME "\"[[:space:]]+BO_[[:space:]]+" REGEX_UINT "[[:space:]]+" REGEX_TO_END REGEX_EOL_DELIM);
+    if (regex_search(line, m, re)) {
+        std::string attributeName = m[1];
+        unsigned int messageId = stoul(m[2]);
+        std::string attributeValue = m[3];
         AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
         Attribute & attribute = messages[messageId].attributeValues[attributeName];
 
@@ -1059,16 +1084,16 @@ bool Database::readAttributeValueMessage(std::string & line)
     return false;
 }
 
-/** Attribute Values (BA) for Signal (SG) */
+/* Attribute Values (BA) for Signal (SG) */
 bool Database::readAttributeValueSignal(std::string & line)
 {
-    smatch mSG;
-    regex reSG("^BA_ \"([[:alnum:]_-]+)\" SG_ ([[:digit:]]+) ([[:alnum:]_-]+) (.+);$");
-    if (regex_search(line, mSG, reSG)) {
-        std::string attributeName = mSG[1];
-        unsigned int messageId = stoul(mSG[2]);
-        std::string signalName = mSG[3];
-        std::string attributeValue = mSG[4];
+    smatch m;
+    regex re(REGEX_SOL "BA_[[:space:]]+\"" REGEX_NAME "\"[[:space:]]+SG_[[:space:]]+" REGEX_UINT "[[:space:]]+" REGEX_NAME "[[:space:]]+" REGEX_TO_END REGEX_EOL_DELIM);
+    if (regex_search(line, m, re)) {
+        std::string attributeName = m[1];
+        unsigned int messageId = stoul(m[2]);
+        std::string signalName = m[3];
+        std::string attributeValue = m[4];
         AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
         Attribute & attribute = messages[messageId].signals[signalName].attributeValues[attributeName];
 
@@ -1107,15 +1132,15 @@ bool Database::readAttributeValueSignal(std::string & line)
     return false;
 }
 
-/** Attribute Values (BA) for Environment Variable (EV) */
+/* Attribute Values (BA) for Environment Variable (EV) */
 bool Database::readAttributeValueEnvironmentVariable(std::string & line)
 {
-    smatch mEV;
-    regex reEV("^BA_ \"([[:alnum:]_-]+)\" EV_ ([[:alnum:]_-]+) (.+);$");
-    if (regex_search(line, mEV, reEV)) {
-        std::string attributeName = mEV[1];
-        std::string envVarName = mEV[2];
-        std::string attributeValue = mEV[3];
+    smatch m;
+    regex re(REGEX_SOL "BA_[[:space:]]+\"" REGEX_NAME "\"[[:space:]]+EV_[[:space:]]+" REGEX_NAME "[[:space:]]+" REGEX_TO_END REGEX_EOL_DELIM);
+    if (regex_search(line, m, re)) {
+        std::string attributeName = m[1];
+        std::string envVarName = m[2];
+        std::string attributeValue = m[3];
         AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
         Attribute & attribute = environmentVariables[envVarName].attributeValues[attributeName];
 
@@ -1269,15 +1294,15 @@ void Database::readAttributeRelationValue(std::string & line)
 /* Value Descriptions (VAL) for Signals (SG) */
 bool Database::readValueDescriptionSignal(std::string & line)
 {
-    smatch mS;
-    regex reSig("^VAL_ ([[:digit:]]+) ([[:alnum:]_-]+) (.*) ;$");
-    if (regex_search(line, mS, reSig)) {
-        unsigned int messageId = stoul(mS[1]);
-        std::string signalName = mS[2];
+    smatch m;
+    regex re(REGEX_SOL "VAL_[[:space:]]+" REGEX_UINT "[[:space:]]+" REGEX_NAME "[[:space:]]+" REGEX_TO_END REGEX_EOL_DELIM);
+    if (regex_search(line, m, re)) {
+        unsigned int messageId = stoul(m[1]);
+        std::string signalName = m[2];
         ValueDescriptions & valueDescriptions = messages[messageId].signals[signalName].valueDescriptions;
 
         /* Value Description Pairs */
-        std::istringstream iss(mS[3]);
+        std::istringstream iss(m[3]);
         while (iss.good()) {
             std::string value;
             iss >> value;
@@ -1303,14 +1328,14 @@ bool Database::readValueDescriptionSignal(std::string & line)
 /* Value Descriptions (VAL) for Environment Variables (EV) */
 bool Database::readValueDescriptionEnvironmentVariable(std::string & line)
 {
-    smatch mEV;
-    regex reEnvVar("^VAL_ ([[:alnum:]_-]+) (.*) ;$");
-    if (regex_search(line, mEV, reEnvVar)) {
-        std::string envVarName = mEV[1];
+    smatch m;
+    regex re(REGEX_SOL "VAL_[[:space:]]+" REGEX_NAME "[[:space:]]+" REGEX_TO_END REGEX_EOL_DELIM);
+    if (regex_search(line, m, re)) {
+        std::string envVarName = m[1];
         ValueDescriptions & valueDescriptions = environmentVariables[envVarName].valueDescriptions;
 
         /* Value Description Pairs */
-        std::istringstream iss(mEV[2]);
+        std::istringstream iss(m[2]);
         while (iss.good()) {
             std::string value;
             iss >> value;
@@ -1363,7 +1388,7 @@ void Database::readValueDescription(std::string & line)
 void Database::readSignalGroup(std::string & line)
 {
     smatch m;
-    regex re("^SIG_GROUP_ ([[:digit:]]+) ([[:alnum:]_-]+) ([[:digit:]]) : (.+);$");
+    regex re(REGEX_SOL "SIG_GROUP_[[:space:]]+" REGEX_UINT "[[:space:]]+" REGEX_NAME "[[:space:]]+" REGEX_UINT "[[:space:]]*:[[:space:]]*" REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
         std::string signalGroupName = m[2];
@@ -1395,7 +1420,7 @@ void Database::readSignalGroup(std::string & line)
 void Database::readSignalExtendedValueType(std::string & line)
 {
     smatch m;
-    regex re("^SIG_VALTYPE_ ([[:digit:]]+) ([[:alnum:]_-]+) : ([[:digit:]]);$");
+    regex re("SIG_VALTYPE_[[:space:]]+" REGEX_UINT "[[:space:]]+" REGEX_NAME "[[:space:]]*:[[:space:]]*([[:digit:]])" REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
         std::string signalName = m[2];
@@ -1429,7 +1454,7 @@ void Database::readSignalExtendedValueType(std::string & line)
 void Database::readExtendedMultiplexor(std::string & line)
 {
     smatch m;
-    regex re("^SG_MUL_VAL_ ([[:digit:]]+) ([[:alnum:]_-]+) ([[:alnum:]_-]+) (.+);$");
+    regex re("SG_MUL_VAL_[[:space:]]+" REGEX_UINT "[[:space:]]+" REGEX_NAME "[[:space:]]+" REGEX_NAME "[[:space:]]+" REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
         std::string multiplexedSignalName = m[2];
@@ -1482,7 +1507,7 @@ bool Database::load(const char * filename)
         chomp(line);
 
         smatch m;
-        regex re("^([[:alnum:]_]+):? ");
+        regex re(REGEX_SOL REGEX_NAME "[[:space:]\\:]");
         if (regex_search(line, m, re)) {
             std::string name = m[1];
 
