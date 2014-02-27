@@ -346,7 +346,7 @@ void Database::readMessageTransmitter(std::string & line)
 void Database::readEnvironmentVariable(std::string & line)
 {
     smatch m;
-    regex re(REGEX_SOL "EV_[[:space:]]+" REGEX_NAME "[[:space:]]*:[[:space:]]*([012])[[:space:]]+\\[" REGEX_DOUBLE "\\|" REGEX_DOUBLE "\\][[:space:]]+" REGEX_STRING "[[:space:]]+" REGEX_DOUBLE "[[:space:]]+" REGEX_UINT "[[:space:]]+DUMMY_NODE_VECTOR([0123])[[:space:]]+" REGEX_TO_END REGEX_EOL_DELIM);
+    regex re(REGEX_SOL "EV_[[:space:]]+" REGEX_NAME "[[:space:]]*:[[:space:]]*([01])[[:space:]]+\\[" REGEX_DOUBLE "\\|" REGEX_DOUBLE "\\][[:space:]]+" REGEX_STRING "[[:space:]]+" REGEX_DOUBLE "[[:space:]]+" REGEX_UINT "[[:space:]]+DUMMY_NODE_VECTOR([[:xdigit:]]+)[[:space:]]+" REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string envVarName = m[1];
         EnvironmentVariable & environmentVariable = environmentVariables[envVarName];
