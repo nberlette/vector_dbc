@@ -33,7 +33,12 @@ namespace DBC {
 #endif
 
 /* this is the standard line ending for this file format */
+#ifdef _WINDOWS
+#define endl std::endl;
+#else
+// std::endl under linux would just generate a "\n"
 constexpr char endl[] = "\r\n";
+#endif
 
 /* Version (VERSION) */
 void Database::writeVersion(std::ofstream & ofs)
