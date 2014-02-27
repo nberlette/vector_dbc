@@ -1,29 +1,9 @@
 FIND_PACKAGE(Doxygen)
+FIND_PACKAGE(Graphviz)
+FIND_PACKAGE(HTMLHelp)
 
 if(DOXYGEN_FOUND)
-
-  if(DOXYGEN_DOT_FOUND)
-    set(DOXYGEN_HAVE_DOT YES)
-  else()
-    set(DOXYGEN_HAVE_DOT NO)
-    if(WIN32)
-      find_path(DOXYGEN_DOT_PATH
-        NAMES dot.exe
-        PATHS "C:/Program Files/Graphviz/bin")
-      if(EXISTS "${DOXYGEN_DOT_PATH}")
-        set(DOXYGEN_HAVE_DOT YES)
-        find_program(DOXYGEN_DOT_EXECUTABLE
-          NAMES dot.exe
-          PATHS "${DOXYGEN_DOT_PATH}")
-      endif()
-    endif()
-  endif()
-
   if(WIN32)
-    find_program(DOXYGEN_HHC_LOCATION
-      NAMES hhc.exe
-      PATHS "C:/Program Files/HTML Help Workshop")
-
     set(DOXYGEN_GENERATE_HTMLHELP YES)
     set(DOXYGEN_GENERATE_TREEVIEW NO)
     set(DOXYGEN_GENERATE_MAN NO)
