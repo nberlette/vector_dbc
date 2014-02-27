@@ -35,6 +35,12 @@
 
 #include "vector_dbc_export.h"
 
+#ifdef USE_CPP11_ENUM_CLASS
+#define enumclass enum class
+#else
+#define enumclass enum
+#endif
+
 namespace Vector {
 namespace DBC {
 
@@ -107,7 +113,7 @@ public:
     double physicalToRawValue(double rawValue);
 
     /** Signal Extended Value Type (SIG_VALTYPE, obsolete) */
-    enum class ExtendedValueType : char {
+    enumclass ExtendedValueType : char {
         Undefined = ' ',
         Integer = '0',
         Float = '1',

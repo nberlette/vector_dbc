@@ -32,6 +32,12 @@
 
 #include "vector_dbc_export.h"
 
+#ifdef USE_CPP11_ENUM_CLASS
+#define enumclass enum class
+#else
+#define enumclass enum
+#endif
+
 namespace Vector {
 namespace DBC {
 
@@ -47,7 +53,7 @@ public:
     std::string name;
 
     /** Type */
-    enum class Type : char {
+    enumclass Type : char {
         Integer, /**< Integer */
         Float, /**< Float */
         String, /**< String */
@@ -73,7 +79,7 @@ public:
     unsigned int id;
 
     /** Access Type */
-    enum class AccessType {
+    enumclass AccessType {
         Unrestricted = 0, /**< Unrestricted */
         Read = 1, /**< Read */
         Write = 2, /**< Write */

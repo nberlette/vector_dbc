@@ -25,13 +25,19 @@
 
 #include "vector_dbc_export.h"
 
+#ifdef USE_CPP11_ENUM_CLASS
+#define enumclass enum class
+#else
+#define enumclass enum
+#endif
+
 namespace Vector {
 namespace DBC {
 
 /**
  * Attribute Value Type
  */
-enum class AttributeValueType {
+enumclass AttributeValueType {
     Int, /**< Integer */
     Hex, /**< Hex */
     Float, /**< Float */

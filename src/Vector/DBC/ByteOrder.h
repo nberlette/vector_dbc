@@ -25,13 +25,19 @@
 
 #include "vector_dbc_export.h"
 
+#ifdef USE_CPP11_ENUM_CLASS
+#define enumclass enum class
+#else
+#define enumclass enum
+#endif
+
 namespace Vector {
 namespace DBC {
 
 /**
  * Byte Order Type
  */
-enum class ByteOrder : char {
+enumclass ByteOrder : char {
     Motorola = '0', /** < Motorola / Big Endian */
     Intel = '1', /**< Intel / Little Endian */
     BigEndian = '0', /**< Bit Endian / Motorola */

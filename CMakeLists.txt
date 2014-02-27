@@ -8,6 +8,9 @@ set(CMAKE_BUILD_TYPE Release)
 # regex support by C++11 or Boost
 option(OPTION_USE_CPP11_REGEX "Use std::regex instead of boost::regex" OFF)
 
+# use enum class instead of enum
+option(OPTION_USE_CPP11_ENUM_CLASS "Use enum class instead of enum" OFF)
+
 # source code documentation
 option(OPTION_RUN_DOXYGEN "Run Doxygen" ON)
 

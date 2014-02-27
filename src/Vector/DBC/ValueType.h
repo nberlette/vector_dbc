@@ -25,13 +25,19 @@
 
 #include "vector_dbc_export.h"
 
+#ifdef USE_CPP11_ENUM_CLASS
+#define enumclass enum class
+#else
+#define enumclass enum
+#endif
+
 namespace Vector {
 namespace DBC {
 
 /**
  * Value Type
  */
-enum class ValueType : char {
+enumclass ValueType : char {
     Unsigned = '+', /**< Unsigned */
     Signed = '-' /**< Signed */
 };
