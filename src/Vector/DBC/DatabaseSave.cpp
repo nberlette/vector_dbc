@@ -99,22 +99,19 @@ void Database::writeSignals(std::ofstream & ofs, Message & message)
 {
     for (auto signal : message.signals) {
         /* Name */
-        ofs << " SG_ " << signal.second.name;
+        ofs << " SG_ " << signal.second.name << ' ';
 
-        /* Multiplexed Signal */
+        /* Multiplexed Signal, Multiplexor Switch/Signal */
         if (signal.second.multiplexedSignal) {
             ofs << 'm' << signal.second.multiplexerSwitchValue;
         }
-
-        /* Multiplexor Switch, Multiplexor Signal */
         if (signal.second.multiplexorSwitch) {
             ofs << 'M';
         }
-
         if (signal.second.multiplexedSignal || signal.second.multiplexorSwitch) {
             ofs << ' ';
         }
-        ofs << " : ";
+        ofs << ": ";
 
         /* Start Bit, Size, Byte Order, Value Type */
         ofs << signal.second.startBit << '|' << signal.second.size << '@' << char(signal.second.byteOrder) << char(signal.second.valueType);
