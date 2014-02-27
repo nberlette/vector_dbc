@@ -9,6 +9,7 @@ if(CCCC_FOUND)
   add_custom_target(cccc ALL
     ${CCCC_EXECUTABLE}
     ${source_files_with_path}
+    --opt_infile=${CMAKE_CURRENT_SOURCE_DIR}/cccc.opt
     --outdir=${CMAKE_CURRENT_BINARY_DIR}/cccc
     --html_outfile=${CMAKE_CURRENT_BINARY_DIR}/cccc/index.html
     > cccc-out.txt 2> cccc-err.txt)
