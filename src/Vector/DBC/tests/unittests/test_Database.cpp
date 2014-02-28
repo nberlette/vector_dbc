@@ -6,6 +6,7 @@
 
 #include <fstream>
 #include <iterator>
+#include <string>
 #include <boost/filesystem.hpp>
 
 #include "Vector/DBC/Database.h"
@@ -16,7 +17,8 @@ BOOST_AUTO_TEST_CASE(Database)
 
     /* load database */
     boost::filesystem::path infile(CMAKE_CURRENT_SOURCE_DIR "/data/Database.dbc");
-    BOOST_REQUIRE(database.load(infile.string().c_str()));
+    std::string infilename = infile.string();
+    BOOST_REQUIRE(database.load(infilename));
 
     /* create output directory */
     boost::filesystem::path outdir(CMAKE_CURRENT_BINARY_DIR "/data/");
@@ -26,7 +28,8 @@ BOOST_AUTO_TEST_CASE(Database)
 
     /* save database */
     boost::filesystem::path outfile(CMAKE_CURRENT_BINARY_DIR "/data/Database.dbc");
-    BOOST_REQUIRE(database.save(outfile.string().c_str()));
+    std::string outfilename = outfile.string();
+    BOOST_REQUIRE(database.save(outfilename));
 
     /* loaded and saved file should be equivalent */
     std::ifstream ifs1(infile.c_str());
