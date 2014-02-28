@@ -36,10 +36,14 @@ AttributeRelation::AttributeRelation() :
 
 bool AttributeRelation::operator < (const AttributeRelation & rhs) const
 {
-    if(relationType < rhs.relationType)
+    if((name < rhs.name) ||
+       (relationType < rhs.relationType) ||
+       (nodeName < rhs.nodeName) ||
+       (messageId < rhs.messageId) ||
+       (signalName < rhs.signalName)) {
         return true;
-    if(name < rhs.name)
-        return true;
+    }
+
     return false;
 }
 
