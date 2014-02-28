@@ -48,7 +48,7 @@ add_compiler_export_flags()
 
 add_library(Vector_DBC SHARED ${source_files} ${header_files})
 
-if(OPTION_USE_GCOV)
+if(OPTION_USE_GCOV_LCOV)
   target_link_libraries(Vector_DBC gcov)
   add_definitions(-g -O0 -fprofile-arcs -ftest-coverage)
 endif()
