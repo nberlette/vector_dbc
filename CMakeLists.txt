@@ -6,7 +6,7 @@ project(Vector_DBC)
 set(CMAKE_BUILD_TYPE Release)
 
 # regex support by C++11 or Boost
-option(OPTION_USE_CPP11_REGEX "Use std::regex instead of boost::regex" OFF)
+option(OPTION_USE_CPP11_REGEX "Use std::regex instead of boost::regex" ON)
 
 # use enum class instead of enum
 option(OPTION_USE_CPP11_ENUM_CLASS "Use enum class instead of enum" OFF)
@@ -19,8 +19,8 @@ option(OPTION_RUN_CCCC "Run CCCC" OFF)
 option(OPTION_RUN_CPPCHECK "Run Cppcheck" OFF)
 
 # dynamic tests
-option(OPTION_RUN_EXAMPLES "Run examples" ON)
-option(OPTION_RUN_TESTS "Run tests" ON)
+option(OPTION_RUN_EXAMPLES "Run examples" OFF)
+option(OPTION_RUN_TESTS "Run tests" OFF)
 option(OPTION_USE_GCOV_LCOV "Use gcov and run lcov" OFF)
 
 # package

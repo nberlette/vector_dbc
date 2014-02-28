@@ -20,21 +20,20 @@ Building under Windows contains the following steps:
 * Use cmake-gui
 * Set "Where is the source code:" to the root directory.
 * Set "Where to build the binaries:" to folder build below the root directory. Eventually create it.
-* Set option OPTION_USE_CPP11_REGEX
 * Configure and Generate
 * Open the Visual Studio Solution (.sln) file in the build folder.
-* Compile it.
+* Compile it in Release Configuration.
 
 # Test
 
 Static tests are
 
-* Cppcheck
-* CCCC
+* Cppcheck (if OPTION_RUN_CPPCHECK is set)
+* CCCC (if OPTION_RUN_CCCC is set)
 
 Dynamic tests are
 
-* Unit tests
+* Unit tests (if OPTION_RUN_TESTS is set)
 
 The test execution can be triggered using
 
