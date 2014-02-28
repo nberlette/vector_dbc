@@ -28,6 +28,14 @@
 #include <stack>
 #include <string>
 
+/* this is the standard line ending for this file format */
+#ifdef _WINDOWS
+#define endl std::endl;
+#else
+// force Linux to use Windows line endings
+constexpr char endl[] = "\r\n";
+#endif
+
 #ifdef USE_CPP11_REGEX
 #include <regex>
 #define smatch       std::smatch
@@ -533,9 +541,10 @@ bool Database::readCommentNetwork(std::stack<size_t> & lineBreaks, std::string &
     if (regex_search(line, m, re)) {
         std::string comment2 = m[1];
         while(!lineBreaks.empty()) {
-            comment2.insert(lineBreaks.top(), "\r\n");
+            comment2.insert(lineBreaks.top(), endl);
             lineBreaks.pop();
         }
+
         comment = comment2;
         return true;
     }
@@ -551,12 +560,13 @@ bool Database::readCommentNode(std::stack<size_t> & lineBreaks, std::string & li
     regex re(REGEX_SOL "CM_" REGEX_SPACE "BU_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string nodeName = m[1];
-        std::string comment2 = m[2];
+        std::string comment = m[2];
         while(!lineBreaks.empty()) {
-            comment2.insert(lineBreaks.top(), "\r\n");
+            comment.insert(lineBreaks.top(), endl);
             lineBreaks.pop();
         }
-        nodes[nodeName].comment = comment2;
+
+        nodes[nodeName].comment = comment;
         return true;
     }
 
@@ -571,12 +581,13 @@ bool Database::readCommentMessage(std::stack<size_t> & lineBreaks, std::string &
     regex re(REGEX_SOL "CM_" REGEX_SPACE "BO_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
-        std::string comment2 = m[2];
+        std::string comment = m[2];
         while(!lineBreaks.empty()) {
-            comment2.insert(lineBreaks.top(), "\r\n");
+            comment.insert(lineBreaks.top(), endl);
             lineBreaks.pop();
         }
-        messages[messageId].comment = comment2;
+
+        messages[messageId].comment = comment;
         return true;
     }
 
@@ -592,12 +603,13 @@ bool Database::readCommentSignal(std::stack<size_t> & lineBreaks, std::string & 
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
         std::string signalName = m[2];
-        std::string comment2 = m[3];
+        std::string comment = m[3];
         while(!lineBreaks.empty()) {
-            comment2.insert(lineBreaks.top(), "\r\n");
+            comment.insert(lineBreaks.top(), endl);
             lineBreaks.pop();
         }
-        messages[messageId].signals[signalName].comment = comment2;
+
+        messages[messageId].signals[signalName].comment = comment;
         return true;
     }
 
@@ -612,12 +624,13 @@ bool Database::readCommentEnvironmentVariable(std::stack<size_t> & lineBreaks, s
     regex re(REGEX_SOL "CM_" REGEX_SPACE "EV_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string envVarName = m[1];
-        std::string comment2 = m[2];
+        std::string comment = m[2];
         while(!lineBreaks.empty()) {
-            comment2.insert(lineBreaks.top(), "\r\n");
+            comment.insert(lineBreaks.top(), endl);
             lineBreaks.pop();
         }
-        environmentVariables[envVarName].comment = comment2;
+
+        environmentVariables[envVarName].comment = comment;
         return true;
     }
 
