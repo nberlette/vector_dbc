@@ -48,14 +48,17 @@ constexpr char endl[] = "\r\n";
 #define regex_search boost::regex_search
 #endif
 
-/* unsigned integer */
+/* Unsigned integer */
 #define REGEX_UINT "([[:digit:]]+)"
 
-/* double (not strict, invalid values may still occur: "..E+-e..1-23e" ) */
+/* Double (not strict, invalid values may fall through: "..E+-e..1-23e") */
 #define REGEX_DOUBLE "([[:digit:]\\.\\+\\-eE]+)"
 
-/* name (C identifier plus '-' for Environment Variables name) */
-#define REGEX_NAME "([[:alpha:]_][[:alnum:]_\\-]*)"
+/* Name (C identifier) */
+#define REGEX_NAME "([[:alpha:]_][[:alnum:]_]*)"
+
+/* Attribute name */
+#define REGEX_ATTRIB_NAME "\"([[:alpha:]_][^\"[:space:]]*)\""
 
 /* Optional text between "" */
 #define REGEX_STRING "\"([^\"]*)\""
@@ -686,7 +689,7 @@ void Database::readComment(std::ifstream & ifs, std::string & line)
 void Database::readAttributeDefinition(std::string & line)
 {
     smatch m;
-    regex re(REGEX_SOL "BA_DEF_" REGEX_SPACE "(BU_|BO_|SG_|EV_)?[[:space:]]*\"" REGEX_NAME "\"" REGEX_SPACE "(INT|HEX|FLOAT|STRING|ENUM)[[:space:]]*(.*)" REGEX_EOL_DELIM);
+    regex re(REGEX_SOL "BA_DEF_" REGEX_SPACE "(BU_|BO_|SG_|EV_)?[[:space:]]*" REGEX_ATTRIB_NAME REGEX_SPACE "(INT|HEX|FLOAT|STRING|ENUM)[[:space:]]*" REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string objectType = m[1];
         std::string attributeName = m[2];
@@ -777,7 +780,7 @@ void Database::readAttributeDefinition(std::string & line)
 void Database::readAttributeDefinitionRelation(std::string & line)
 {
     smatch m;
-    regex re(REGEX_SOL "BA_DEF_REL_" REGEX_SPACE REGEX_NAME REGEX_SPACE "\"" REGEX_NAME "\"" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
+    regex re(REGEX_SOL "BA_DEF_REL_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string objectType = m[1];
         std::string attributeName = m[2];
@@ -870,7 +873,7 @@ void Database::readAttributeDefinitionRelation(std::string & line)
 void Database::readAttributeDefault(std::string & line)
 {
     smatch m;
-    regex re(REGEX_SOL "BA_DEF_DEF_" REGEX_SPACE "\"" REGEX_NAME "\"" REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
+    regex re(REGEX_SOL "BA_DEF_DEF_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string attributeName = m[1];
         std::string attributeValue = m[2];
@@ -919,7 +922,7 @@ void Database::readAttributeDefault(std::string & line)
 void Database::readAttributeDefaultRelation(std::string & line)
 {
     smatch m;
-    regex re(REGEX_SOL "BA_DEF_DEF_REL_" REGEX_SPACE "\"" REGEX_NAME "\"" REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
+    regex re(REGEX_SOL "BA_DEF_DEF_REL_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string attributeName = m[1];
         std::string attributeValue = m[2];
@@ -979,7 +982,7 @@ void Database::readAttributeDefaultRelation(std::string & line)
 bool Database::readAttributeValueNetwork(std::string & line)
 {
     smatch m;
-    regex re(REGEX_SOL "BA_" REGEX_SPACE "\"" REGEX_NAME "\"" REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
+    regex re(REGEX_SOL "BA_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string attributeName = m[1];
         std::string attributeValue = m[2];
@@ -1025,7 +1028,7 @@ bool Database::readAttributeValueNetwork(std::string & line)
 bool Database::readAttributeValueNode(std::string & line)
 {
     smatch m;
-    regex re(REGEX_SOL "BA_" REGEX_SPACE "\"" REGEX_NAME "\"" REGEX_SPACE "BU_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
+    regex re(REGEX_SOL "BA_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE "BU_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string attributeName = m[1];
         std::string nodeName = m[2];
@@ -1075,7 +1078,7 @@ bool Database::readAttributeValueNode(std::string & line)
 bool Database::readAttributeValueMessage(std::string & line)
 {
     smatch m;
-    regex re(REGEX_SOL "BA_" REGEX_SPACE "\"" REGEX_NAME "\"" REGEX_SPACE "BO_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
+    regex re(REGEX_SOL "BA_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE "BO_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string attributeName = m[1];
         unsigned int messageId = stoul(m[2]);
@@ -1122,7 +1125,7 @@ bool Database::readAttributeValueMessage(std::string & line)
 bool Database::readAttributeValueSignal(std::string & line)
 {
     smatch m;
-    regex re(REGEX_SOL "BA_" REGEX_SPACE "\"" REGEX_NAME "\"" REGEX_SPACE "SG_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
+    regex re(REGEX_SOL "BA_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE "SG_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string attributeName = m[1];
         unsigned int messageId = stoul(m[2]);
@@ -1170,7 +1173,7 @@ bool Database::readAttributeValueSignal(std::string & line)
 bool Database::readAttributeValueEnvironmentVariable(std::string & line)
 {
     smatch m;
-    regex re(REGEX_SOL "BA_" REGEX_SPACE "\"" REGEX_NAME "\"" REGEX_SPACE "EV_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
+    regex re(REGEX_SOL "BA_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE "EV_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string attributeName = m[1];
         std::string envVarName = m[2];
@@ -1254,7 +1257,7 @@ void Database::readAttributeRelationValue(std::string & line)
 
     // for relation "Control Unit - Env. Variable" (BU_EV_REL)
     smatch mBU_EV_REL;
-    regex reBU_EV_REL(REGEX_SOL "BA_REL_" REGEX_SPACE "\"" REGEX_NAME "\"" REGEX_SPACE "BU_EV_REL_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
+    regex reBU_EV_REL(REGEX_SOL "BA_REL_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE "BU_EV_REL_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (!found && regex_search(line, mBU_EV_REL, reBU_EV_REL)) {
         attributeRelation.relationType = AttributeRelation::RelationType::ControlUnitEnvironmentVariable;
         attributeRelation.name = mBU_EV_REL[1];
@@ -1266,7 +1269,7 @@ void Database::readAttributeRelationValue(std::string & line)
 
     // for relation "Node - Tx Message" (BU_BO_REL)
     smatch mBU_BO_REL;
-    regex reBU_BO_REL(REGEX_SOL "BA_REL_" REGEX_SPACE "\"" REGEX_NAME "\"" REGEX_SPACE "BU_BO_REL_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
+    regex reBU_BO_REL(REGEX_SOL "BA_REL_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE "BU_BO_REL_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (!found && regex_search(line, mBU_BO_REL, reBU_BO_REL)) {
         attributeRelation.relationType = AttributeRelation::RelationType::NodeTxMessage;
         attributeRelation.name = mBU_BO_REL[1];
@@ -1278,7 +1281,7 @@ void Database::readAttributeRelationValue(std::string & line)
 
     // for relation "Node - Mapped Rx Signal" (BU_SG_REL)
     smatch mBU_SG_REL;
-    regex reBU_SG_REL(REGEX_SOL "BA_REL_" REGEX_SPACE "\"" REGEX_NAME "\"" REGEX_SPACE "BU_SG_REL_" REGEX_SPACE REGEX_NAME REGEX_SPACE "SG_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
+    regex reBU_SG_REL(REGEX_SOL "BA_REL_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE "BU_SG_REL_" REGEX_SPACE REGEX_NAME REGEX_SPACE "SG_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (!found && regex_search(line, mBU_SG_REL, reBU_SG_REL)) {
         attributeRelation.relationType = AttributeRelation::RelationType::NodeMappedRxSignal;
         attributeRelation.name = mBU_SG_REL[1];
