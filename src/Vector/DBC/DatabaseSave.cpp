@@ -231,8 +231,9 @@ void Database::writeEnvironmentVariables(std::ofstream & ofs)
 
         /* Access Nodes */
         if (environmentVariable.second.accessNodes.empty()) {
-            ofs << "VECTOR__XXX";
+            ofs << "Vector__XXX";
         } else {
+            ofs << ' ';
             bool first = true;
             for (auto accessNode : environmentVariable.second.accessNodes) {
                 if (first) {
@@ -431,7 +432,7 @@ void Database::writeAttributeDefaults(std::ofstream & ofs)
         case AttributeDefinition::ObjectType::Message:
         case AttributeDefinition::ObjectType::Signal:
         case AttributeDefinition::ObjectType::EnvironmentVariable:
-            ofs << "BA_DEF_DEF_";
+            ofs << "BA_DEF_DEF_ ";
             break;
         case AttributeDefinition::ObjectType::ControlUnitEnvironmentVariable:
         case AttributeDefinition::ObjectType::NodeTxMessage:
@@ -441,7 +442,7 @@ void Database::writeAttributeDefaults(std::ofstream & ofs)
         }
 
         /* Name */
-        ofs << "  \"" << attribute.second.name << "\" ";
+        ofs << " \"" << attribute.second.name << "\" ";
 
         /* Value */
         switch(attribute.second.valueType) {
@@ -764,7 +765,7 @@ void Database::writeSignalExtendedValueTypes(std::ofstream & ofs)
             if (signal.second.extendedValueType  !=  Signal::ExtendedValueType::Undefined) {
                 ofs << "SIG_VALTYPE_ " << message.second.id << ' ' << signal.second.name;
                 ofs << " : " << char(signal.second.extendedValueType);
-                ofs << endl;
+                ofs << ';' << endl;
             }
         }
     }
