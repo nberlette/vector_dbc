@@ -548,6 +548,13 @@ bool Database::readCommentNetwork(std::stack<size_t> & lineBreaks, std::string &
             lineBreaks.pop();
         }
 
+        /* replace \' with \" */
+        for (size_t p = comment2.find('\\'); (p != std::string::npos) &&
+             (p < comment2.size() - 1) &&
+             (comment2[p+1] == '\''); p = comment2.find('\\', p+1)) {
+            comment2[p+1] = '"';
+        }
+
         comment = comment2;
         return true;
     }
@@ -569,6 +576,13 @@ bool Database::readCommentNode(std::stack<size_t> & lineBreaks, std::string & li
             lineBreaks.pop();
         }
 
+        /* replace \' with \" */
+        for (size_t p = comment.find('\\'); (p != std::string::npos) &&
+             (p < comment.size() - 1) &&
+             (comment[p+1] == '\''); p = comment.find('\\', p+1)) {
+            comment[p+1] = '"';
+        }
+
         nodes[nodeName].comment = comment;
         return true;
     }
@@ -588,6 +602,13 @@ bool Database::readCommentMessage(std::stack<size_t> & lineBreaks, std::string &
         while(!lineBreaks.empty()) {
             comment.insert(lineBreaks.top(), endl);
             lineBreaks.pop();
+        }
+
+        /* replace \' with \" */
+        for (size_t p = comment.find('\\'); (p != std::string::npos) &&
+             (p < comment.size() - 1) &&
+             (comment[p+1] == '\''); p = comment.find('\\', p+1)) {
+            comment[p+1] = '"';
         }
 
         messages[messageId].comment = comment;
@@ -612,6 +633,13 @@ bool Database::readCommentSignal(std::stack<size_t> & lineBreaks, std::string & 
             lineBreaks.pop();
         }
 
+        /* replace \' with \" */
+        for (size_t p = comment.find('\\'); (p != std::string::npos) &&
+             (p < comment.size() - 1) &&
+             (comment[p+1] == '\''); p = comment.find('\\', p+1)) {
+            comment[p+1] = '"';
+        }
+
         messages[messageId].signals[signalName].comment = comment;
         return true;
     }
@@ -633,6 +661,13 @@ bool Database::readCommentEnvironmentVariable(std::stack<size_t> & lineBreaks, s
             lineBreaks.pop();
         }
 
+        /* replace \' with \" */
+        for (size_t p = comment.find('\\'); (p != std::string::npos) &&
+             (p < comment.size() - 1) &&
+             (comment[p+1] == '\''); p = comment.find('\\', p+1)) {
+            comment[p+1] = '"';
+        }
+
         environmentVariables[envVarName].comment = comment;
         return true;
     }
@@ -644,16 +679,39 @@ bool Database::readCommentEnvironmentVariable(std::stack<size_t> & lineBreaks, s
 /* Comments (CM) */
 void Database::readComment(std::ifstream & ifs, std::string & line)
 {
-    /* support multi-line comments */
-    std::string suffix("\";");
-    size_t firstCommentCharPos = line.find('"') + 1;
+    /* support multi-line comments and escape sequences */
+    size_t firstCommentCharPos = line.find('"');
+    if (firstCommentCharPos == std::string::npos) {
+        return;
+    }
+    size_t lastCommentCharPos = line.rfind('"');
+    size_t eolPos = line.rfind(';');
+    bool eol = (lastCommentCharPos > firstCommentCharPos) &&
+            (line[lastCommentCharPos-1] != '\\') &&
+            (eolPos != std::string::npos) &&
+            (eolPos > lastCommentCharPos);
+    firstCommentCharPos++;
     std::stack<size_t> lineBreaks;
-    while (line.rfind(suffix) != (line.size() - suffix.size())) {
+    while (!eol) {
         std::string nextLine;
         std::getline(ifs, nextLine);
         chomp(nextLine);
         lineBreaks.push(line.size() - firstCommentCharPos);
+        lastCommentCharPos = nextLine.rfind('"');
+        eolPos = nextLine.rfind(';');
+        eol = (lastCommentCharPos != std::string::npos) &&
+                (nextLine[lastCommentCharPos-1] != '\\') &&
+                (eolPos != std::string::npos) &&
+                (eolPos > lastCommentCharPos);
         line += nextLine;
+    }
+
+    /* replace \" with \' */
+    for (size_t p = line.find('\\', firstCommentCharPos);
+         (p != std::string::npos) &&
+         (p < line.size() - 1) &&
+         (line[p+1] == '"'); p = line.find('\\', p+1)) {
+        line[p+1] = '\'';
     }
 
     // for nodes (BU)
