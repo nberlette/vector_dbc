@@ -28,11 +28,10 @@
 #include <stack>
 #include <string>
 
-/* this is the standard line ending for this file format */
+/* force Linux to use Windows line endings */
 #ifdef _WINDOWS
 #define endl std::endl;
 #else
-// force Linux to use Windows line endings
 constexpr char endl[] = "\r\n";
 #endif
 
