@@ -71,6 +71,7 @@ The following files are products of installation and building:
 * Templates/Functions for protocols (ARINC664, CANoe, CANopen, CAN_FD, CAPL, Ethernet, Interaction Layer, Network Management, ISO11783, J1587, J1939, MOST, NMEA)
 * Comparation of two DBCs
 * Signal: Calculation of min/max/auto
+* Some OPTIONS can be auto detected, e.g. OPTION_USE_CPP11_REGEX or OPTION_USE_CPP11_ENUM_CLASS. Results should be placed in config.h.
 
 # Missing test coverage
 
