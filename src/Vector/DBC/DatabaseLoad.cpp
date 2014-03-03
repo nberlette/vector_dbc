@@ -536,7 +536,7 @@ void Database::readSignalType(std::string & line)
 }
 
 /* Comments (CM) for Networks */
-bool Database::readCommentNetwork(std::stack<size_t> & lineBreaks, std::string & line)
+bool Database::readCommentNetwork(std::stack<std::size_t> & lineBreaks, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "CM_" REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
@@ -548,7 +548,7 @@ bool Database::readCommentNetwork(std::stack<size_t> & lineBreaks, std::string &
         }
 
         /* replace \' with \" */
-        for (size_t p = comment2.find('\\'); (p != std::string::npos) &&
+        for (std::size_t p = comment2.find('\\'); (p != std::string::npos) &&
              (p < comment2.size() - 1) &&
              (comment2[p+1] == '\''); p = comment2.find('\\', p+1)) {
             comment2[p+1] = '"';
@@ -563,7 +563,7 @@ bool Database::readCommentNetwork(std::stack<size_t> & lineBreaks, std::string &
 }
 
 /* Comments (CM) for Nodes (BU) */
-bool Database::readCommentNode(std::stack<size_t> & lineBreaks, std::string & line)
+bool Database::readCommentNode(std::stack<std::size_t> & lineBreaks, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "CM_" REGEX_SPACE "BU_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
@@ -576,7 +576,7 @@ bool Database::readCommentNode(std::stack<size_t> & lineBreaks, std::string & li
         }
 
         /* replace \' with \" */
-        for (size_t p = comment.find('\\'); (p != std::string::npos) &&
+        for (std::size_t p = comment.find('\\'); (p != std::string::npos) &&
              (p < comment.size() - 1) &&
              (comment[p+1] == '\''); p = comment.find('\\', p+1)) {
             comment[p+1] = '"';
@@ -591,7 +591,7 @@ bool Database::readCommentNode(std::stack<size_t> & lineBreaks, std::string & li
 }
 
 /* Comments (CM) for Messages (BO) */
-bool Database::readCommentMessage(std::stack<size_t> & lineBreaks, std::string & line)
+bool Database::readCommentMessage(std::stack<std::size_t> & lineBreaks, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "CM_" REGEX_SPACE "BO_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
@@ -604,7 +604,7 @@ bool Database::readCommentMessage(std::stack<size_t> & lineBreaks, std::string &
         }
 
         /* replace \' with \" */
-        for (size_t p = comment.find('\\'); (p != std::string::npos) &&
+        for (std::size_t p = comment.find('\\'); (p != std::string::npos) &&
              (p < comment.size() - 1) &&
              (comment[p+1] == '\''); p = comment.find('\\', p+1)) {
             comment[p+1] = '"';
@@ -619,7 +619,7 @@ bool Database::readCommentMessage(std::stack<size_t> & lineBreaks, std::string &
 }
 
 /* Comments (CM) for Signals (SG) */
-bool Database::readCommentSignal(std::stack<size_t> & lineBreaks, std::string & line)
+bool Database::readCommentSignal(std::stack<std::size_t> & lineBreaks, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "CM_" REGEX_SPACE "SG_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
@@ -633,7 +633,7 @@ bool Database::readCommentSignal(std::stack<size_t> & lineBreaks, std::string & 
         }
 
         /* replace \' with \" */
-        for (size_t p = comment.find('\\'); (p != std::string::npos) &&
+        for (std::size_t p = comment.find('\\'); (p != std::string::npos) &&
              (p < comment.size() - 1) &&
              (comment[p+1] == '\''); p = comment.find('\\', p+1)) {
             comment[p+1] = '"';
@@ -648,7 +648,7 @@ bool Database::readCommentSignal(std::stack<size_t> & lineBreaks, std::string & 
 }
 
 /* Comments (CM) for Environment Variables (EV) */
-bool Database::readCommentEnvironmentVariable(std::stack<size_t> & lineBreaks, std::string & line)
+bool Database::readCommentEnvironmentVariable(std::stack<std::size_t> & lineBreaks, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "CM_" REGEX_SPACE "EV_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
@@ -661,7 +661,7 @@ bool Database::readCommentEnvironmentVariable(std::stack<size_t> & lineBreaks, s
         }
 
         /* replace \' with \" */
-        for (size_t p = comment.find('\\'); (p != std::string::npos) &&
+        for (std::size_t p = comment.find('\\'); (p != std::string::npos) &&
              (p < comment.size() - 1) &&
              (comment[p+1] == '\''); p = comment.find('\\', p+1)) {
             comment[p+1] = '"';
@@ -679,18 +679,18 @@ bool Database::readCommentEnvironmentVariable(std::stack<size_t> & lineBreaks, s
 void Database::readComment(std::ifstream & ifs, std::string & line)
 {
     /* support multi-line comments and escape sequences */
-    size_t firstCommentCharPos = line.find('"');
+    std::size_t firstCommentCharPos = line.find('"');
     if (firstCommentCharPos == std::string::npos) {
         return;
     }
-    size_t lastCommentCharPos = line.rfind('"');
-    size_t eolPos = line.rfind(';');
+    std::size_t lastCommentCharPos = line.rfind('"');
+    std::size_t eolPos = line.rfind(';');
     bool eol = (lastCommentCharPos > firstCommentCharPos) &&
             (line[lastCommentCharPos-1] != '\\') &&
             (eolPos != std::string::npos) &&
             (eolPos > lastCommentCharPos);
     firstCommentCharPos++;
-    std::stack<size_t> lineBreaks;
+    std::stack<std::size_t> lineBreaks;
     while (!eol) {
         std::string nextLine;
         std::getline(ifs, nextLine);
@@ -706,7 +706,7 @@ void Database::readComment(std::ifstream & ifs, std::string & line)
     }
 
     /* replace \" with \' */
-    for (size_t p = line.find('\\', firstCommentCharPos);
+    for (std::size_t p = line.find('\\', firstCommentCharPos);
          (p != std::string::npos) &&
          (p < line.size() - 1) &&
          (line[p+1] == '"'); p = line.find('\\', p+1)) {

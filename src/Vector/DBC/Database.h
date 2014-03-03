@@ -242,19 +242,19 @@ private:
     void writeSignalTypes(std::ofstream & ofs);
 
     /** Read Comment (CM) for Network */
-    bool readCommentNetwork(std::stack<size_t> & lineBreaks, std::string & line);
+    bool readCommentNetwork(std::stack<std::size_t> & lineBreaks, std::string & line);
 
     /** Read Comment (CM) for Node (BU) */
-    bool readCommentNode(std::stack<size_t> & lineBreaks, std::string & line);
+    bool readCommentNode(std::stack<std::size_t> & lineBreaks, std::string & line);
 
     /** Read Comment (CM) for Message (BO) */
-    bool readCommentMessage(std::stack<size_t> & lineBreaks, std::string & line);
+    bool readCommentMessage(std::stack<std::size_t> & lineBreaks, std::string & line);
 
     /** Read Comment (CM) for Signal (SG) */
-    bool readCommentSignal(std::stack<size_t> & lineBreaks, std::string & line);
+    bool readCommentSignal(std::stack<std::size_t> & lineBreaks, std::string & line);
 
     /** Read Comment (CM) for Environment Variable (EV) */
-    bool readCommentEnvironmentVariable(std::stack<size_t> & lineBreaks, std::string & line);
+    bool readCommentEnvironmentVariable(std::stack<std::size_t> & lineBreaks, std::string & line);
 
     /** Read Comment (CM) */
     void readComment(std::ifstream & ifs, std::string & line);
