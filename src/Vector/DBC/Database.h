@@ -36,6 +36,7 @@
 #include "Message.h"
 #include "Node.h"
 #include "SignalType.h"
+#include "Status.h"
 #include "ValueDescriptions.h"
 #include "ValueTable.h"
 
@@ -55,38 +56,49 @@ public:
     /**
      * @brief Load Database
      * @param[in] filename File name
-     * @return True if successful
+     * @return Status code
      *
      * Loads database.
      */
-    bool load(const char * filename);
+    int load(const char * filename);
 
     /**
      * @brief Load Database
      * @param[in] filename File Name
-     * @return True if successful
+     * @return Status code
      *
      * Loads database.
      */
-    bool load(std::string & filename);
+    int load(std::string & filename);
 
     /**
      * @brief Save Database
      * @param[in] filename File Name
-     * @return True if successful
+     * @return Status code
      *
      * Saves database.
      */
-    bool save(const char * filename);
+    int save(const char * filename);
 
     /**
      * @brief Save Database
      * @param[in] filename File Name
-     * @return True if successful
+     * @return Status code
      *
      * Saves database.
      */
-    bool save(std::string & filename);
+    int save(std::string & filename);
+
+    /**
+     * Status Callback function type
+     */
+    typedef void (*StatusCallback)(Status status);
+
+    /**
+     * @brief Set callback function
+     * @param[in] function Callback function
+     */
+    void setStatusCallback(StatusCallback function);
 
     /** Version (VERSION) */
     std::string version;
@@ -172,6 +184,9 @@ public:
     // moved to Signal (SG)
 
 private:
+    /** Status Callback function */
+    StatusCallback statusCallback;
+
     /** Remove windows/unix/mac line endings */
     void chomp(std::string & line);
 

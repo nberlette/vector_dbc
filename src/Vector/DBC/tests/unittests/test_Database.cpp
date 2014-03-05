@@ -5,20 +5,35 @@
 #include <boost/test/unit_test.hpp>
 
 #include <fstream>
+#include <iostream>
 #include <iterator>
 #include <string>
 #include <boost/filesystem.hpp>
 
 #include "Vector/DBC/Database.h"
 
+void statusCallback(Vector::DBC::Status status)
+{
+    if (status < 0) {
+        std::cerr << "Error: " << status << std::endl;
+    } else
+    if (status & 0x40000000) {
+        std::cout << "Warning: " << status << std::endl;
+    } else
+    if (status >= 0) {
+        std::cout << "Success: " << status << std::endl;
+    }
+}
+
 BOOST_AUTO_TEST_CASE(Database)
 {
     Vector::DBC::Database database;
+    database.setStatusCallback(&statusCallback);
 
     /* load database */
     boost::filesystem::path infile(CMAKE_CURRENT_SOURCE_DIR "/data/Database.dbc");
     std::string infilename = infile.string();
-    BOOST_REQUIRE(database.load(infilename));
+    BOOST_REQUIRE(database.load(infilename) == Vector::DBC::Status::Ok);
 
     /* create output directory */
     boost::filesystem::path outdir(CMAKE_CURRENT_BINARY_DIR "/data/");
@@ -29,7 +44,7 @@ BOOST_AUTO_TEST_CASE(Database)
     /* save database */
     boost::filesystem::path outfile(CMAKE_CURRENT_BINARY_DIR "/data/Database.dbc");
     std::string outfilename = outfile.string();
-    BOOST_REQUIRE(database.save(outfilename));
+    BOOST_REQUIRE(database.save(outfilename) == Vector::DBC::Status::Ok);
 
     /* loaded and saved file should be equivalent */
     std::ifstream ifs1(infile.c_str());

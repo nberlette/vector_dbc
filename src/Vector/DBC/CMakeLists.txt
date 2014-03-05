@@ -40,6 +40,7 @@ set(header_files
   Signal.h
   SignalGroup.h
   SignalType.h
+  Status.h
   ValueDescriptions.h
   ValueTable.h
   ValueType.h)

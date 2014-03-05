@@ -6,7 +6,7 @@
 int main()
 {
     Vector::DBC::Database database;
-    if (!database.load(CMAKE_CURRENT_SOURCE_DIR "/data/Database.dbc")) {
+    if (database.load(CMAKE_CURRENT_SOURCE_DIR "/data/Database.dbc") != Vector::DBC::Status::Ok) {
         return EXIT_FAILURE;
     }
 

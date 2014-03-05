@@ -22,7 +22,6 @@
 #include "Database.h"
 
 #include <clocale>
-#include <iostream> // for std::cerr
 #include <fstream>
 #include <sstream>
 #include <stack>
@@ -113,7 +112,9 @@ void Database::readVersion(std::string & line)
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedVersion);
+    }
 }
 
 /* New Symbols (NS) */
@@ -151,7 +152,9 @@ void Database::readBitTiming(std::string & line)
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedBitTiming);
+    }
 }
 
 /* Nodes (BU) */
@@ -203,7 +206,9 @@ void Database::readValueTable(std::string & line)
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedValueTable);
+    }
 }
 
 /* Signals (SG) */
@@ -248,8 +253,6 @@ void Database::readSignal(Message & message, std::string & line)
         case '1':
             signal.byteOrder = ByteOrder::LittleEndian;
             break;
-        default:
-            std::cerr << line << std::endl;
         }
 
         /* Value Type */
@@ -261,8 +264,6 @@ void Database::readSignal(Message & message, std::string & line)
         case '-':
             signal.valueType = ValueType::Signed;
             break;
-        default:
-            std::cerr << line << std::endl;
         }
 
         /* Factor, Offset */
@@ -289,7 +290,9 @@ void Database::readSignal(Message & message, std::string & line)
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedSignal);
+    }
 }
 
 /* Messages (BO) */
@@ -329,7 +332,9 @@ void Database::readMessage(std::ifstream & ifs, std::string & line)
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedMessage);
+    }
 }
 
 /* Message Transmitters (BO_TX_BU) */
@@ -355,7 +360,9 @@ void Database::readMessageTransmitter(std::string & line)
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedMessageTransmitter);
+    }
 }
 
 /* Environment Variables (EV) */
@@ -379,8 +386,6 @@ void Database::readEnvironmentVariable(std::string & line)
         case '1':
             environmentVariable.type = EnvironmentVariable::Type::Float;
             break;
-        default:
-            std::cerr << line << std::endl;
         }
 
         /* Minimum, Maximum */
@@ -416,7 +421,9 @@ void Database::readEnvironmentVariable(std::string & line)
             environmentVariable.accessType = EnvironmentVariable::AccessType::ReadWrite;
             break;
         default:
-            std::cerr << line << std::endl;
+            if (statusCallback != nullptr) {
+                statusCallback(Status::MalformedEnvironmentVariable);
+            }
         }
 
         /* Access Nodes */
@@ -432,7 +439,9 @@ void Database::readEnvironmentVariable(std::string & line)
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedEnvironmentVariable);
+    }
 }
 
 /* Environment Variable Data (ENVVAR_DATA) */
@@ -456,7 +465,9 @@ void Database::readEnvironmentVariableData(std::string & line)
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedEnvironmentVariableData);
+    }
 }
 
 /* Signal Types (SGTYPE, obsolete) */
@@ -484,8 +495,6 @@ void Database::readSignalType(std::string & line)
         case '1':
             signalType.byteOrder = ByteOrder::LittleEndian;
             break;
-        default:
-            std::cerr << line << std::endl;
         }
 
         /* Value Type */
@@ -497,8 +506,6 @@ void Database::readSignalType(std::string & line)
         case '-':
             signalType.valueType = ValueType::Signed;
             break;
-        default:
-            std::cerr << line << std::endl;
         }
 
         /* Factor, Offset */
@@ -532,7 +539,9 @@ void Database::readSignalType(std::string & line)
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedSignalType);
+    }
 }
 
 /* Comments (CM) for Networks */
@@ -739,7 +748,9 @@ void Database::readComment(std::ifstream & ifs, std::string & line)
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedComment);
+    }
 }
 
 /* Attribute Definitions (BA_DEF) */
@@ -776,8 +787,8 @@ void Database::readAttributeDefinition(std::string & line)
             attributeDefinition.objectType = AttributeDefinition::ObjectType::EnvironmentVariable;
         } else
         // format doesn't match
-        {
-            std::cerr << line << std::endl;
+        if (statusCallback != nullptr) {
+            statusCallback(Status::MalformedAttributeDefinition);
         }
 
         // for integer
@@ -823,14 +834,16 @@ void Database::readAttributeDefinition(std::string & line)
             }
         } else
         // format doesn't match
-        {
-            std::cerr << line << std::endl;
+        if (statusCallback != nullptr) {
+            statusCallback(Status::MalformedAttributeDefinition);
         }
         return;
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedAttributeDefinition);
+    }
 }
 
 /* Attribute Definitions at Relations (BA_DEF_REL) */
@@ -862,8 +875,8 @@ void Database::readAttributeDefinitionRelation(std::string & line)
         } else
 
         // format doesn't match
-        {
-            std::cerr << line << std::endl;
+        if (statusCallback != nullptr) {
+            statusCallback(Status::MalformedAttributeDefinitionRelation);
         }
 
         // Integer
@@ -914,14 +927,16 @@ void Database::readAttributeDefinitionRelation(std::string & line)
         } else
 
         // format doesn't match
-        {
-            std::cerr << line << std::endl;
+        if (statusCallback != nullptr) {
+            statusCallback(Status::MalformedAttributeDefinitionRelation);
         }
         return;
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedAttributeDefinitionRelation);
+    }
 }
 
 /* Sigtype Attr Lists (?, obsolete) */
@@ -946,33 +961,43 @@ void Database::readAttributeDefault(std::string & line)
         /* Value */
         attributeDefault.stringValue = attributeValue;
         switch(attributeDefinition.valueType) {
+
+        // Integer
         case AttributeValueType::Int:
             attributeDefault.integerValue = stoul(attributeValue);
             break;
+
+        // Hexadecimal
         case AttributeValueType::Hex:
             attributeDefault.hexValue = stoul(attributeValue);
             break;
+
+        // Float
         case AttributeValueType::Float:
             attributeDefault.floatValue = stod(attributeValue);
             break;
+
+        // String
         case AttributeValueType::String:
             attributeValue.erase(0, 1);
             attributeValue.pop_back();
             attributeDefault.stringValue = attributeValue;
             break;
+
+        // Enumeration
         case AttributeValueType::Enum:
             attributeValue.erase(0, 1);
             attributeValue.pop_back();
             attributeDefault.stringValue = attributeValue;
             break;
-        default:
-            std::cerr << line << std::endl;
         }
         return;
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedAttributeDefault);
+    }
 }
 
 /* Attribute Defaults at Relations (BA_DEF_DEF_REL) */
@@ -996,43 +1021,42 @@ void Database::readAttributeDefaultRelation(std::string & line)
         attributeDefault.stringValue = attributeValue;
         switch(attributeDefinition.valueType) {
 
-        // integer
+        // Integer
         case AttributeValueType::Int:
             attributeDefault.integerValue = stoul(attributeValue);
             break;
 
-        // hexadecimal
+        // Hexadecimal
         case AttributeValueType::Hex:
             attributeDefault.hexValue = stoul(attributeValue);
             break;
 
-        // float
+        // Float
         case AttributeValueType::Float:
             attributeDefault.floatValue = stod(attributeValue);
             break;
 
-        // string
+        // String
         case AttributeValueType::String:
             attributeValue.erase(0, 1);
             attributeValue.pop_back();
             attributeDefault.stringValue = attributeValue;
             break;
 
-        // enumeration
+        // Enumeration
         case AttributeValueType::Enum:
             attributeValue.erase(0, 1);
             attributeValue.pop_back();
             attributeDefault.stringValue = attributeValue;
             break;
-
-        default:
-            std::cerr << line << std::endl;
         }
         return;
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedAttributeDefaultRelation);
+    }
 }
 
 /* Attribute Values (BA) for Network */
@@ -1054,25 +1078,33 @@ bool Database::readAttributeValueNetwork(std::string & line)
 
         /* Value */
         switch(attribute.valueType) {
+
+        // Integer
         case AttributeValueType::Int:
             attribute.integerValue = stoul(attributeValue);
             break;
+
+        // Hexadecimal
         case AttributeValueType::Hex:
             attribute.hexValue = stoul(attributeValue);
             break;
+
+        // Float
         case AttributeValueType::Float:
             attribute.floatValue = stod(attributeValue);
             break;
+
+        // String
         case AttributeValueType::String:
             attributeValue.erase(0, 1);
             attributeValue.pop_back();
             attribute.stringValue = attributeValue;
             break;
+
+        // Enumeration
         case AttributeValueType::Enum:
             attribute.enumValue = stoul(attributeValue);
             break;
-        default:
-            std::cerr << line << std::endl;
         }
         return true;
     }
@@ -1104,25 +1136,32 @@ bool Database::readAttributeValueNode(std::string & line)
 
         /* Value */
         switch(attribute.valueType) {
+        // Integer
         case AttributeValueType::Int:
             attribute.integerValue = stoul(attributeValue);
             break;
+
+        // Hexadecimal
         case AttributeValueType::Hex:
             attribute.hexValue = stoul(attributeValue);
             break;
+
+        // Float
         case AttributeValueType::Float:
             attribute.floatValue = stod(attributeValue);
             break;
+
+        // String
         case AttributeValueType::String:
             attributeValue.erase(0, 1);
             attributeValue.pop_back();
             attribute.stringValue = attributeValue;
             break;
+
+        // Enumeration
         case AttributeValueType::Enum:
             attribute.enumValue = stoul(attributeValue);
             break;
-        default:
-            std::cerr << line << std::endl;
         }
         return true;
     }
@@ -1151,25 +1190,33 @@ bool Database::readAttributeValueMessage(std::string & line)
 
         /* Value */
         switch(attribute.valueType) {
+
+        // Integer
         case AttributeValueType::Int:
             attribute.integerValue = stoul(attributeValue);
             break;
+
+        // Hexadecimal
         case AttributeValueType::Hex:
             attribute.hexValue = stoul(attributeValue);
             break;
+
+        // Float
         case AttributeValueType::Float:
             attribute.floatValue = stod(attributeValue);
             break;
+
+        // String
         case AttributeValueType::String:
             attributeValue.erase(0, 1);
             attributeValue.pop_back();
             attribute.stringValue = attributeValue;
             break;
+
+        // Enumeration
         case AttributeValueType::Enum:
             attribute.enumValue = stoul(attributeValue);
             break;
-        default:
-            std::cerr << line << std::endl;
         }
         return true;
     }
@@ -1199,25 +1246,33 @@ bool Database::readAttributeValueSignal(std::string & line)
 
         /* Value */
         switch(attribute.valueType) {
+
+        // Integer
         case AttributeValueType::Int:
             attribute.integerValue = stoul(attributeValue);
             break;
+
+        // Hexadecimal
         case AttributeValueType::Hex:
             attribute.hexValue = stoul(attributeValue);
             break;
+
+        // Float
         case AttributeValueType::Float:
             attribute.floatValue = stod(attributeValue);
             break;
+
+        // String
         case AttributeValueType::String:
             attributeValue.erase(0, 1);
             attributeValue.pop_back();
             attribute.stringValue = attributeValue;
             break;
+
+        // Enumeration
         case AttributeValueType::Enum:
             attribute.enumValue = stoul(attributeValue);
             break;
-        default:
-            std::cerr << line << std::endl;
         }
         return true;
     }
@@ -1246,25 +1301,33 @@ bool Database::readAttributeValueEnvironmentVariable(std::string & line)
 
         /* Value */
         switch(attribute.valueType) {
+
+        // Integer
         case AttributeValueType::Int:
             attribute.integerValue = stoul(attributeValue);
             break;
+
+        // Hexadecimal
         case AttributeValueType::Hex:
             attribute.hexValue = stoul(attributeValue);
             break;
+
+        // Float
         case AttributeValueType::Float:
             attribute.floatValue = stod(attributeValue);
             break;
+
+        // String
         case AttributeValueType::String:
             attributeValue.erase(0, 1);
             attributeValue.pop_back();
             attribute.stringValue = attributeValue;
             break;
+
+        // Enumeration
         case AttributeValueType::Enum:
             attribute.enumValue = stoul(attributeValue);
             break;
-        default:
-            std::cerr << line << std::endl;
         }
         return true;
     }
@@ -1302,7 +1365,9 @@ void Database::readAttributeValue(std::string & line)
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedAttributeValue);
+    }
 }
 
 /* Attribute Values at Relations (BA_REL) */
@@ -1379,16 +1444,15 @@ void Database::readAttributeRelationValue(std::string & line)
         case AttributeValueType::Enum:
             attributeRelation.enumValue = stoul(attributeValue);
             break;
-
-        default:
-            std::cerr << line << std::endl;
         }
         attributeRelationValues.insert(attributeRelation);
         return;
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedAttributeRelationValue);
+    }
 }
 
 /* Value Descriptions (VAL) for Signals (SG) */
@@ -1472,7 +1536,9 @@ void Database::readValueDescription(std::string & line)
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedValueDescription);
+    }
 }
 
 /* Category Definitions (?, obsolete) */
@@ -1513,14 +1579,16 @@ void Database::readSignalGroup(std::string & line)
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedSignalGroup);
+    }
 }
 
 /* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
 void Database::readSignalExtendedValueType(std::string & line)
 {
     smatch m;
-    regex re(REGEX_SOL "SIG_VALTYPE_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_DELIM(":") REGEX_UINT REGEX_EOL_DELIM);
+    regex re(REGEX_SOL "SIG_VALTYPE_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_DELIM(":") "([012])" REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
         std::string signalName = m[2];
@@ -1540,14 +1608,14 @@ void Database::readSignalExtendedValueType(std::string & line)
         case 2:
             messages[messageId].signals[signalName].extendedValueType = Signal::ExtendedValueType::Double;
             break;
-        default:
-            std::cerr << line << std::endl;
         }
         return;
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedSignalExtendedValueType);
+    }
 }
 
 /* Extended Multiplexors (SG_MUL_VAL) */
@@ -1584,10 +1652,12 @@ void Database::readExtendedMultiplexor(std::string & line)
     }
 
     /* format doesn't match */
-    std::cerr << line << std::endl;
+    if (statusCallback != nullptr) {
+        statusCallback(Status::MalformedExtendedMultiplexor);
+    }
 }
 
-bool Database::load(const char * filename)
+int Database::load(const char * filename)
 {
     std::ifstream ifs;
 
@@ -1597,7 +1667,7 @@ bool Database::load(const char * filename)
     /* open stream */
     ifs.open(filename, std::ifstream::in);
     if (!ifs.is_open()) {
-        return false;
+        return Status::FileOpenError;
     }
 
     /* parse stream */
@@ -1728,18 +1798,18 @@ bool Database::load(const char * filename)
             } else
 
             /* not supported */
-            {
-                std::cerr << name << " not supported" << std::endl;
+            if (statusCallback != nullptr) {
+                statusCallback(Status::Unknown);
             }
         }
     }
 
     /* close stream */
     ifs.close();
-    return true;
+    return Status::Ok;
 }
 
-bool Database::load(std::string & filename)
+int Database::load(std::string & filename)
 {
     return load(filename.c_str());
 }

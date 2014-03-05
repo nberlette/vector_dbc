@@ -25,6 +25,7 @@ namespace Vector {
 namespace DBC {
 
 Database::Database() :
+    statusCallback(nullptr),
     version(),
     newSymbols(),
     bitTiming(),
@@ -40,6 +41,11 @@ Database::Database() :
     attributeRelationValues()
 {
     /* nothing to do here */
+}
+
+void Database::setStatusCallback(StatusCallback function)
+{
+    statusCallback = function;
 }
 
 }

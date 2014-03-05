@@ -798,7 +798,7 @@ void Database::writeExtendedMultiplexors(std::ofstream & ofs)
     }
 }
 
-bool Database::save(const char * filename)
+int Database::save(const char * filename)
 {
     std::ofstream ofs;
 
@@ -807,7 +807,7 @@ bool Database::save(const char * filename)
     /* open stream */
     ofs.open(filename, std::ofstream::out | std::ofstream::trunc);
     if (!ofs.is_open()) {
-        return false;
+        return Status::FileOpenError;
     }
     ofs.precision(16);
 
@@ -891,10 +891,10 @@ bool Database::save(const char * filename)
     ofs << endl;
     ofs.close();
 
-    return true;
+    return Status::Ok;
 }
 
-bool Database::save(std::string & filename)
+int Database::save(std::string & filename)
 {
     return save(filename.c_str());
 }
