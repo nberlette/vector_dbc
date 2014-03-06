@@ -90,13 +90,30 @@ public:
     int save(std::string & filename);
 
     /**
+     * Progress Callback function type
+     */
+    typedef void (*ProgressCallback)(float numerator, float denominator);
+
+    /**
+     * @brief Set Progress Callback function
+     * @param[in] function Progress Callback function
+     *
+     * Set the callback function to get progress information.
+     * On load this is the file position, so can be used for debugging also.
+     */
+    void setProgressCallback(ProgressCallback function);
+
+    /**
      * Status Callback function type
      */
     typedef void (*StatusCallback)(Status status);
 
     /**
-     * @brief Set callback function
-     * @param[in] function Callback function
+     * @brief Set Status Callback function
+     * @param[in] function Status Callback function
+     *
+     * Set the callback function to get status information.
+     * Even if the database loads fine, it might step over some warnings that can only be seen here.
      */
     void setStatusCallback(StatusCallback function);
 
@@ -184,6 +201,9 @@ public:
     // moved to Signal (SG)
 
 private:
+    /** Progress Callback function */
+    ProgressCallback progressCallback;
+
     /** Status Callback function */
     StatusCallback statusCallback;
 

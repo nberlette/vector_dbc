@@ -12,6 +12,11 @@
 
 #include "Vector/DBC/Database.h"
 
+void progressCallback(float numerator, float denominator)
+{
+    std::cout << "Progress: " << std::fixed << 100 * (numerator / denominator) << '%' << std::endl;
+}
+
 void statusCallback(Vector::DBC::Status status)
 {
     if (status < 0) {
@@ -28,6 +33,7 @@ void statusCallback(Vector::DBC::Status status)
 BOOST_AUTO_TEST_CASE(Database)
 {
     Vector::DBC::Database database;
+    database.setProgressCallback(&progressCallback);
     database.setStatusCallback(&statusCallback);
 
     /* load database */

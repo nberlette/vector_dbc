@@ -1660,6 +1660,7 @@ void Database::readExtendedMultiplexor(std::string & line)
 int Database::load(const char * filename)
 {
     std::ifstream ifs;
+    std::streampos fileSize;
 
     /* use english decimal points for floating numbers */
     std::setlocale(LC_ALL, "C");
@@ -1670,8 +1671,18 @@ int Database::load(const char * filename)
         return Status::FileOpenError;
     }
 
+    /* get file size */
+    ifs.seekg(0, std::ifstream::end);
+    fileSize = ifs.tellg();
+    ifs.seekg(0);
+
     /* parse stream */
     while(ifs.good()) {
+        /* call progress function */
+        if (progressCallback != nullptr) {
+            progressCallback(ifs.tellg(), fileSize);
+        }
+
         std::string line;
         std::getline(ifs, line);
         chomp(line);
