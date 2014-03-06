@@ -19,6 +19,9 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
+#include <algorithm>
+#include <cmath>
+
 #include "Signal.h"
 
 namespace Vector {
@@ -79,6 +82,66 @@ double Signal::physicalToRawValue(double physicalValue)
 
     /* rawValue = (physicalValue - offset) / factor */
     return (physicalValue - offset) / factor;
+}
+
+double Signal::getMinimumPhysicalValue()
+{
+    /* if this is not set to auto-calculation, return minimum */
+    if ((minimum != 0.0) && (maximum != 0.0)) {
+        return maximum;
+    }
+
+    /* calculate minimum */
+    switch (extendedValueType) {
+    case ExtendedValueType::Undefined:
+    case ExtendedValueType::Integer:
+        if (valueType == ValueType::Signed) {
+            return -(2<<(size-1));
+        } else {
+            return 0;
+        }
+        break;
+
+    case ExtendedValueType::Float:
+        // precision: 7 digits
+        return 3.4 * std::pow(10, -38);
+        break;
+
+    case ExtendedValueType::Double:
+        // precision: 15 digits
+        return 1.7 * std::pow(10, -308);
+        break;
+    }
+}
+
+double Signal::getMaximumPhysicalValue()
+{
+    /* if this is not set to auto-calculation, return maximum */
+    if ((minimum != 0.0) && (maximum != 0.0)) {
+        return maximum;
+    }
+
+    /* calculate maximum */
+    switch (extendedValueType) {
+    case ExtendedValueType::Undefined:
+    case ExtendedValueType::Integer:
+        if (valueType == ValueType::Signed) {
+            return (2<<(size-1))-1;
+        } else {
+            return (2<< size   )-1;
+        }
+        break;
+
+    case ExtendedValueType::Float:
+        // precision: 7 digits
+        return 3.4 * std::pow(10, 38);
+        break;
+
+    case ExtendedValueType::Double:
+        // precision: 15 digits
+        return 1.7 * std::pow(10, 308);
+        break;
+    }
 }
 
 }

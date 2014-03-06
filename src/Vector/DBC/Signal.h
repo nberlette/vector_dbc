@@ -82,10 +82,10 @@ public:
     /** Offset */
     double offset;
 
-    /** Minimun */
+    /** Minimun Physical Value (or 0 if auto calculated) */
     double minimum;
 
-    /** Maximum */
+    /** Maximum Physical Value (or 0 if auto calculated) */
     double maximum;
 
     /** Unit */
@@ -122,6 +122,26 @@ public:
 
     /** Signal Extended Value Type (SIG_VALTYPE, obsolete) */
     ExtendedValueType extendedValueType;
+
+    /**
+     * @brief Get minimum Physical Value
+     * @return Minimum Physical Value
+     *
+     * Based on the size, valueType and extendedValueType this first calculates the minimum raw value.
+     * Using factor and offset this calculates the minimum physical value.
+     * If minimum is greater, then minimum is used.
+     */
+    double getMinimumPhysicalValue();
+
+    /**
+     * @brief Get maximum Physical Value
+     * @return Maximum Physical Value
+     *
+     * Based on size, valueType and extendedValueType this first calculates the maximum raw value.
+     * Using factor and offset this calculates the maximum physical value.
+     * If maximum is lesser, then maximum is used.
+     */
+    double getMaximumPhysicalValue();
 
     /** Value Descriptions (VAL) */
     ValueDescriptions valueDescriptions;
