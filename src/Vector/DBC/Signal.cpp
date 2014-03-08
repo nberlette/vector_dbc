@@ -37,15 +37,15 @@ Signal::Signal() :
 
     /* position */
     startBit(0),
-    size(0),
+    bitSize(0),
     byteOrder(ByteOrder::BigEndian),
     valueType(ValueType::Unsigned),
 
     /* raw/physical conversion */
     factor(0.0),
     offset(0.0),
-    minimum(0.0),
-    maximum(0.0),
+    minimumPhysicalValue(0.0),
+    maximumPhysicalValue(0.0),
 
     /* unit */
     unit(),
@@ -84,64 +84,54 @@ double Signal::physicalToRawValue(double physicalValue)
     return (physicalValue - offset) / factor;
 }
 
-double Signal::getMinimumPhysicalValue()
+double Signal::minimumRawValue()
 {
-    /* if this is not set to auto-calculation, return minimum */
-    if ((minimum != 0.0) && (maximum != 0.0)) {
-        return maximum;
-    }
-
-    /* calculate minimum */
+    /* calculate minimum raw value */
+    double minimumRawValue;
     switch (extendedValueType) {
     case ExtendedValueType::Undefined:
     case ExtendedValueType::Integer:
         if (valueType == ValueType::Signed) {
-            return -(2<<(size-1));
+            minimumRawValue = -(2<<(bitSize-2)); // bitSize-- because shift instead of pow
         } else {
-            return 0;
+            minimumRawValue = 0;
         }
         break;
 
     case ExtendedValueType::Float:
-        // precision: 7 digits
-        return 3.4 * std::pow(10, -38);
+        minimumRawValue = 3.4e-38;
         break;
 
     case ExtendedValueType::Double:
-        // precision: 15 digits
-        return 1.7 * std::pow(10, -308);
+        minimumRawValue = 1.7e-308;
         break;
     }
+    return minimumRawValue;
 }
 
-double Signal::getMaximumPhysicalValue()
+double Signal::maximumRawValue()
 {
-    /* if this is not set to auto-calculation, return maximum */
-    if ((minimum != 0.0) && (maximum != 0.0)) {
-        return maximum;
-    }
-
-    /* calculate maximum */
+    /* calculate maximum raw value */
+    double maximumRawValue;
     switch (extendedValueType) {
     case ExtendedValueType::Undefined:
     case ExtendedValueType::Integer:
         if (valueType == ValueType::Signed) {
-            return (2<<(size-1))-1;
+            maximumRawValue = (2<<(bitSize-2))-1; // bitSize-- because shift instead of pow
         } else {
-            return (2<< size   )-1;
+            maximumRawValue = (2<<(bitSize-1))-1; // bitSize-- because shift instead of pow
         }
         break;
 
     case ExtendedValueType::Float:
-        // precision: 7 digits
-        return 3.4 * std::pow(10, 38);
+        maximumRawValue = 3.4e38;
         break;
 
     case ExtendedValueType::Double:
-        // precision: 15 digits
-        return 1.7 * std::pow(10, 308);
+        maximumRawValue = 1.7e308;
         break;
     }
+    return maximumRawValue;
 }
 
 }

@@ -118,13 +118,13 @@ void Database::writeSignals(std::ofstream & ofs, Message & message)
         ofs << ": ";
 
         /* Start Bit, Size, Byte Order, Value Type */
-        ofs << signal.second.startBit << '|' << signal.second.size << '@' << char(signal.second.byteOrder) << char(signal.second.valueType);
+        ofs << signal.second.startBit << '|' << signal.second.bitSize << '@' << char(signal.second.byteOrder) << char(signal.second.valueType);
 
         /* Factor, Offset */
         ofs << " (" << signal.second.factor << ',' << signal.second.offset << ')';
 
         /* Minimum, Maximum */
-        ofs << " [" << signal.second.minimum << '|' << signal.second.maximum << ']';
+        ofs << " [" << signal.second.minimumPhysicalValue << '|' << signal.second.maximumPhysicalValue << ']';
 
         /* Unit */
         ofs << " \"" << signal.second.unit << "\" ";

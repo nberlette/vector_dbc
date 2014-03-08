@@ -242,7 +242,7 @@ void Database::readSignal(Message & message, std::string & line)
         signal.startBit = stoul(m[4]);
 
         /* Size */
-        signal.size = stoul(m[5]);
+        signal.bitSize = stoul(m[5]);
 
         /* Byte Order */
         std::string byteOrder = m[6];
@@ -270,9 +270,9 @@ void Database::readSignal(Message & message, std::string & line)
         signal.factor = stod(m[8]);
         signal.offset = stod(m[9]);
 
-        /* Minimum, Maximum */
-        signal.minimum = stod(m[10]);
-        signal.maximum = stod(m[11]);
+        /* Minimum and Maximum Physical Value */
+        signal.minimumPhysicalValue = stod(m[10]);
+        signal.maximumPhysicalValue = stod(m[11]);
 
         /* Unit */
         signal.unit = m[12];

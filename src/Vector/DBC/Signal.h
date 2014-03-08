@@ -67,8 +67,8 @@ public:
     /** Start Bit */
     unsigned int startBit;
 
-    /** Size */
-    unsigned int size;
+    /** Bit Size */
+    unsigned int bitSize;
 
     /** Byte Order */
     ByteOrder byteOrder;
@@ -83,10 +83,10 @@ public:
     double offset;
 
     /** Minimun Physical Value (or 0 if auto calculated) */
-    double minimum;
+    double minimumPhysicalValue;
 
     /** Maximum Physical Value (or 0 if auto calculated) */
-    double maximum;
+    double maximumPhysicalValue;
 
     /** Unit */
     std::string unit;
@@ -127,21 +127,17 @@ public:
      * @brief Get minimum Physical Value
      * @return Minimum Physical Value
      *
-     * Based on the size, valueType and extendedValueType this first calculates the minimum raw value.
-     * Using factor and offset this calculates the minimum physical value.
-     * If minimum is greater, then minimum is used.
+     * Based on size, valueType and extendedValueType this calculates the minimum raw value.
      */
-    double getMinimumPhysicalValue();
+    double minimumRawValue();
 
     /**
-     * @brief Get maximum Physical Value
-     * @return Maximum Physical Value
+     * @brief Get maximum Raw Value
+     * @return Maximum Raw Value
      *
-     * Based on size, valueType and extendedValueType this first calculates the maximum raw value.
-     * Using factor and offset this calculates the maximum physical value.
-     * If maximum is lesser, then maximum is used.
+     * Based on size, valueType and extendedValueType this calculates the maximum raw value.
      */
-    double getMaximumPhysicalValue();
+    double maximumRawValue();
 
     /** Value Descriptions (VAL) */
     ValueDescriptions valueDescriptions;
