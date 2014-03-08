@@ -5,6 +5,9 @@ project(Vector_DBC)
 # build types: None, Debug, Release, RelWithDebInfo, MinSizeRel
 set(CMAKE_BUILD_TYPE Release)
 
+# strict names
+option(OPTION_USE_STRICT_NAMES "Names normally must be C-identifiers" ON)
+
 # regex support by C++11 or Boost
 option(OPTION_USE_CPP11_REGEX "Use std::regex instead of boost::regex" ON)
 

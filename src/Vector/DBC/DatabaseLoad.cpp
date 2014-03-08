@@ -52,11 +52,19 @@ constexpr char endl[] = "\r\n";
 /* Double (not strict, invalid values may fall through: "..E+-e..1-23e") */
 #define REGEX_DOUBLE "([[:digit:]\\.\\+\\-eE]+)"
 
-/* Name (C identifier) */
-#define REGEX_NAME "([[:alpha:]_][[:alnum:]_]*)"
+/* Name */
+#ifdef OPTION_USE_STRICT_NAMES
+#define REGEX_NAME "([[:alpha:]_][[:alnum:]_]*)" /* C identifier */
+#else
+#define REGEX_NAME "([^[:space:]]*)"
+#endif
 
 /* Attribute name */
-#define REGEX_ATTRIB_NAME "\"([[:alpha:]_][^\"[:space:]]*)\""
+#ifdef OPTION_USE_STRICT_NAMES
+#define REGEX_ATTRIB_NAME "\"([[:alpha:]_][[:alnum:]_]*)\"" /* C identifier */
+#else
+#define REGEX_ATTRIB_NAME "\"([^\"[:space:]]*)\""
+#endif
 
 /* Optional text between "" */
 #define REGEX_STRING "\"([^\"]*)\""
