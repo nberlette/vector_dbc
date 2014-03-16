@@ -21,7 +21,6 @@
 
 #include "Database.h"
 
-#include <clocale>
 #include <fstream>
 #include <string>
 
@@ -802,13 +801,15 @@ int Database::save(const char * filename)
 {
     std::ofstream ofs;
 
-    std::setlocale(LC_ALL, "C");
-
     /* open stream */
     ofs.open(filename, std::ofstream::out | std::ofstream::trunc);
     if (!ofs.is_open()) {
         return Status::FileOpenError;
     }
+
+    /* use english decimal points for floating numbers */
+    ofs.imbue(std::locale("C"));
+
     ofs.precision(16);
 
     /* Version (VERSION) */

@@ -210,6 +210,9 @@ private:
     /** Remove windows/unix/mac line endings */
     void chomp(std::string & line);
 
+    /** stod with C locale */
+    double stod(const std::string & str);
+
     /** Read Version (VERSION) */
     void readVersion(std::string & line);
 

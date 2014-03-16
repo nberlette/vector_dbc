@@ -21,7 +21,6 @@
 
 #include "Database.h"
 
-#include <clocale>
 #include <fstream>
 #include <sstream>
 #include <stack>
@@ -107,6 +106,20 @@ void Database::chomp(std::string & line)
             return;
         }
     }
+}
+
+/* stod without C locale */
+double Database::stod(const std::string & str)
+{
+    std::istringstream iss(str);
+
+    /* use english decimal points for floating numbers */
+    iss.imbue(std::locale("C"));
+
+    double d;
+    iss >> d;
+
+    return d;
 }
 
 /* Version (VERSION) */
@@ -1670,14 +1683,14 @@ int Database::load(const char * filename)
     std::ifstream ifs;
     std::streampos fileSize;
 
-    /* use english decimal points for floating numbers */
-    std::setlocale(LC_ALL, "C");
-
     /* open stream */
     ifs.open(filename, std::ifstream::in);
     if (!ifs.is_open()) {
         return Status::FileOpenError;
     }
+
+    /* use english decimal points for floating numbers */
+    ifs.imbue(std::locale("C"));
 
     /* get file size */
     ifs.seekg(0, std::ifstream::end);
