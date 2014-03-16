@@ -1,6 +1,7 @@
 # Introduction
 
 This is a library to access CAN Databases (aka CANdb, aka DBC files) from Vector Informatik.
+It's optimized towards fast access on loaded data, not on load performance or save order.
 
 # Build on Linux (e.g. Debian Testing)
 
@@ -71,7 +72,8 @@ The following files are products of installation and building:
 * Templates/Functions for protocols (ARINC664, CANoe, CANopen, CAN_FD, CAPL, Ethernet, Interaction Layer, Network Management, ISO11783, J1587, J1939, MOST, NMEA)
 * Comparation of two DBCs
 * Some OPTIONS can be auto detected, e.g. OPTION_USE_CPP11_REGEX or OPTION_USE_CPP11_ENUM_CLASS. Results should be placed in config.h.
-* cmake target for code beautifier: Astyle or Uncrustify (add_custom_target?)
+* cmake target for code beautifier: Astyle or Uncrustify (add_custom_command)?
+* Keep order of NS_ (new symbols)? Data access performance is probably not necessary here.
 
 # Missing test coverage
 

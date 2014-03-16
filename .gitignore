@@ -4,3 +4,6 @@ build/
 include/
 lib/
 share/
+
+# QtCreator
+CMakeLists.txt.user
