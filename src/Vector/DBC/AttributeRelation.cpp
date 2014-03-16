@@ -36,15 +36,51 @@ AttributeRelation::AttributeRelation() :
 
 bool AttributeRelation::operator < (const AttributeRelation & rhs) const
 {
-    if((name < rhs.name) ||
-       (relationType < rhs.relationType) ||
-       (nodeName < rhs.nodeName) ||
-       (messageId < rhs.messageId) ||
-       (signalName < rhs.signalName)) {
-        return true;
-    }
+    /* compare name */
+    if (name == rhs.name) {
 
-    return false;
+        /* compare relationType */
+        if (relationType == rhs.relationType) {
+
+            /* relationType based optimizations */
+            switch(relationType) {
+            case ControlUnitEnvironmentVariable:
+                /* only compare nodeName, environmentVariableName */
+                if (nodeName == rhs.nodeName) {
+                    return environmentVariableName < rhs.environmentVariableName;
+                } else {
+                    return nodeName < rhs.nodeName;
+                }
+                break;
+
+            case NodeTxMessage:
+                /* only compare nodeName, messageId */
+                if (nodeName == rhs.nodeName) {
+                    return messageId < rhs.messageId;
+                } else {
+                    return nodeName < rhs.nodeName;
+                }
+                break;
+
+            case NodeMappedRxSignal:
+                /* only compare nodeName, messageId, signalName */
+                if (nodeName == rhs.nodeName) {
+                    if (messageId == rhs.messageId) {
+                        return signalName < rhs.signalName;
+                    } else {
+                        return messageId < rhs.messageId;
+                    }
+                } else {
+                    return nodeName < rhs.nodeName;
+                }
+                break;
+            }
+        } else {
+            return relationType < rhs.relationType;
+        }
+    } else {
+        return name < rhs.name;
+    }
 }
 
 }
