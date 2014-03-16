@@ -55,7 +55,7 @@ constexpr char endl[] = "\r\n";
 #ifdef OPTION_USE_STRICT_NAMES
 #define REGEX_NAME "([[:alpha:]_][[:alnum:]_]*)" /* C identifier */
 #else
-#define REGEX_NAME "([^[:space:]]*)"
+#define REGEX_NAME "([^[:space:]\\:]*)"
 #endif
 
 /* Attribute name */
@@ -1709,8 +1709,8 @@ int Database::load(const char * filename)
         chomp(line);
 
         smatch m;
-        regex re(REGEX_SOL REGEX_NAME "[[:space:]\\:]");
-        if (regex_search(line, m, re)) {
+        regex re(REGEX_SOL REGEX_NAME);
+        if ((!line.empty()) && (regex_search(line, m, re))) {
             std::string name = m[1];
 
             /* Version (VERSION) */
