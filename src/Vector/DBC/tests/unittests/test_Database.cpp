@@ -14,19 +14,19 @@
 
 void progressCallback(float numerator, float denominator)
 {
-    std::cout << "Progress: " << std::fixed << 100 * (numerator / denominator) << '%' << std::endl;
+    std::cout << "Progress: filepos=" << numerator << " percent="<< std::fixed << 100 * (numerator / denominator) << '%' << std::endl;
 }
 
 void statusCallback(Vector::DBC::Status status)
 {
     if (status < 0) {
-        std::cerr << "Error: " << status << std::endl;
+        std::cerr << "Error: 0x" << std::hex << status << std::endl;
     } else
     if (status & 0x40000000) {
-        std::cout << "Warning: " << status << std::endl;
+        std::cout << "Warning: 0x" << std::hex << status << std::endl;
     } else
     if (status >= 0) {
-        std::cout << "Success: " << status << std::endl;
+        std::cout << "Success: 0x" << std::hex << status << std::endl;
     }
 }
 
