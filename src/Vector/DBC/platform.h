@@ -21,30 +21,36 @@
 
 #pragma once
 
-#include "platform.h"
+#include "config.h"
 
-#include "vector_dbc_export.h"
+#if __cplusplus < 201103L
+#define constexpr static const
+#endif
 
-namespace Vector {
-namespace DBC {
+#ifdef _WINDOWS
 
-/**
- * Bit Timing (BS)
- */
-class VECTOR_DBC_EXPORT BitTiming
-{
-public:
-    BitTiming();
+/* '..' : class '..' needs to have dll-interface to be used by clients of class '..' */
+#pragma warning (disable: 4251)
 
-    /** Baud rate */
-    unsigned int baudrate;
+/* nonstandard extension used: enum '...' used in qualified name */
+#pragma warning (disable: 4482)
 
-    /** Bit Timing Register 1 */
-    unsigned int btr1;
+#endif
 
-    /** Bit Timing Register 2 */
-    unsigned int btr2;
-};
+#ifdef OPTION_USE_CPP11_REGEX
+#include <regex>
+#define smatch       std::smatch
+#define regex        std::regex
+#define regex_search std::regex_search
+#else
+#include <boost/regex.hpp>
+#define smatch       boost::smatch
+#define regex        boost::regex
+#define regex_search boost::regex_search
+#endif
 
-}
-}
+#ifdef OPTION_USE_CPP11_ENUM_CLASS
+#define enumclass enum class
+#else
+#define enumclass enum
+#endif

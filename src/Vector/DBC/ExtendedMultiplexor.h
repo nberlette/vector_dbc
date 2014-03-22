@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "config.h"
+#include "platform.h"
 
 #include <set>
 #include <string>

@@ -37,6 +37,7 @@ set(header_files
   ExtendedMultiplexor.h
   Message.h
   Node.h
+  platform.h
   Signal.h
   SignalGroup.h
   SignalType.h
@@ -60,9 +61,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   add_definitions(-std=c++11)
 endif()
 
-if(OPTION_USE_CPP11_REGEX)
-  add_definitions(-DUSE_CPP11_REGEX)
-else()
+if(NOT OPTION_USE_CPP11_REGEX)
   find_package(Boost 1.54 COMPONENTS regex)
   include_directories(${Boost_INCLUDE_DIR})
   link_directories(${Boost_LIBRARY_DIRS})

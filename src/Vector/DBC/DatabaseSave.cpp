@@ -24,13 +24,9 @@
 #include <fstream>
 #include <string>
 
-#if __cplusplus < 201103L
-#define constexpr static const
-#endif
-
 /* force Linux to use Windows line endings */
 #ifdef _WINDOWS
-#define endl std::endl;
+#define endl std::endl
 #else
 constexpr char endl[] = "\r\n";
 #endif

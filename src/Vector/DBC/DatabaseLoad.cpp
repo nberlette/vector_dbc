@@ -28,21 +28,9 @@
 
 /* force Linux to use Windows line endings */
 #ifdef _WINDOWS
-#define endl std::endl;
+#define endl std::endl
 #else
 constexpr char endl[] = "\r\n";
-#endif
-
-#ifdef USE_CPP11_REGEX
-#include <regex>
-#define smatch       std::smatch
-#define regex        std::regex
-#define regex_search std::regex_search
-#else
-#include <boost/regex.hpp>
-#define smatch       boost::smatch
-#define regex        boost::regex
-#define regex_search boost::regex_search
 #endif
 
 /* Unsigned integer */

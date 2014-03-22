@@ -21,15 +21,9 @@
 
 #pragma once
 
-#include "config.h"
+#include "platform.h"
 
 #include "vector_dbc_export.h"
-
-#ifdef USE_CPP11_ENUM_CLASS
-#define enumclass enum class
-#else
-#define enumclass enum
-#endif
 
 namespace Vector {
 namespace DBC {
