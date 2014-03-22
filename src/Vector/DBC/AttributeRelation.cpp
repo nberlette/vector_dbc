@@ -44,7 +44,7 @@ bool AttributeRelation::operator < (const AttributeRelation & rhs) const
 
             /* relationType based optimizations */
             switch(relationType) {
-            case ControlUnitEnvironmentVariable:
+            case RelationType::ControlUnitEnvironmentVariable:
                 /* only compare nodeName, environmentVariableName */
                 if (nodeName == rhs.nodeName) {
                     return environmentVariableName < rhs.environmentVariableName;
@@ -53,7 +53,7 @@ bool AttributeRelation::operator < (const AttributeRelation & rhs) const
                 }
                 break;
 
-            case NodeTxMessage:
+            case RelationType::NodeTxMessage:
                 /* only compare nodeName, messageId */
                 if (nodeName == rhs.nodeName) {
                     return messageId < rhs.messageId;
@@ -62,7 +62,7 @@ bool AttributeRelation::operator < (const AttributeRelation & rhs) const
                 }
                 break;
 
-            case NodeMappedRxSignal:
+            case RelationType::NodeMappedRxSignal:
                 /* only compare nodeName, messageId, signalName */
                 if (nodeName == rhs.nodeName) {
                     if (messageId == rhs.messageId) {
