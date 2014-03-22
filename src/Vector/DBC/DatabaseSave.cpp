@@ -24,9 +24,6 @@
 #include <fstream>
 #include <string>
 
-namespace Vector {
-namespace DBC {
-
 #if __cplusplus < 201103L
 #define constexpr static const
 #endif
@@ -37,6 +34,9 @@ namespace DBC {
 #else
 constexpr char endl[] = "\r\n";
 #endif
+
+namespace Vector {
+namespace DBC {
 
 /* Version (VERSION) */
 void Database::writeVersion(std::ofstream & ofs)
