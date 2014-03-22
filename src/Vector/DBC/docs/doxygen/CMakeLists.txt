@@ -1,6 +1,6 @@
-FIND_PACKAGE(Doxygen)
-FIND_PACKAGE(Graphviz)
-FIND_PACKAGE(HTMLHelp)
+find_package(Doxygen)
+find_package(Graphviz)
+find_package(HTMLHelp)
 
 if(DOXYGEN_FOUND)
   if(WIN32)
