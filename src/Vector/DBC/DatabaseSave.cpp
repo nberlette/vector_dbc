@@ -793,7 +793,7 @@ void Database::writeExtendedMultiplexors(std::ofstream & ofs)
     }
 }
 
-int Database::save(const char * filename)
+Status Database::save(const char * filename)
 {
     std::ofstream ofs;
 
@@ -891,7 +891,7 @@ int Database::save(const char * filename)
     return Status::Ok;
 }
 
-int Database::save(std::string & filename)
+Status Database::save(std::string & filename)
 {
     return save(filename.c_str());
 }

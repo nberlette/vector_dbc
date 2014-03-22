@@ -60,7 +60,7 @@ public:
      *
      * Loads database.
      */
-    int load(const char * filename);
+    Status load(const char * filename);
 
     /**
      * @brief Load Database
@@ -69,7 +69,7 @@ public:
      *
      * Loads database.
      */
-    int load(std::string & filename);
+    Status load(std::string & filename);
 
     /**
      * @brief Save Database
@@ -78,7 +78,7 @@ public:
      *
      * Saves database.
      */
-    int save(const char * filename);
+    Status save(const char * filename);
 
     /**
      * @brief Save Database
@@ -87,7 +87,7 @@ public:
      *
      * Saves database.
      */
-    int save(std::string & filename);
+    Status save(std::string & filename);
 
     /**
      * Progress Callback function type

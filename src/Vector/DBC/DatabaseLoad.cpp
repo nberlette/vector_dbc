@@ -1666,7 +1666,7 @@ void Database::readExtendedMultiplexor(std::string & line)
     }
 }
 
-int Database::load(const char * filename)
+Status Database::load(const char * filename)
 {
     std::ifstream ifs;
     std::streampos fileSize;
@@ -1829,7 +1829,7 @@ int Database::load(const char * filename)
     return Status::Ok;
 }
 
-int Database::load(std::string & filename)
+Status Database::load(std::string & filename)
 {
     return load(filename.c_str());
 }
