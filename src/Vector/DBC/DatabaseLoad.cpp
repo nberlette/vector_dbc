@@ -269,10 +269,10 @@ void Database::readSignal(Message & message, std::string & line)
         std::string byteOrder = m[6];
         switch(byteOrder.front()) {
         case '0':
-            signal.byteOrder = ByteOrder::BigEndian;
+            signal.byteOrder = ByteOrder::LittleEndian;
             break;
         case '1':
-            signal.byteOrder = ByteOrder::LittleEndian;
+            signal.byteOrder = ByteOrder::BigEndian;
             break;
         }
 
@@ -511,10 +511,10 @@ void Database::readSignalType(std::string & line)
         std::string byteOrder = m[3];
         switch(byteOrder.front()) {
         case '0':
-            signalType.byteOrder = ByteOrder::BigEndian;
+            signalType.byteOrder = ByteOrder::LittleEndian;
             break;
         case '1':
-            signalType.byteOrder = ByteOrder::LittleEndian;
+            signalType.byteOrder = ByteOrder::BigEndian;
             break;
         }
 
