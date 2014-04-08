@@ -44,14 +44,12 @@ void Database::writeVersion(std::ofstream & ofs)
 /* New Symbols (NS) */
 void Database::writeNewSymbols(std::ofstream & ofs)
 {
-    if (newSymbols.size() > 0) {
-        ofs << endl;
-        ofs << "NS_ : " << endl;
-        for (auto newSymbol : newSymbols) {
-            ofs << "\t" << newSymbol << endl;
-        }
-        ofs << endl;
+    ofs << endl;
+    ofs << "NS_ : " << endl;
+    for (auto newSymbol : newSymbols) {
+        ofs << "\t" << newSymbol << endl;
     }
+    ofs << endl;
 }
 
 /* Bit Timing (BS) */

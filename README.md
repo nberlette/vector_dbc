@@ -73,7 +73,6 @@ The following files are products of installation and building:
 * Comparation of two DBCs
 * Some OPTIONS can be auto detected, e.g. OPTION_USE_CPP11_REGEX or OPTION_USE_CPP11_ENUM_CLASS. Results should be placed in config.h.
 * cmake target for code beautifier: Astyle or Uncrustify (add_custom_command)?
-* Keep order of NS_ (new symbols)? Data access performance is probably not necessary here.
 
 # Missing test coverage
 

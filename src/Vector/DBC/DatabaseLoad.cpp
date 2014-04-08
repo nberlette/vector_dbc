@@ -138,7 +138,7 @@ void Database::readNewSymbols(std::ifstream & ifs, std::string & line)
         smatch m;
         regex re(REGEX_SOL REGEX_NAME REGEX_EOL);
         if (regex_search(line, m, re)) {
-            newSymbols.insert(m[1]);
+            newSymbols.push_back(m[1]);
         }
     }
 }

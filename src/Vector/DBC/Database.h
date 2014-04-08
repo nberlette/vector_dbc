@@ -23,8 +23,8 @@
 
 #include "platform.h"
 
+#include <list>
 #include <map>
-#include <set>
 #include <stack>
 #include <string>
 
@@ -121,7 +121,7 @@ public:
     std::string version;
 
     /** New Symbols (NS) */
-    std::set<std::string> newSymbols;
+    std::list<std::string> newSymbols;
 
     /** Bit Timing (BS) */
     BitTiming bitTiming;
