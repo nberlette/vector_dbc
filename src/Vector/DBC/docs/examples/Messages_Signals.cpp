@@ -3,10 +3,16 @@
 
 #include "Vector/DBC/Database.h"
 
-int main()
+int main(int argc, char *argv[])
 {
+    if (argc != 2) {
+        std::cout << "Messages_Signals <database.dbc>" << std::endl;
+        return -1;
+    }
+
+    /* load database */
     Vector::DBC::Database database;
-    if (database.load(CMAKE_CURRENT_SOURCE_DIR "/data/Database.dbc") != Vector::DBC::Status::Ok) {
+    if (database.load(argv[1]) != Vector::DBC::Status::Ok) {
         return EXIT_FAILURE;
     }
 
