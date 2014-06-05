@@ -23,6 +23,7 @@
 
 #include "platform.h"
 
+#include <cstdint>
 #include <map>
 #include <set>
 #include <string>
@@ -58,6 +59,16 @@ public:
 
     /** Signals (SG) */
     std::map<std::string, Signal> signals;
+
+    /**
+     * @brief Extracts a signal from the message data
+     * @param[in] data Data
+     * @param[in] signal Signal
+     * @return Raw signal value
+     *
+     * Extracts a signal from the message data.
+     */
+    std::uint64_t extractSignal(std::vector<std::uint8_t> & data, Signal & signal);
 
     /** Message Transmitters (BO_TX_BU) */
     std::set<std::string> transmitters;

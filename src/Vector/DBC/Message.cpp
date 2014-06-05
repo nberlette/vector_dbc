@@ -38,5 +38,60 @@ Message::Message() :
     /* nothing to do here */
 }
 
+std::uint64_t Message::extractSignal(std::vector<std::uint8_t> & data, Signal & signal)
+{
+    std::uint64_t retVal = 0;
+    unsigned int size = signal.bitSize;
+
+    /* copy bits */
+    if (signal.byteOrder == ByteOrder::BigEndian) {
+        /* start with MSB */
+        unsigned int srcBit = signal.startBit;
+        unsigned int dstBit = size - 1;
+        while(size > 0) {
+            /* copy bit */
+            if (data[srcBit/8] & (1<<(srcBit%8))) {
+                retVal |= (1<<dstBit);
+            }
+
+            /* calculate next position */
+            if ((srcBit % 8) == 0) {
+                srcBit += 15;
+            } else {
+                --srcBit;
+            }
+            --dstBit;
+            --size;
+        }
+    } else {
+        /* start with LSB */
+        unsigned int srcBit = signal.startBit;
+        unsigned int dstBit = 0;
+        while(size > 0) {
+            /* copy bit */
+            if (data[srcBit/8] & (1<<(srcBit%8))) {
+                retVal |= (1<<dstBit);
+            }
+
+            /* calculate next position */
+            ++srcBit;
+            ++dstBit;
+            --size;
+        }
+    }
+
+    /* if signed, then fill all bits above MSB with 1 */
+    if (signal.valueType == ValueType::Signed) {
+        uint64_t msb = (retVal >> (size - 1)) & 1;
+        if (msb) {
+            for (unsigned int i = size; i < 8*sizeof(retVal); ++i) {
+                retVal |= (1<<i);
+            }
+        }
+    }
+
+    return retVal;
+}
+
 }
 }
