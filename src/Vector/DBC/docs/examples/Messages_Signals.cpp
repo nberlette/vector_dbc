@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "Vector/DBC/Database.h"
+#include "Vector/DBC/File.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,14 +10,14 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    /* load database */
-    Vector::DBC::Database database;
-    if (database.load(argv[1]) != Vector::DBC::Status::Ok) {
+    /* load database file */
+    Vector::DBC::File file;
+    if (file.load(argv[1]) != Vector::DBC::Status::Ok) {
         return EXIT_FAILURE;
     }
 
     /* loop over messages */
-    for (auto message : database.messages) {
+    for (auto message : file.messages) {
         std::cout << "Message " << message.second.name << std::endl;
 
         /* loop over signals of this messages */

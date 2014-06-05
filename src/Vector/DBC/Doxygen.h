@@ -47,7 +47,7 @@
  *   "AttributeDefinition" [ URL="@ref Vector::DBC::AttributeDefinition" ];
  *   "AttributeRelation" [ URL="@ref Vector::DBC::AttributeRelation" ];
  *   "BitTiming" [ URL="@ref Vector::DBC::BitTiming" ];
- *   "Database" [ URL="@ref Vector::DBC::Database", style=bold ];
+ *   "File" [ URL="@ref Vector::DBC::File", style=bold ];
  *   "EnvironmentVariable" [ URL="@ref Vector::DBC::EnvironmentVariable", style=bold ];
  *   "ExtendedMultiplexor" [ URL="@ref Vector::DBC::ExtendedMultiplexor" ];
  *   "Message" [ URL="@ref Vector::DBC::Message", style=bold ];
@@ -57,16 +57,16 @@
  *   "SignalType" [ URL="@ref Vector::DBC::SignalType" ];
  *   "ValueTable" [ URL="@ref Vector::DBC::ValueTable" ];
  *
- *   "Database" -> "BitTiming" [ label="bitTiming" ];
- *   "Database" -> "Node" [ label="nodes" ];
- *   "Database" -> "ValueTable" [ label="valueTables" ];
- *   "Database" -> "Message" [ label="messages" ];
- *   "Database" -> "EnvironmentVariable" [ label="environmentVariables" ];
- *   "Database" -> "SignalType" [ label="signalTypes" ];
- *   "Database" -> "AttributeDefinition" [ label="attributeDefinitions" ];
- *   "Database" -> "Attribute" [ label="attributeDefaults" ];
- *   "Database" -> "Attribute" [ label="attributeValues" ];
- *   "Database" -> "AttributeRelation" [ label="attributeRelationValues" ];
+ *   "File" -> "BitTiming" [ label="bitTiming" ];
+ *   "File" -> "Node" [ label="nodes" ];
+ *   "File" -> "ValueTable" [ label="valueTables" ];
+ *   "File" -> "Message" [ label="messages" ];
+ *   "File" -> "EnvironmentVariable" [ label="environmentVariables" ];
+ *   "File" -> "SignalType" [ label="signalTypes" ];
+ *   "File" -> "AttributeDefinition" [ label="attributeDefinitions" ];
+ *   "File" -> "Attribute" [ label="attributeDefaults" ];
+ *   "File" -> "Attribute" [ label="attributeValues" ];
+ *   "File" -> "AttributeRelation" [ label="attributeRelationValues" ];
  *
  *   "EnvironmentVariable" -> "Node" [ label="accessNodes", style=dotted ];
  *   "EnvironmentVariable" -> "Attribute" [ label="attributeValues" ];

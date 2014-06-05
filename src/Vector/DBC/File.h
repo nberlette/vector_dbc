@@ -46,46 +46,46 @@ namespace Vector {
 namespace DBC {
 
 /**
- * Database
+ * File
  */
-class VECTOR_DBC_EXPORT Database
+class VECTOR_DBC_EXPORT File
 {
 public:
-    Database();
+    File();
 
     /**
-     * @brief Load Database
+     * @brief Load database file
      * @param[in] filename File name
      * @return Status code
      *
-     * Loads database.
+     * Loads database file.
      */
     Status load(const char * filename);
 
     /**
-     * @brief Load Database
+     * @brief Load database file
      * @param[in] filename File Name
      * @return Status code
      *
-     * Loads database.
+     * Loads database file.
      */
     Status load(std::string & filename);
 
     /**
-     * @brief Save Database
+     * @brief Save database file
      * @param[in] filename File Name
      * @return Status code
      *
-     * Saves database.
+     * Saves database file.
      */
     Status save(const char * filename);
 
     /**
-     * @brief Save Database
+     * @brief Save database file
      * @param[in] filename File Name
      * @return Status code
      *
-     * Saves database.
+     * Saves database file.
      */
     Status save(std::string & filename);
 

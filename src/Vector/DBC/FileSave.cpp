@@ -19,7 +19,7 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "Database.h"
+#include "File.h"
 
 #include <fstream>
 #include <string>
@@ -35,14 +35,14 @@ namespace Vector {
 namespace DBC {
 
 /* Version (VERSION) */
-void Database::writeVersion(std::ofstream & ofs)
+void File::writeVersion(std::ofstream & ofs)
 {
     ofs << "VERSION \"" << version << "\"" << endl;
     ofs << endl;
 }
 
 /* New Symbols (NS) */
-void Database::writeNewSymbols(std::ofstream & ofs)
+void File::writeNewSymbols(std::ofstream & ofs)
 {
     ofs << endl;
     ofs << "NS_ : " << endl;
@@ -53,7 +53,7 @@ void Database::writeNewSymbols(std::ofstream & ofs)
 }
 
 /* Bit Timing (BS) */
-void Database::writeBitTiming(std::ofstream & ofs)
+void File::writeBitTiming(std::ofstream & ofs)
 {
     ofs << "BS_:";
     if (bitTiming.baudrate || bitTiming.btr1 || bitTiming.btr2) {
@@ -67,7 +67,7 @@ void Database::writeBitTiming(std::ofstream & ofs)
 }
 
 /* Nodes (BU) */
-void Database::writeNodes(std::ofstream & ofs)
+void File::writeNodes(std::ofstream & ofs)
 {
     ofs << "BU_:";
     for (auto node : nodes) {
@@ -77,7 +77,7 @@ void Database::writeNodes(std::ofstream & ofs)
 }
 
 /* Value Tables (VAL_TABLE) */
-void Database::writeValueTables(std::ofstream & ofs)
+void File::writeValueTables(std::ofstream & ofs)
 {
     for (auto valueTable : valueTables) {
         ofs << "VAL_TABLE_ " << valueTable.second.name;
@@ -92,7 +92,7 @@ void Database::writeValueTables(std::ofstream & ofs)
 }
 
 /* Signals (SG) */
-void Database::writeSignals(std::ofstream & ofs, Message & message)
+void File::writeSignals(std::ofstream & ofs, Message & message)
 {
     for (auto signal : message.signals) {
         /* Name */
@@ -135,7 +135,7 @@ void Database::writeSignals(std::ofstream & ofs, Message & message)
 }
 
 /* Messages (BO) */
-void Database::writeMessages(std::ofstream & ofs)
+void File::writeMessages(std::ofstream & ofs)
 {
     for (auto message : messages) {
         ofs << "BO_ " << message.second.id;
@@ -156,7 +156,7 @@ void Database::writeMessages(std::ofstream & ofs)
 }
 
 /* Message Transmitters (BO_TX_BU) */
-void Database::writeMessageTransmitters(std::ofstream & ofs)
+void File::writeMessageTransmitters(std::ofstream & ofs)
 {
     for (auto message : messages) {
         if (!message.second.transmitters.empty()) {
@@ -171,7 +171,7 @@ void Database::writeMessageTransmitters(std::ofstream & ofs)
 }
 
 /* Environment Variables (EV) */
-void Database::writeEnvironmentVariables(std::ofstream & ofs)
+void File::writeEnvironmentVariables(std::ofstream & ofs)
 {
     for (auto environmentVariable : environmentVariables) {
         ofs << endl;
@@ -241,7 +241,7 @@ void Database::writeEnvironmentVariables(std::ofstream & ofs)
 }
 
 /* Environment Variables Data (ENVVAR_DATA) */
-void Database::writeEnvironmentVariableData(std::ofstream & ofs)
+void File::writeEnvironmentVariableData(std::ofstream & ofs)
 {
     for (auto environmentVariable : environmentVariables) {
         if (environmentVariable.second.type == EnvironmentVariable::Type::Data) {
@@ -254,7 +254,7 @@ void Database::writeEnvironmentVariableData(std::ofstream & ofs)
 }
 
 /* Signal Types (SGTYPE, obsolete) */
-void Database::writeSignalTypes(std::ofstream & ofs)
+void File::writeSignalTypes(std::ofstream & ofs)
 {
     for (auto signalType : signalTypes) {
         ofs << "SGTYPE_ " << signalType.second.name;
@@ -275,7 +275,7 @@ void Database::writeSignalTypes(std::ofstream & ofs)
 }
 
 /* Comments (CM) for Networks */
-void Database::writeCommentsNetworks(std::ofstream & ofs)
+void File::writeCommentsNetworks(std::ofstream & ofs)
 {
     if (!comment.empty()) {
         ofs << "CM_ \"" << comment << "\";" << endl;
@@ -283,7 +283,7 @@ void Database::writeCommentsNetworks(std::ofstream & ofs)
 }
 
 /* Comments (CM) for Node (BU) */
-void Database::writeCommentsNodes(std::ofstream & ofs)
+void File::writeCommentsNodes(std::ofstream & ofs)
 {
     for (auto node : nodes) {
         if (!node.second.comment.empty()) {
@@ -293,7 +293,7 @@ void Database::writeCommentsNodes(std::ofstream & ofs)
 }
 
 /* Comments (CM) for Message (BO) */
-void Database::writeCommentsMessages(std::ofstream & ofs)
+void File::writeCommentsMessages(std::ofstream & ofs)
 {
     for (auto message : messages) {
         if (!message.second.comment.empty()) {
@@ -303,7 +303,7 @@ void Database::writeCommentsMessages(std::ofstream & ofs)
 }
 
 /* Comments (CM) for Signal (SG) */
-void Database::writeCommentsSignals(std::ofstream & ofs)
+void File::writeCommentsSignals(std::ofstream & ofs)
 {
     for (auto message : messages) {
         for (auto signal : message.second.signals) {
@@ -315,7 +315,7 @@ void Database::writeCommentsSignals(std::ofstream & ofs)
 }
 
 /* Comments (CM) for Environment Variable (EV) */
-void Database::writeCommentsEnvironmentVariables(std::ofstream & ofs)
+void File::writeCommentsEnvironmentVariables(std::ofstream & ofs)
 {
     for (auto environmentVariable : environmentVariables) {
         if (!environmentVariable.second.comment.empty()) {
@@ -325,7 +325,7 @@ void Database::writeCommentsEnvironmentVariables(std::ofstream & ofs)
 }
 
 /* Attribute Definitions (BA_DEF) and Attribute Definitions at Relations (BA_DEF_REL) */
-void Database::writeAttributeDefinitions(std::ofstream & ofs)
+void File::writeAttributeDefinitions(std::ofstream & ofs)
 {
     for (auto attributeDefinition : attributeDefinitions) {
         /* Object Type */
@@ -412,7 +412,7 @@ void Database::writeAttributeDefinitions(std::ofstream & ofs)
 /* Sigtype Attr Lists (?, obsolete) */
 
 /* Attribute Defaults (BA_DEF_DEF) and Attribute Defaults at Relations (BA_DEF_DEF_REL) */
-void Database::writeAttributeDefaults(std::ofstream & ofs)
+void File::writeAttributeDefaults(std::ofstream & ofs)
 {
     for (auto attribute : attributeDefaults) {
         AttributeDefinition attributeDefinition = attributeDefinitions[attribute.second.name];
@@ -459,7 +459,7 @@ void Database::writeAttributeDefaults(std::ofstream & ofs)
 }
 
 /* Attribute Values (BA) for Network */
-void Database::writeAttributeValuesNetworks(std::ofstream & ofs)
+void File::writeAttributeValuesNetworks(std::ofstream & ofs)
 {
     for (auto attribute : attributeValues) {
         /* Name */
@@ -488,7 +488,7 @@ void Database::writeAttributeValuesNetworks(std::ofstream & ofs)
 }
 
 /* Attribute Values (BA) for Nodes (BU) */
-void Database::writeAttributeValuesNodes(std::ofstream & ofs)
+void File::writeAttributeValuesNodes(std::ofstream & ofs)
 {
     for (auto node : nodes) {
         for (auto attribute : node.second.attributeValues) {
@@ -522,7 +522,7 @@ void Database::writeAttributeValuesNodes(std::ofstream & ofs)
 }
 
 /* Attribute Values (BA) for Messages (BO) */
-void Database::writeAttributeValuesMessages(std::ofstream & ofs)
+void File::writeAttributeValuesMessages(std::ofstream & ofs)
 {
     for (auto message : messages) {
         for (auto attribute : message.second.attributeValues) {
@@ -556,7 +556,7 @@ void Database::writeAttributeValuesMessages(std::ofstream & ofs)
 }
 
 /* Attribute Values (BA) for Signals (SG) */
-void Database::writeAttributeValuesSignals(std::ofstream & ofs)
+void File::writeAttributeValuesSignals(std::ofstream & ofs)
 {
     for (auto message : messages) {
         for (auto signal : message.second.signals) {
@@ -592,7 +592,7 @@ void Database::writeAttributeValuesSignals(std::ofstream & ofs)
 }
 
 /* Attribute Values (BA) for Environment Variables (EV) */
-void Database::writeAttributeValuesEnvironmentVariables(std::ofstream & ofs)
+void File::writeAttributeValuesEnvironmentVariables(std::ofstream & ofs)
 {
     for (auto environmentVariable : environmentVariables) {
         for (auto attribute : environmentVariable.second.attributeValues) {
@@ -626,7 +626,7 @@ void Database::writeAttributeValuesEnvironmentVariables(std::ofstream & ofs)
 }
 
 /* Attribute Values at Relations (BA_REL)  */
-void Database::writeAttributeRelationValues(std::ofstream & ofs)
+void File::writeAttributeRelationValues(std::ofstream & ofs)
 {
     for (auto attributeRelation : attributeRelationValues) {
         /* Name */
@@ -689,7 +689,7 @@ void Database::writeAttributeRelationValues(std::ofstream & ofs)
 }
 
 /* Value Descriptions (VAL) for Signals (SG) */
-void Database::writeValueDescriptionsSignals(std::ofstream & ofs)
+void File::writeValueDescriptionsSignals(std::ofstream & ofs)
 {
     for (auto message : messages) {
         for (auto signal : message.second.signals) {
@@ -706,7 +706,7 @@ void Database::writeValueDescriptionsSignals(std::ofstream & ofs)
 }
 
 /* Value Descriptions (VAL) for Environment Variables (EV) */
-void Database::writeValueDescriptionsEnvironmentVariables(std::ofstream & ofs)
+void File::writeValueDescriptionsEnvironmentVariables(std::ofstream & ofs)
 {
     for (auto environmentVariable : environmentVariables) {
         if (!environmentVariable.second.valueDescriptions.empty()) {
@@ -729,7 +729,7 @@ void Database::writeValueDescriptionsEnvironmentVariables(std::ofstream & ofs)
 /* Signal Type Refs (SGTYPE, obsolete) */
 
 /* Signal Groups (SIG_GROUP) */
-void Database::writeSignalGroups(std::ofstream & ofs)
+void File::writeSignalGroups(std::ofstream & ofs)
 {
     for (auto message : messages) {
         for (auto signalGroup : message.second.signalGroups) {
@@ -750,7 +750,7 @@ void Database::writeSignalGroups(std::ofstream & ofs)
 }
 
 /* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
-void Database::writeSignalExtendedValueTypes(std::ofstream & ofs)
+void File::writeSignalExtendedValueTypes(std::ofstream & ofs)
 {
     for (auto message : messages) {
         for (auto signal : message.second.signals) {
@@ -764,7 +764,7 @@ void Database::writeSignalExtendedValueTypes(std::ofstream & ofs)
 }
 
 /* Extended Multiplexors (SG_MUL_VAL) */
-void Database::writeExtendedMultiplexors(std::ofstream & ofs)
+void File::writeExtendedMultiplexors(std::ofstream & ofs)
 {
     for (auto message : messages) {
         for (auto signal : message.second.signals) {
@@ -791,7 +791,7 @@ void Database::writeExtendedMultiplexors(std::ofstream & ofs)
     }
 }
 
-Status Database::save(const char * filename)
+Status File::save(const char * filename)
 {
     std::ofstream ofs;
 
@@ -889,7 +889,7 @@ Status Database::save(const char * filename)
     return Status::Ok;
 }
 
-Status Database::save(std::string & filename)
+Status File::save(std::string & filename)
 {
     return save(filename.c_str());
 }

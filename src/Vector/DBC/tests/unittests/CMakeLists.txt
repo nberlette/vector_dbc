@@ -8,7 +8,7 @@ add_definitions(
   -DCMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
   -DCMAKE_CURRENT_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}")
 
-add_executable(test_Database test_Database.cpp)
+add_executable(test_File test_File.cpp)
 add_executable(test_Signal test_Signal.cpp)
 
 if(OPTION_USE_GCOV)
@@ -17,7 +17,7 @@ if(OPTION_USE_GCOV)
   target_link_libraries(test_Signal gcov)
 endif()
 
-target_link_libraries(test_Database
+target_link_libraries(test_File
   Vector_DBC
   ${Boost_SYSTEM_LIBRARY}
   ${Boost_FILESYSTEM_LIBRARY}
@@ -30,5 +30,5 @@ target_link_libraries(test_Signal
 
 enable_testing()
 
-add_test(Database test_Database)
+add_test(File test_File)
 add_test(Signal test_Signal)

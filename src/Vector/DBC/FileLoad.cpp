@@ -19,7 +19,7 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "Database.h"
+#include "File.h"
 
 #include <fstream>
 #include <sstream>
@@ -78,7 +78,7 @@ namespace Vector {
 namespace DBC {
 
 /* Removes windows/unix/mac line endings. */
-void Database::chomp(std::string & line)
+void File::chomp(std::string & line)
 {
     /* don't do anything if line is empty */
     if (line.empty()) {
@@ -97,7 +97,7 @@ void Database::chomp(std::string & line)
 }
 
 /* stod without C locale */
-double Database::stod(const std::string & str)
+double File::stod(const std::string & str)
 {
     std::istringstream iss(str);
 
@@ -111,7 +111,7 @@ double Database::stod(const std::string & str)
 }
 
 /* Version (VERSION) */
-void Database::readVersion(std::string & line)
+void File::readVersion(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "VERSION" REGEX_SPACE REGEX_STRING REGEX_EOL);
@@ -127,7 +127,7 @@ void Database::readVersion(std::string & line)
 }
 
 /* New Symbols (NS) */
-void Database::readNewSymbols(std::ifstream & ifs, std::string & line)
+void File::readNewSymbols(std::ifstream & ifs, std::string & line)
 {
     while(ifs.good()) {
         std::getline(ifs, line);
@@ -144,7 +144,7 @@ void Database::readNewSymbols(std::ifstream & ifs, std::string & line)
 }
 
 /* Bit Timing (BS) */
-void Database::readBitTiming(std::string & line)
+void File::readBitTiming(std::string & line)
 {
     if (line == "BS_:") {
         // all ok
@@ -167,7 +167,7 @@ void Database::readBitTiming(std::string & line)
 }
 
 /* Nodes (BU) */
-void Database::readNodes(std::string & line)
+void File::readNodes(std::string & line)
 {
     std::istringstream iss(line);
     std::string node;
@@ -182,7 +182,7 @@ void Database::readNodes(std::string & line)
 }
 
 /* Value Tables (VAL_TABLE) */
-void Database::readValueTable(std::string & line)
+void File::readValueTable(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "VAL_TABLE_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -221,7 +221,7 @@ void Database::readValueTable(std::string & line)
 }
 
 /* Signals (SG) */
-void Database::readSignal(Message & message, std::string & line)
+void File::readSignal(Message & message, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "SG_" REGEX_SPACE REGEX_NAME "[[:space:]]*((m[[:digit:]]+)|M)?[[:space:]]*:[[:space:]]*" REGEX_UINT "\\|" REGEX_UINT "@([01])([+-])" REGEX_SPACE "\\(" REGEX_DOUBLE "," REGEX_DOUBLE "\\)" REGEX_SPACE "\\[" REGEX_DOUBLE "\\|" REGEX_DOUBLE "\\]" REGEX_SPACE REGEX_STRING REGEX_SPACE REGEX_TO_END REGEX_EOL);
@@ -305,7 +305,7 @@ void Database::readSignal(Message & message, std::string & line)
 }
 
 /* Messages (BO) */
-void Database::readMessage(std::ifstream & ifs, std::string & line)
+void File::readMessage(std::ifstream & ifs, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BO_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_DELIM(":") REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_EOL);
@@ -347,7 +347,7 @@ void Database::readMessage(std::ifstream & ifs, std::string & line)
 }
 
 /* Message Transmitters (BO_TX_BU) */
-void Database::readMessageTransmitter(std::string & line)
+void File::readMessageTransmitter(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BO_TX_BU_" REGEX_SPACE REGEX_UINT REGEX_DELIM(":") REGEX_TO_END REGEX_EOL_DELIM);
@@ -375,7 +375,7 @@ void Database::readMessageTransmitter(std::string & line)
 }
 
 /* Environment Variables (EV) */
-void Database::readEnvironmentVariable(std::string & line)
+void File::readEnvironmentVariable(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "EV_" REGEX_SPACE REGEX_NAME REGEX_DELIM(":") "([01])" REGEX_SPACE "\\[" REGEX_DOUBLE "\\|" REGEX_DOUBLE "\\]" REGEX_SPACE REGEX_STRING REGEX_SPACE REGEX_DOUBLE REGEX_SPACE REGEX_UINT REGEX_SPACE "DUMMY_NODE_VECTOR([[:xdigit:]]+)" REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -454,7 +454,7 @@ void Database::readEnvironmentVariable(std::string & line)
 }
 
 /* Environment Variable Data (ENVVAR_DATA) */
-void Database::readEnvironmentVariableData(std::string & line)
+void File::readEnvironmentVariableData(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "ENVVAR_DATA_" REGEX_SPACE REGEX_NAME REGEX_DELIM(":") REGEX_UINT REGEX_EOL_DELIM);
@@ -480,7 +480,7 @@ void Database::readEnvironmentVariableData(std::string & line)
 }
 
 /* Signal Types (SGTYPE, obsolete) */
-void Database::readSignalType(std::string & line)
+void File::readSignalType(std::string & line)
 {
     // Signal Type
     smatch m;
@@ -554,7 +554,7 @@ void Database::readSignalType(std::string & line)
 }
 
 /* Comments (CM) for Networks */
-bool Database::readCommentNetwork(std::stack<std::size_t> & lineBreaks, std::string & line)
+bool File::readCommentNetwork(std::stack<std::size_t> & lineBreaks, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "CM_" REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
@@ -581,7 +581,7 @@ bool Database::readCommentNetwork(std::stack<std::size_t> & lineBreaks, std::str
 }
 
 /* Comments (CM) for Nodes (BU) */
-bool Database::readCommentNode(std::stack<std::size_t> & lineBreaks, std::string & line)
+bool File::readCommentNode(std::stack<std::size_t> & lineBreaks, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "CM_" REGEX_SPACE "BU_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
@@ -609,7 +609,7 @@ bool Database::readCommentNode(std::stack<std::size_t> & lineBreaks, std::string
 }
 
 /* Comments (CM) for Messages (BO) */
-bool Database::readCommentMessage(std::stack<std::size_t> & lineBreaks, std::string & line)
+bool File::readCommentMessage(std::stack<std::size_t> & lineBreaks, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "CM_" REGEX_SPACE "BO_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
@@ -637,7 +637,7 @@ bool Database::readCommentMessage(std::stack<std::size_t> & lineBreaks, std::str
 }
 
 /* Comments (CM) for Signals (SG) */
-bool Database::readCommentSignal(std::stack<std::size_t> & lineBreaks, std::string & line)
+bool File::readCommentSignal(std::stack<std::size_t> & lineBreaks, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "CM_" REGEX_SPACE "SG_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
@@ -666,7 +666,7 @@ bool Database::readCommentSignal(std::stack<std::size_t> & lineBreaks, std::stri
 }
 
 /* Comments (CM) for Environment Variables (EV) */
-bool Database::readCommentEnvironmentVariable(std::stack<std::size_t> & lineBreaks, std::string & line)
+bool File::readCommentEnvironmentVariable(std::stack<std::size_t> & lineBreaks, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "CM_" REGEX_SPACE "EV_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
@@ -694,7 +694,7 @@ bool Database::readCommentEnvironmentVariable(std::stack<std::size_t> & lineBrea
 }
 
 /* Comments (CM) */
-void Database::readComment(std::ifstream & ifs, std::string & line)
+void File::readComment(std::ifstream & ifs, std::string & line)
 {
     /* support multi-line comments and escape sequences */
     std::size_t firstCommentCharPos = line.find('"');
@@ -763,7 +763,7 @@ void Database::readComment(std::ifstream & ifs, std::string & line)
 }
 
 /* Attribute Definitions (BA_DEF) */
-void Database::readAttributeDefinition(std::string & line)
+void File::readAttributeDefinition(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_DEF_" REGEX_SPACE "(BU_|BO_|SG_|EV_)?[[:space:]]*" REGEX_ATTRIB_NAME REGEX_SPACE "(INT|HEX|FLOAT|STRING|ENUM)[[:space:]]*" REGEX_TO_END REGEX_EOL_DELIM);
@@ -856,7 +856,7 @@ void Database::readAttributeDefinition(std::string & line)
 }
 
 /* Attribute Definitions at Relations (BA_DEF_REL) */
-void Database::readAttributeDefinitionRelation(std::string & line)
+void File::readAttributeDefinitionRelation(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_DEF_REL_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -951,7 +951,7 @@ void Database::readAttributeDefinitionRelation(std::string & line)
 /* Sigtype Attr Lists (?, obsolete) */
 
 /* Attribute Defaults (BA_DEF_DEF) */
-void Database::readAttributeDefault(std::string & line)
+void File::readAttributeDefault(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_DEF_DEF_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -1010,7 +1010,7 @@ void Database::readAttributeDefault(std::string & line)
 }
 
 /* Attribute Defaults at Relations (BA_DEF_DEF_REL) */
-void Database::readAttributeDefaultRelation(std::string & line)
+void File::readAttributeDefaultRelation(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_DEF_DEF_REL_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -1069,7 +1069,7 @@ void Database::readAttributeDefaultRelation(std::string & line)
 }
 
 /* Attribute Values (BA) for Network */
-bool Database::readAttributeValueNetwork(std::string & line)
+bool File::readAttributeValueNetwork(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -1123,7 +1123,7 @@ bool Database::readAttributeValueNetwork(std::string & line)
 }
 
 /* Attribute Values (BA) for Node (BU) */
-bool Database::readAttributeValueNode(std::string & line)
+bool File::readAttributeValueNode(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE "BU_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -1180,7 +1180,7 @@ bool Database::readAttributeValueNode(std::string & line)
 }
 
 /* Attribute Values (BA) for Message (BO) */
-bool Database::readAttributeValueMessage(std::string & line)
+bool File::readAttributeValueMessage(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE "BO_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -1235,7 +1235,7 @@ bool Database::readAttributeValueMessage(std::string & line)
 }
 
 /* Attribute Values (BA) for Signal (SG) */
-bool Database::readAttributeValueSignal(std::string & line)
+bool File::readAttributeValueSignal(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE "SG_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -1291,7 +1291,7 @@ bool Database::readAttributeValueSignal(std::string & line)
 }
 
 /* Attribute Values (BA) for Environment Variable (EV) */
-bool Database::readAttributeValueEnvironmentVariable(std::string & line)
+bool File::readAttributeValueEnvironmentVariable(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE "EV_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -1346,7 +1346,7 @@ bool Database::readAttributeValueEnvironmentVariable(std::string & line)
 }
 
 /* Attribute Values (BA) */
-void Database::readAttributeValue(std::string & line)
+void File::readAttributeValue(std::string & line)
 {
     // for nodes (BU)
     if (readAttributeValueNode(line)) {
@@ -1368,7 +1368,7 @@ void Database::readAttributeValue(std::string & line)
         return;
     }
 
-    // for database
+    // for network
     if (readAttributeValueNetwork(line)) {
         return;
     }
@@ -1380,7 +1380,7 @@ void Database::readAttributeValue(std::string & line)
 }
 
 /* Attribute Values at Relations (BA_REL) */
-void Database::readAttributeRelationValue(std::string & line)
+void File::readAttributeRelationValue(std::string & line)
 {
     bool found = false;
     AttributeRelation attributeRelation;
@@ -1465,7 +1465,7 @@ void Database::readAttributeRelationValue(std::string & line)
 }
 
 /* Value Descriptions (VAL) for Signals (SG) */
-bool Database::readValueDescriptionSignal(std::string & line)
+bool File::readValueDescriptionSignal(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "VAL_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -1499,7 +1499,7 @@ bool Database::readValueDescriptionSignal(std::string & line)
 }
 
 /* Value Descriptions (VAL) for Environment Variables (EV) */
-bool Database::readValueDescriptionEnvironmentVariable(std::string & line)
+bool File::readValueDescriptionEnvironmentVariable(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "VAL_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -1532,7 +1532,7 @@ bool Database::readValueDescriptionEnvironmentVariable(std::string & line)
 }
 
 /* Value Descriptions (VAL) */
-void Database::readValueDescription(std::string & line)
+void File::readValueDescription(std::string & line)
 {
     // for signal
     if (readValueDescriptionSignal(line)) {
@@ -1560,7 +1560,7 @@ void Database::readValueDescription(std::string & line)
 // see above readSignalType
 
 /* Signal Groups (SIG_GROUP) */
-void Database::readSignalGroup(std::string & line)
+void File::readSignalGroup(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "SIG_GROUP_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_UINT REGEX_DELIM(":") REGEX_TO_END REGEX_EOL_DELIM);
@@ -1594,7 +1594,7 @@ void Database::readSignalGroup(std::string & line)
 }
 
 /* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
-void Database::readSignalExtendedValueType(std::string & line)
+void File::readSignalExtendedValueType(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "SIG_VALTYPE_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_DELIM(":") "([012])" REGEX_EOL_DELIM);
@@ -1628,7 +1628,7 @@ void Database::readSignalExtendedValueType(std::string & line)
 }
 
 /* Extended Multiplexors (SG_MUL_VAL) */
-void Database::readExtendedMultiplexor(std::string & line)
+void File::readExtendedMultiplexor(std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "SG_MUL_VAL_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -1666,7 +1666,7 @@ void Database::readExtendedMultiplexor(std::string & line)
     }
 }
 
-Status Database::load(const char * filename)
+Status File::load(const char * filename)
 {
     std::ifstream ifs;
     std::streampos fileSize;
@@ -1692,10 +1692,12 @@ Status Database::load(const char * filename)
             progressCallback(ifs.tellg(), fileSize);
         }
 
+        /* get one line */
         std::string line;
         std::getline(ifs, line);
         chomp(line);
 
+        /* parse line */
         smatch m;
         regex re(REGEX_SOL REGEX_NAME);
         if ((!line.empty()) && (regex_search(line, m, re))) {
@@ -1829,7 +1831,7 @@ Status Database::load(const char * filename)
     return Status::Ok;
 }
 
-Status Database::load(std::string & filename)
+Status File::load(std::string & filename)
 {
     return load(filename.c_str());
 }

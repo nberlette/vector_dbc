@@ -37,8 +37,8 @@ enumclass Status : int {
 
     /* Warnings */
     Warning = 0x40000000, /**< General warning */
-    Unknown, /** Unknown entry in database */
-    Unsupported, /** Unsupported entry in database */
+    Unknown, /** Unknown entry in database file */
+    Unsupported, /** Unsupported entry in database file */
     MalformedVersion, /**< Incorrect format of Version (VERSION) */
     MalformedBitTiming, /**< Incorrect format of Bit Timing (BS) */
     MalformedValueTable, /**< Incorrect format of Value Table (VAL_TABLE) */

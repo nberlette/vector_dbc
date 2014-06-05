@@ -13,11 +13,11 @@ set(source_files
   AttributeDefinition.cpp
   AttributeRelation.cpp
   BitTiming.cpp
-  Database.cpp
-  DatabaseLoad.cpp
-  DatabaseSave.cpp
   EnvironmentVariable.cpp
   ExtendedMultiplexor.cpp
+  File.cpp
+  FileLoad.cpp
+  FileSave.cpp
   Message.cpp
   Node.cpp
   Signal.cpp
@@ -32,9 +32,9 @@ set(header_files
   AttributeValueType.h
   BitTiming.h
   ByteOrder.h
-  Database.h
   EnvironmentVariable.h
   ExtendedMultiplexor.h
+  File.h
   Message.h
   Node.h
   platform.h

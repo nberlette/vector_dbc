@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE Database
+#define BOOST_TEST_MODULE File
 #if !defined(WIN32)
 #define BOOST_TEST_DYN_LINK
 #endif
@@ -10,7 +10,7 @@
 #include <string>
 #include <boost/filesystem.hpp>
 
-#include "Vector/DBC/Database.h"
+#include "Vector/DBC/File.h"
 
 void progressCallback(float numerator, float denominator)
 {
@@ -34,27 +34,30 @@ void statusCallback(Vector::DBC::Status status)
     }
 }
 
-BOOST_AUTO_TEST_CASE(Database)
+BOOST_AUTO_TEST_CASE(File)
 {
-    Vector::DBC::Database database;
-    database.setProgressCallback(&progressCallback);
-    database.setStatusCallback(&statusCallback);
+    Vector::DBC::File file;
+    file.setProgressCallback(&progressCallback);
+    file.setStatusCallback(&statusCallback);
 
-    /* load database */
+    /* load database file */
     boost::filesystem::path infile(CMAKE_CURRENT_SOURCE_DIR "/data/Database.dbc");
     std::string infilename = infile.string();
-    BOOST_REQUIRE(database.load(infilename) == Vector::DBC::Status::Ok);
+    std::cout << "Input file: " << infilename << std::endl;
+    BOOST_REQUIRE(file.load(infilename) == Vector::DBC::Status::Ok);
 
     /* create output directory */
     boost::filesystem::path outdir(CMAKE_CURRENT_BINARY_DIR "/data/");
+    std::cout << "Output directory: " << outdir.string() << std::endl;
     if (!exists(outdir)) {
         BOOST_REQUIRE(create_directory(outdir));
     }
 
-    /* save database */
+    /* save database file */
     boost::filesystem::path outfile(CMAKE_CURRENT_BINARY_DIR "/data/Database.dbc");
     std::string outfilename = outfile.string();
-    BOOST_REQUIRE(database.save(outfilename) == Vector::DBC::Status::Ok);
+    std::cout << "Output file: " << outfilename << std::endl;
+    BOOST_REQUIRE(file.save(outfilename) == Vector::DBC::Status::Ok);
 
     /* loaded and saved file should be equivalent */
     std::ifstream ifs1(infile.c_str());

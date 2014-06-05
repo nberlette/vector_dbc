@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE Database
+#define BOOST_TEST_MODULE Signal
 #if !defined(WIN32)
 #define BOOST_TEST_DYN_LINK
 #endif

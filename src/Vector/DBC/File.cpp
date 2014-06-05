@@ -19,12 +19,12 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "Database.h"
+#include "File.h"
 
 namespace Vector {
 namespace DBC {
 
-Database::Database() :
+File::File() :
     version(),
     newSymbols(),
     bitTiming(),
@@ -44,12 +44,12 @@ Database::Database() :
     /* nothing to do here */
 }
 
-void Database::setProgressCallback(ProgressCallback function)
+void File::setProgressCallback(ProgressCallback function)
 {
     progressCallback = function;
 }
 
-void Database::setStatusCallback(StatusCallback function)
+void File::setStatusCallback(StatusCallback function)
 {
     statusCallback = function;
 }
