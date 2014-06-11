@@ -35,31 +35,31 @@ namespace Vector {
 namespace DBC {
 
 /* Version (VERSION) */
-void File::writeVersion(std::ofstream & ofs)
+void File::writeVersion(std::ofstream & ofs, Network & network)
 {
-    ofs << "VERSION \"" << version << "\"" << endl;
+    ofs << "VERSION \"" << network.version << "\"" << endl;
     ofs << endl;
 }
 
 /* New Symbols (NS) */
-void File::writeNewSymbols(std::ofstream & ofs)
+void File::writeNewSymbols(std::ofstream & ofs, Network & network)
 {
     ofs << endl;
     ofs << "NS_ : " << endl;
-    for (auto newSymbol : newSymbols) {
+    for (auto newSymbol : network.newSymbols) {
         ofs << "\t" << newSymbol << endl;
     }
     ofs << endl;
 }
 
 /* Bit Timing (BS) */
-void File::writeBitTiming(std::ofstream & ofs)
+void File::writeBitTiming(std::ofstream & ofs, Network & network)
 {
     ofs << "BS_:";
-    if (bitTiming.baudrate || bitTiming.btr1 || bitTiming.btr2) {
-        ofs << ' ' << bitTiming.baudrate;
-        ofs << ':' << bitTiming.btr1;
-        ofs << ':' << bitTiming.btr2;
+    if (network.bitTiming.baudrate || network.bitTiming.btr1 || network.bitTiming.btr2) {
+        ofs << ' ' << network.bitTiming.baudrate;
+        ofs << ':' << network.bitTiming.btr1;
+        ofs << ':' << network.bitTiming.btr2;
         ofs << ';';
     }
     ofs << endl;
@@ -67,19 +67,19 @@ void File::writeBitTiming(std::ofstream & ofs)
 }
 
 /* Nodes (BU) */
-void File::writeNodes(std::ofstream & ofs)
+void File::writeNodes(std::ofstream & ofs, Network & network)
 {
     ofs << "BU_:";
-    for (auto node : nodes) {
+    for (auto node : network.nodes) {
         ofs << " " << node.second.name;
     }
     ofs << endl;
 }
 
 /* Value Tables (VAL_TABLE) */
-void File::writeValueTables(std::ofstream & ofs)
+void File::writeValueTables(std::ofstream & ofs, Network & network)
 {
-    for (auto valueTable : valueTables) {
+    for (auto valueTable : network.valueTables) {
         ofs << "VAL_TABLE_ " << valueTable.second.name;
         for (auto valueDescription : valueTable.second.valueDescriptions) {
             ofs << " " << valueDescription.first;
@@ -135,9 +135,9 @@ void File::writeSignals(std::ofstream & ofs, Message & message)
 }
 
 /* Messages (BO) */
-void File::writeMessages(std::ofstream & ofs)
+void File::writeMessages(std::ofstream & ofs, Network & network)
 {
-    for (auto message : messages) {
+    for (auto message : network.messages) {
         ofs << "BO_ " << message.second.id;
         ofs << " " << message.second.name;
         ofs << ": " << message.second.size << " ";
@@ -156,9 +156,9 @@ void File::writeMessages(std::ofstream & ofs)
 }
 
 /* Message Transmitters (BO_TX_BU) */
-void File::writeMessageTransmitters(std::ofstream & ofs)
+void File::writeMessageTransmitters(std::ofstream & ofs, Network & network)
 {
-    for (auto message : messages) {
+    for (auto message : network.messages) {
         if (!message.second.transmitters.empty()) {
             ofs << "BO_TX_BU_ " << message.second.id << " :";
             for (auto transmitter : message.second.transmitters) {
@@ -171,9 +171,9 @@ void File::writeMessageTransmitters(std::ofstream & ofs)
 }
 
 /* Environment Variables (EV) */
-void File::writeEnvironmentVariables(std::ofstream & ofs)
+void File::writeEnvironmentVariables(std::ofstream & ofs, Network & network)
 {
-    for (auto environmentVariable : environmentVariables) {
+    for (auto environmentVariable : network.environmentVariables) {
         ofs << endl;
         ofs << "EV_ " << environmentVariable.second.name << ": ";
 
@@ -241,9 +241,9 @@ void File::writeEnvironmentVariables(std::ofstream & ofs)
 }
 
 /* Environment Variables Data (ENVVAR_DATA) */
-void File::writeEnvironmentVariableData(std::ofstream & ofs)
+void File::writeEnvironmentVariableData(std::ofstream & ofs, Network & network)
 {
-    for (auto environmentVariable : environmentVariables) {
+    for (auto environmentVariable : network.environmentVariables) {
         if (environmentVariable.second.type == EnvironmentVariable::Type::Data) {
             ofs << "ENVVAR_DATA_ " << environmentVariable.second.name;
             ofs << ": " << environmentVariable.second.dataSize;
@@ -254,9 +254,9 @@ void File::writeEnvironmentVariableData(std::ofstream & ofs)
 }
 
 /* Signal Types (SGTYPE, obsolete) */
-void File::writeSignalTypes(std::ofstream & ofs)
+void File::writeSignalTypes(std::ofstream & ofs, Network & network)
 {
-    for (auto signalType : signalTypes) {
+    for (auto signalType : network.signalTypes) {
         ofs << "SGTYPE_ " << signalType.second.name;
         ofs << " : " << signalType.second.size;
         ofs << '@' << char(signalType.second.byteOrder);
@@ -265,7 +265,7 @@ void File::writeSignalTypes(std::ofstream & ofs)
         ofs << ", " << signalType.second.valueTable;
         ofs << ';' << endl;
     }
-    for (auto message : messages) {
+    for (auto message : network.messages) {
         for (auto signal : message.second.signals) {
             if (!signal.second.type.empty()) {
                 ofs << "SGTYPE_ " << message.second.id << ' ' << signal.second.name << " : " << signal.second.type << ";" << endl;
@@ -275,17 +275,17 @@ void File::writeSignalTypes(std::ofstream & ofs)
 }
 
 /* Comments (CM) for Networks */
-void File::writeCommentsNetworks(std::ofstream & ofs)
+void File::writeCommentsNetworks(std::ofstream & ofs, Network & network)
 {
-    if (!comment.empty()) {
-        ofs << "CM_ \"" << comment << "\";" << endl;
+    if (!network.comment.empty()) {
+        ofs << "CM_ \"" << network.comment << "\";" << endl;
     }
 }
 
 /* Comments (CM) for Node (BU) */
-void File::writeCommentsNodes(std::ofstream & ofs)
+void File::writeCommentsNodes(std::ofstream & ofs, Network & network)
 {
-    for (auto node : nodes) {
+    for (auto node : network.nodes) {
         if (!node.second.comment.empty()) {
             ofs << "CM_ BU_ " << node.second.name << " \"" << node.second.comment << "\";" << endl;
         }
@@ -293,9 +293,9 @@ void File::writeCommentsNodes(std::ofstream & ofs)
 }
 
 /* Comments (CM) for Message (BO) */
-void File::writeCommentsMessages(std::ofstream & ofs)
+void File::writeCommentsMessages(std::ofstream & ofs, Network & network)
 {
-    for (auto message : messages) {
+    for (auto message : network.messages) {
         if (!message.second.comment.empty()) {
             ofs << "CM_ BO_ " << message.second.id << " \"" << message.second.comment << "\";" << endl;
         }
@@ -303,9 +303,9 @@ void File::writeCommentsMessages(std::ofstream & ofs)
 }
 
 /* Comments (CM) for Signal (SG) */
-void File::writeCommentsSignals(std::ofstream & ofs)
+void File::writeCommentsSignals(std::ofstream & ofs, Network & network)
 {
-    for (auto message : messages) {
+    for (auto message : network.messages) {
         for (auto signal : message.second.signals) {
             if (!signal.second.comment.empty()) {
                 ofs << "CM_ SG_ " << message.second.id << ' ' << signal.second.name << " \"" << signal.second.comment << "\";" << endl;
@@ -315,9 +315,9 @@ void File::writeCommentsSignals(std::ofstream & ofs)
 }
 
 /* Comments (CM) for Environment Variable (EV) */
-void File::writeCommentsEnvironmentVariables(std::ofstream & ofs)
+void File::writeCommentsEnvironmentVariables(std::ofstream & ofs, Network & network)
 {
-    for (auto environmentVariable : environmentVariables) {
+    for (auto environmentVariable : network.environmentVariables) {
         if (!environmentVariable.second.comment.empty()) {
             ofs << "CM_ EV_ " << environmentVariable.second.name << " \"" << environmentVariable.second.comment << "\";" << endl;
         }
@@ -325,9 +325,9 @@ void File::writeCommentsEnvironmentVariables(std::ofstream & ofs)
 }
 
 /* Attribute Definitions (BA_DEF) and Attribute Definitions at Relations (BA_DEF_REL) */
-void File::writeAttributeDefinitions(std::ofstream & ofs)
+void File::writeAttributeDefinitions(std::ofstream & ofs, Network & network)
 {
-    for (auto attributeDefinition : attributeDefinitions) {
+    for (auto attributeDefinition : network.attributeDefinitions) {
         /* Object Type */
         switch(attributeDefinition.second.objectType) {
         case AttributeDefinition::ObjectType::Network:
@@ -412,10 +412,10 @@ void File::writeAttributeDefinitions(std::ofstream & ofs)
 /* Sigtype Attr Lists (?, obsolete) */
 
 /* Attribute Defaults (BA_DEF_DEF) and Attribute Defaults at Relations (BA_DEF_DEF_REL) */
-void File::writeAttributeDefaults(std::ofstream & ofs)
+void File::writeAttributeDefaults(std::ofstream & ofs, Network & network)
 {
-    for (auto attribute : attributeDefaults) {
-        AttributeDefinition attributeDefinition = attributeDefinitions[attribute.second.name];
+    for (auto attribute : network.attributeDefaults) {
+        AttributeDefinition attributeDefinition = network.attributeDefinitions[attribute.second.name];
 
         /* Object Type */
         switch(attributeDefinition.objectType) {
@@ -459,9 +459,9 @@ void File::writeAttributeDefaults(std::ofstream & ofs)
 }
 
 /* Attribute Values (BA) for Network */
-void File::writeAttributeValuesNetworks(std::ofstream & ofs)
+void File::writeAttributeValuesNetworks(std::ofstream & ofs, Network & network)
 {
-    for (auto attribute : attributeValues) {
+    for (auto attribute : network.attributeValues) {
         /* Name */
         ofs << "BA_ \"" << attribute.second.name << "\" ";
 
@@ -488,9 +488,9 @@ void File::writeAttributeValuesNetworks(std::ofstream & ofs)
 }
 
 /* Attribute Values (BA) for Nodes (BU) */
-void File::writeAttributeValuesNodes(std::ofstream & ofs)
+void File::writeAttributeValuesNodes(std::ofstream & ofs, Network & network)
 {
-    for (auto node : nodes) {
+    for (auto node : network.nodes) {
         for (auto attribute : node.second.attributeValues) {
             /* Name */
             ofs << "BA_ \"" << attribute.second.name << "\" ";
@@ -522,9 +522,9 @@ void File::writeAttributeValuesNodes(std::ofstream & ofs)
 }
 
 /* Attribute Values (BA) for Messages (BO) */
-void File::writeAttributeValuesMessages(std::ofstream & ofs)
+void File::writeAttributeValuesMessages(std::ofstream & ofs, Network & network)
 {
-    for (auto message : messages) {
+    for (auto message : network.messages) {
         for (auto attribute : message.second.attributeValues) {
             /* Name */
             ofs << "BA_ \"" << attribute.second.name << "\" ";
@@ -556,9 +556,9 @@ void File::writeAttributeValuesMessages(std::ofstream & ofs)
 }
 
 /* Attribute Values (BA) for Signals (SG) */
-void File::writeAttributeValuesSignals(std::ofstream & ofs)
+void File::writeAttributeValuesSignals(std::ofstream & ofs, Network & network)
 {
-    for (auto message : messages) {
+    for (auto message : network.messages) {
         for (auto signal : message.second.signals) {
             for (auto attribute : signal.second.attributeValues) {
                 /* Name */
@@ -592,9 +592,9 @@ void File::writeAttributeValuesSignals(std::ofstream & ofs)
 }
 
 /* Attribute Values (BA) for Environment Variables (EV) */
-void File::writeAttributeValuesEnvironmentVariables(std::ofstream & ofs)
+void File::writeAttributeValuesEnvironmentVariables(std::ofstream & ofs, Network & network)
 {
-    for (auto environmentVariable : environmentVariables) {
+    for (auto environmentVariable : network.environmentVariables) {
         for (auto attribute : environmentVariable.second.attributeValues) {
             /* Name */
             ofs << "BA_ \"" << attribute.second.name << "\" ";
@@ -626,9 +626,9 @@ void File::writeAttributeValuesEnvironmentVariables(std::ofstream & ofs)
 }
 
 /* Attribute Values at Relations (BA_REL)  */
-void File::writeAttributeRelationValues(std::ofstream & ofs)
+void File::writeAttributeRelationValues(std::ofstream & ofs, Network & network)
 {
-    for (auto attributeRelation : attributeRelationValues) {
+    for (auto attributeRelation : network.attributeRelationValues) {
         /* Name */
         ofs << "BA_REL_ \"" << attributeRelation.name << "\" ";
 
@@ -689,9 +689,9 @@ void File::writeAttributeRelationValues(std::ofstream & ofs)
 }
 
 /* Value Descriptions (VAL) for Signals (SG) */
-void File::writeValueDescriptionsSignals(std::ofstream & ofs)
+void File::writeValueDescriptionsSignals(std::ofstream & ofs, Network & network)
 {
-    for (auto message : messages) {
+    for (auto message : network.messages) {
         for (auto signal : message.second.signals) {
             if (!signal.second.valueDescriptions.empty()) {
                 ofs << "VAL_ " << message.second.id << ' ' << signal.second.name;
@@ -706,9 +706,9 @@ void File::writeValueDescriptionsSignals(std::ofstream & ofs)
 }
 
 /* Value Descriptions (VAL) for Environment Variables (EV) */
-void File::writeValueDescriptionsEnvironmentVariables(std::ofstream & ofs)
+void File::writeValueDescriptionsEnvironmentVariables(std::ofstream & ofs, Network & network)
 {
-    for (auto environmentVariable : environmentVariables) {
+    for (auto environmentVariable : network.environmentVariables) {
         if (!environmentVariable.second.valueDescriptions.empty()) {
             ofs << "VAL_ " << environmentVariable.second.name;
             for (auto valueDescription : environmentVariable.second.valueDescriptions) {
@@ -729,9 +729,9 @@ void File::writeValueDescriptionsEnvironmentVariables(std::ofstream & ofs)
 /* Signal Type Refs (SGTYPE, obsolete) */
 
 /* Signal Groups (SIG_GROUP) */
-void File::writeSignalGroups(std::ofstream & ofs)
+void File::writeSignalGroups(std::ofstream & ofs, Network & network)
 {
-    for (auto message : messages) {
+    for (auto message : network.messages) {
         for (auto signalGroup : message.second.signalGroups) {
             ofs << "SIG_GROUP_ " << message.second.id << ' ' << signalGroup.second.name;
             ofs << ' ' << signalGroup.second.repetitions;
@@ -750,9 +750,9 @@ void File::writeSignalGroups(std::ofstream & ofs)
 }
 
 /* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
-void File::writeSignalExtendedValueTypes(std::ofstream & ofs)
+void File::writeSignalExtendedValueTypes(std::ofstream & ofs, Network & network)
 {
-    for (auto message : messages) {
+    for (auto message : network.messages) {
         for (auto signal : message.second.signals) {
             if (signal.second.extendedValueType  !=  Signal::ExtendedValueType::Undefined) {
                 ofs << "SIG_VALTYPE_ " << message.second.id << ' ' << signal.second.name;
@@ -764,9 +764,9 @@ void File::writeSignalExtendedValueTypes(std::ofstream & ofs)
 }
 
 /* Extended Multiplexors (SG_MUL_VAL) */
-void File::writeExtendedMultiplexors(std::ofstream & ofs)
+void File::writeExtendedMultiplexors(std::ofstream & ofs, Network & network)
 {
-    for (auto message : messages) {
+    for (auto message : network.messages) {
         for (auto signal : message.second.signals) {
             for (auto extendedMultiplexor : signal.second.extendedMultiplexors) {
                 /* Identifier, Name */
@@ -791,7 +791,7 @@ void File::writeExtendedMultiplexors(std::ofstream & ofs)
     }
 }
 
-Status File::save(const char * filename)
+Status File::save(Network & network, const char * filename)
 {
     std::ofstream ofs;
 
@@ -807,63 +807,63 @@ Status File::save(const char * filename)
     ofs.precision(16);
 
     /* Version (VERSION) */
-    writeVersion(ofs);
+    writeVersion(ofs, network);
 
     /* New Symbols (NS) */
-    writeNewSymbols(ofs);
+    writeNewSymbols(ofs, network);
 
     /* Bit Timing (BS) */
-    writeBitTiming(ofs);
+    writeBitTiming(ofs, network);
 
     /* Nodes (BU) */
-    writeNodes(ofs);
+    writeNodes(ofs, network);
 
     /* Value Tables (VAL_TABLE) */
-    writeValueTables(ofs);
+    writeValueTables(ofs, network);
 
     /* Messages (BO) */
-    writeMessages(ofs);
+    writeMessages(ofs, network);
 
     /* Message Transmitters (BO_TX_BU) */
-    writeMessageTransmitters(ofs);
+    writeMessageTransmitters(ofs, network);
 
     /* Environment Variables (EV) */
-    writeEnvironmentVariables(ofs);
+    writeEnvironmentVariables(ofs, network);
 
     /* Environment Variable Data (ENVVAR_DATA) */
-    writeEnvironmentVariableData(ofs);
+    writeEnvironmentVariableData(ofs, network);
 
     /* Signal Types (SGTYPE, obsolete) */
-    writeSignalTypes(ofs);
+    writeSignalTypes(ofs, network);
 
     /* Comments (CM) */
-    writeCommentsNetworks(ofs);
-    writeCommentsNodes(ofs);
-    writeCommentsMessages(ofs);
-    writeCommentsSignals(ofs);
-    writeCommentsEnvironmentVariables(ofs);
+    writeCommentsNetworks(ofs, network);
+    writeCommentsNodes(ofs, network);
+    writeCommentsMessages(ofs, network);
+    writeCommentsSignals(ofs, network);
+    writeCommentsEnvironmentVariables(ofs, network);
 
     /* Attribute Definitions (BA_DEF) and Attribute Definitions at Relations (BA_DEF_REL) */
-    writeAttributeDefinitions(ofs);
+    writeAttributeDefinitions(ofs, network);
 
     /* Sigtype Attr Lists (?, obsolete) */
 
     /* Attribute Defaults (BA_DEF_DEF) and Attribute Defaults at Relations (BA_DEF_DEF_REL) */
-    writeAttributeDefaults(ofs);
+    writeAttributeDefaults(ofs, network);
 
     /* Attribute Values (BA) */
-    writeAttributeValuesNetworks(ofs);
-    writeAttributeValuesNodes(ofs);
-    writeAttributeValuesMessages(ofs);
-    writeAttributeValuesSignals(ofs);
-    writeAttributeValuesEnvironmentVariables(ofs);
+    writeAttributeValuesNetworks(ofs, network);
+    writeAttributeValuesNodes(ofs, network);
+    writeAttributeValuesMessages(ofs, network);
+    writeAttributeValuesSignals(ofs, network);
+    writeAttributeValuesEnvironmentVariables(ofs, network);
 
     /* Attribute Values at Relations (BA_REL) */
-    writeAttributeRelationValues(ofs);
+    writeAttributeRelationValues(ofs, network);
 
     /* Value Descriptions (VAL) */
-    writeValueDescriptionsSignals(ofs);
-    writeValueDescriptionsEnvironmentVariables(ofs);
+    writeValueDescriptionsSignals(ofs, network);
+    writeValueDescriptionsEnvironmentVariables(ofs, network);
 
     /* Category Definitions (CAT_DEF, obsolete) */
 
@@ -874,13 +874,13 @@ Status File::save(const char * filename)
     /* Signal Type Refs (SGTYPE, obsolete) */
 
     /* Signal Groups (SIG_GROUP) */
-    writeSignalGroups(ofs);
+    writeSignalGroups(ofs, network);
 
     /* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
-    writeSignalExtendedValueTypes(ofs);
+    writeSignalExtendedValueTypes(ofs, network);
 
     /* Extended Multiplexors (SG_MUL_VAL) */
-    writeExtendedMultiplexors(ofs);
+    writeExtendedMultiplexors(ofs, network);
 
     /* close stream */
     ofs << endl;
@@ -889,9 +889,9 @@ Status File::save(const char * filename)
     return Status::Ok;
 }
 
-Status File::save(std::string & filename)
+Status File::save(Network & network, std::string & filename)
 {
-    return save(filename.c_str());
+    return save(network, filename.c_str());
 }
 
 }

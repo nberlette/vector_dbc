@@ -23,22 +23,8 @@
 
 #include "platform.h"
 
-#include <list>
-#include <map>
-#include <stack>
-#include <string>
-
-#include "Attribute.h"
-#include "AttributeDefinition.h"
-#include "AttributeRelation.h"
-#include "BitTiming.h"
-#include "EnvironmentVariable.h"
-#include "Message.h"
-#include "Node.h"
-#include "SignalType.h"
+#include "Network.h"
 #include "Status.h"
-#include "ValueDescriptions.h"
-#include "ValueTable.h"
 
 #include "vector_dbc_export.h"
 
@@ -55,44 +41,48 @@ public:
 
     /**
      * @brief Load database file
+     * @param[out] network Network
      * @param[in] filename File name
      * @return Status code
      *
      * Loads database file.
      */
-    Status load(const char * filename);
+    Status load(Network & network, const char * filename);
 
     /**
      * @brief Load database file
+     * @param[out] network Network
      * @param[in] filename File Name
      * @return Status code
      *
      * Loads database file.
      */
-    Status load(std::string & filename);
+    Status load(Network & network, std::string & filename);
 
     /**
      * @brief Save database file
+     * @param[in] network Network
      * @param[in] filename File Name
      * @return Status code
      *
      * Saves database file.
      */
-    Status save(const char * filename);
+    Status save(Network & network, const char * filename);
 
     /**
      * @brief Save database file
+     * @param[in] network Network
      * @param[in] filename File Name
      * @return Status code
      *
      * Saves database file.
      */
-    Status save(std::string & filename);
+    Status save(Network & network, std::string & filename);
 
     /**
      * Progress Callback function type
      */
-    typedef void (*ProgressCallback)(float numerator, float denominator);
+    typedef void (*ProgressCallback)(Network & network, float numerator, float denominator);
 
     /**
      * @brief Set Progress Callback function
@@ -106,7 +96,7 @@ public:
     /**
      * Status Callback function type
      */
-    typedef void (*StatusCallback)(Status status);
+    typedef void (*StatusCallback)(Network & network, Status status);
 
     /**
      * @brief Set Status Callback function
@@ -116,89 +106,6 @@ public:
      * Even if the database loads fine, it might step over some warnings that can only be seen here.
      */
     void setStatusCallback(StatusCallback function);
-
-    /** Version (VERSION) */
-    std::string version;
-
-    /** New Symbols (NS) */
-    std::list<std::string> newSymbols;
-
-    /** Bit Timing (BS) */
-    BitTiming bitTiming;
-
-    /** Nodes (BU) */
-    std::map<std::string, Node> nodes;
-
-    /** Value Tables (VAL_TABLE) */
-    std::map<std::string, ValueTable> valueTables;
-
-    /** Messages (BO) */
-    std::map<unsigned int, Message> messages;
-
-    /* Message Transmitters (BO_TX_BU) */
-    // moved to Message (BO)
-
-    /** Environment Variables (EV) */
-    std::map<std::string, EnvironmentVariable> environmentVariables;
-
-    /* Environment Variables Data (ENVVAR_DATA) */
-    // moved to Environment Variables (EV)
-
-    /** Signal Types (SGTYPE, obsolete) */
-    std::map<std::string, SignalType> signalTypes;
-
-    /** Comments (CM) */
-    std::string comment; // for network
-    // moved to Node (BU) for nodes
-    // moved to Message (BO) for messages
-    // moved to Signal (SG) for signals
-    // moved to Environment Variable (EV) for environment variables
-
-    /**
-     * Attribute Definitions (BA_DEF) and
-     * Attribute Definitions for Relations (BA_DEF_REL)
-     */
-    std::map<std::string, AttributeDefinition> attributeDefinitions;
-
-    /* Sigtype Attr List (?, obsolete) */
-
-    /**
-     * Attribute Defaults (BA_DEF_DEF) and
-     * Attribute Defaults for Relations (BA_DEF_DEF_REL)
-     */
-    std::map<std::string, Attribute> attributeDefaults;
-
-    /** Attribute Values (BA) */
-    std::map<std::string, Attribute> attributeValues; // for network
-    // moved to Node (BU) for nodes
-    // moved to Message (BO) for messages
-    // moved to Signal (SG) for signals
-    // moved to Environment Variable (EV) for environment variables
-
-    /** Attribute Values on Relations (BA_REF) */
-    std::set<AttributeRelation> attributeRelationValues;
-
-    /* Value Descriptions (VAL) */
-    // moved to Signals (BO) for signals
-    // moved to EnvironmentVariable (EV) for environment variables
-
-    /* Category Definitions (CAT_DEF, obsolete) */
-
-    /* Categories (CAT, obsolete) */
-
-    /* Filters (FILTER, obsolete) */
-
-    /* Signal Type Refs (SGTYPE, obsolete) */
-    // moved to Signal (SG)
-
-    /* Signal Groups (SIG_GROUP) */
-    // moved to Message (BO)
-
-    /* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
-    // moved to Signal (SG)
-
-    /* Extended Multiplexors (SG_MUL_VAL) */
-    // moved to Signal (SG)
 
 private:
     /** Progress Callback function */
@@ -214,182 +121,182 @@ private:
     double stod(const std::string & str);
 
     /** Read Version (VERSION) */
-    void readVersion(std::string & line);
+    void readVersion(Network & network, std::string & line);
 
     /** Write Version (VERSION) */
-    void writeVersion(std::ofstream & ofs);
+    void writeVersion(std::ofstream & ofs, Network & network);
 
     /** Read New Symbols (NS) */
-    void readNewSymbols(std::ifstream & ifs, std::string & line);
+    void readNewSymbols(Network & network, std::ifstream & ifs, std::string & line);
 
     /** Write New Symbols (NS) */
-    void writeNewSymbols(std::ofstream & ofs);
+    void writeNewSymbols(std::ofstream & ofs, Network & network);
 
     /** Read Bit Timing (BS) */
-    void readBitTiming(std::string & line);
+    void readBitTiming(Network & network, std::string & line);
 
     /** Write Bit Timing (BS) */
-    void writeBitTiming(std::ofstream & ofs);
+    void writeBitTiming(std::ofstream & ofs, Network & network);
 
     /** Read Nodes (BU) */
-    void readNodes(std::string & line);
+    void readNodes(Network & network, std::string & line);
 
     /** Write Nodes (BU) */
-    void writeNodes(std::ofstream & ofs);
+    void writeNodes(std::ofstream & ofs, Network & network);
 
     /** Read Value Table (VAL_TABLE) */
-    void readValueTable(std::string & line);
+    void readValueTable(Network & network, std::string & line);
 
     /** Write Value Tables (VAL_TABLE) */
-    void writeValueTables(std::ofstream & ofs);
+    void writeValueTables(std::ofstream & ofs, Network & network);
 
     /** Read Signal (SG) */
-    void readSignal(Message & message, std::string & line);
+    void readSignal(Network & network, Message & message, std::string & line);
 
-    /* Write Signals (SG) */
+    /** Write Signals (SG) */
     void writeSignals(std::ofstream & ofs, Message & message);
 
     /** Read Message (BO) */
-    void readMessage(std::ifstream & ifs, std::string & line);
+    void readMessage(Network & network, std::ifstream & ifs, std::string & line);
 
     /** Write Messages (BO) */
-    void writeMessages(std::ofstream & ofs);
+    void writeMessages(std::ofstream & ofs, Network & network);
 
     /** Read Message Transmitter (BO_TX_BU) */
-    void readMessageTransmitter(std::string & line);
+    void readMessageTransmitter(Network & network, std::string & line);
 
     /** Write Message Transmitters (BO_TX_BU) */
-    void writeMessageTransmitters(std::ofstream & ofs);
+    void writeMessageTransmitters(std::ofstream & ofs, Network & network);
 
     /** Read Environment Variable (EV) */
-    void readEnvironmentVariable(std::string & line);
+    void readEnvironmentVariable(Network & network, std::string & line);
 
     /** Write Environment Variables (EV) */
-    void writeEnvironmentVariables(std::ofstream & ofs);
+    void writeEnvironmentVariables(std::ofstream & ofs, Network & network);
 
     /** Read Environment Variable Data (ENVVAR_DATA) */
-    void readEnvironmentVariableData(std::string & line);
+    void readEnvironmentVariableData(Network & network, std::string & line);
 
     /** Write Environment Variable Data (ENVVAR_DATA) */
-    void writeEnvironmentVariableData(std::ofstream & ofs);
+    void writeEnvironmentVariableData(std::ofstream & ofs, Network & network);
 
     /** Read Signal Type (SGTYPE, obsolete) */
-    void readSignalType(std::string & line);
+    void readSignalType(Network & network, std::string & line);
 
     /** Write Signal Types (SGTYPE, obsolete) */
-    void writeSignalTypes(std::ofstream & ofs);
+    void writeSignalTypes(std::ofstream & ofs, Network & network);
 
     /** Read Comment (CM) for Network */
-    bool readCommentNetwork(std::stack<std::size_t> & lineBreaks, std::string & line);
+    bool readCommentNetwork(Network & network, std::stack<std::size_t> & lineBreaks, std::string & line);
 
     /** Read Comment (CM) for Node (BU) */
-    bool readCommentNode(std::stack<std::size_t> & lineBreaks, std::string & line);
+    bool readCommentNode(Network & network, std::stack<std::size_t> & lineBreaks, std::string & line);
 
     /** Read Comment (CM) for Message (BO) */
-    bool readCommentMessage(std::stack<std::size_t> & lineBreaks, std::string & line);
+    bool readCommentMessage(Network & network, std::stack<std::size_t> & lineBreaks, std::string & line);
 
     /** Read Comment (CM) for Signal (SG) */
-    bool readCommentSignal(std::stack<std::size_t> & lineBreaks, std::string & line);
+    bool readCommentSignal(Network & network, std::stack<std::size_t> & lineBreaks, std::string & line);
 
     /** Read Comment (CM) for Environment Variable (EV) */
-    bool readCommentEnvironmentVariable(std::stack<std::size_t> & lineBreaks, std::string & line);
+    bool readCommentEnvironmentVariable(Network & network, std::stack<std::size_t> & lineBreaks, std::string & line);
 
     /** Read Comment (CM) */
-    void readComment(std::ifstream & ifs, std::string & line);
+    void readComment(Network & network, std::ifstream & ifs, std::string & line);
 
     /** Write Comments (CM) for Networks */
-    void writeCommentsNetworks(std::ofstream & ofs);
+    void writeCommentsNetworks(std::ofstream & ofs, Network & network);
 
     /** Write Comments (CM) for Node (BU) */
-    void writeCommentsNodes(std::ofstream & ofs);
+    void writeCommentsNodes(std::ofstream & ofs, Network & network);
 
     /** Write Comments (CM) for Message (BO) */
-    void writeCommentsMessages(std::ofstream & ofs);
+    void writeCommentsMessages(std::ofstream & ofs, Network & network);
 
     /** Write Comments (CM) for Signal (SG) */
-    void writeCommentsSignals(std::ofstream & ofs);
+    void writeCommentsSignals(std::ofstream & ofs, Network & network);
 
     /** Write Comments (CM) for Environment Variable (EV) */
-    void writeCommentsEnvironmentVariables(std::ofstream & ofs);
+    void writeCommentsEnvironmentVariables(std::ofstream & ofs, Network & network);
 
     /** Write Comments (CM) */
-    void writeComments(std::ofstream & ofs);
+    void writeComments(std::ofstream & ofs, Network & network);
 
     /** Read Attribute Definition (BA_DEF) */
-    void readAttributeDefinition(std::string & line);
+    void readAttributeDefinition(Network & network, std::string & line);
 
     /** Read Attribute Definition at Relation (BA_DEF_REL) */
-    void readAttributeDefinitionRelation(std::string & line);
+    void readAttributeDefinitionRelation(Network & network, std::string & line);
 
     /** Write Attribute Definitions (BA_DEF) and Attribute Definitions at Relations (BA_DEF_REL) */
-    void writeAttributeDefinitions(std::ofstream & ofs);
+    void writeAttributeDefinitions(std::ofstream & ofs, Network & network);
 
     /* Read Sigtype Attr List (?, obsolete) */
 
     /* Write Sigtype Attr Lists (?, obsolete) */
 
     /** Read Attribute Default (BA_DEF_DEF) */
-    void readAttributeDefault(std::string & line);
+    void readAttributeDefault(Network & network, std::string & line);
 
     /** Read Attribute Default at Relation (BA_DEF_DEF_REL) */
-    void readAttributeDefaultRelation(std::string & line);
+    void readAttributeDefaultRelation(Network & network, std::string & line);
 
     /** Write Attribute Defaults (BA_DEF_DEF) and Attribute Defaults at Relations (BA_DEF_DEF_REL) */
-    void writeAttributeDefaults(std::ofstream & ofs);
+    void writeAttributeDefaults(std::ofstream & ofs, Network & network);
 
     /** Read Attribute Value (BA) for Network */
-    bool readAttributeValueNetwork(std::string & line);
+    bool readAttributeValueNetwork(Network & network, std::string & line);
 
     /** Read Attribute Value (BA) for Node (BU) */
-    bool readAttributeValueNode(std::string & line);
+    bool readAttributeValueNode(Network & network, std::string & line);
 
     /** Read Attribute Value (BA) for Message (BO) */
-    bool readAttributeValueMessage(std::string & line);
+    bool readAttributeValueMessage(Network & network, std::string & line);
 
     /** Read Attribute Value (BA) for Signal (SG) */
-    bool readAttributeValueSignal(std::string & line);
+    bool readAttributeValueSignal(Network & network, std::string & line);
 
     /** Read Attribute Value (BA) for Environment Variable (EV) */
-    bool readAttributeValueEnvironmentVariable(std::string & line);
+    bool readAttributeValueEnvironmentVariable(Network & network, std::string & line);
 
     /** Read Attribute Value (BA) */
-    void readAttributeValue(std::string & line);
+    void readAttributeValue(Network & network, std::string & line);
 
     /** Write Attribute Values (BA) for Networks */
-    void writeAttributeValuesNetworks(std::ofstream & ofs);
+    void writeAttributeValuesNetworks(std::ofstream & ofs, Network & network);
 
     /** Write Attribute Values (BA) for Nodes (BU) */
-    void writeAttributeValuesNodes(std::ofstream & ofs);
+    void writeAttributeValuesNodes(std::ofstream & ofs, Network & network);
 
     /** Write Attribute Values (BA) for Messages (BO) */
-    void writeAttributeValuesMessages(std::ofstream & ofs);
+    void writeAttributeValuesMessages(std::ofstream & ofs, Network & network);
 
     /** Write Attribute Values (BA) for Signals (SG) */
-    void writeAttributeValuesSignals(std::ofstream & ofs);
+    void writeAttributeValuesSignals(std::ofstream & ofs, Network & network);
 
     /** Write Attribute Values (BA) for Environment Variables (EV) */
-    void writeAttributeValuesEnvironmentVariables(std::ofstream & ofs);
+    void writeAttributeValuesEnvironmentVariables(std::ofstream & ofs, Network & network);
 
     /** Read Attribute Value at Relation (BA_REL) */
-    void readAttributeRelationValue(std::string & line);
+    void readAttributeRelationValue(Network & network, std::string & line);
 
     /** Write Attribute Values at Relations (BA_REL) */
-    void writeAttributeRelationValues(std::ofstream & ofs);
+    void writeAttributeRelationValues(std::ofstream & ofs, Network & network);
 
     /* Read Value Description (VAL) for Signal (SG) */
-    bool readValueDescriptionSignal(std::string & line);
+    bool readValueDescriptionSignal(Network & network, std::string & line);
 
     /* Read Value Description (VAL) for Environment Variable (EV) */
-    bool readValueDescriptionEnvironmentVariable(std::string & line);
+    bool readValueDescriptionEnvironmentVariable(Network & network, std::string & line);
 
     /** Read Value Description (VAL) */
-    void readValueDescription(std::string & line);
+    void readValueDescription(Network & network, std::string & line);
 
     /* Write Value Descriptions (VAL) for Signals (SG) */
-    void writeValueDescriptionsSignals(std::ofstream & ofs);
+    void writeValueDescriptionsSignals(std::ofstream & ofs, Network & network);
 
     /* Write Value Descriptions (VAL) for Environment Variables (EV) */
-    void writeValueDescriptionsEnvironmentVariables(std::ofstream & ofs);
+    void writeValueDescriptionsEnvironmentVariables(std::ofstream & ofs, Network & network);
 
     /* Read Category Definition (?, obsolete) */
 
@@ -410,22 +317,22 @@ private:
     // see above writeSignalTypes
 
     /** Read Signal Group (SIG_GROUP) */
-    void readSignalGroup(std::string & line);
+    void readSignalGroup(Network & network, std::string & line);
 
     /** Write Signal Groups (SIG_GROUP) */
-    void writeSignalGroups(std::ofstream & ofs);
+    void writeSignalGroups(std::ofstream & ofs, Network & network);
 
     /** Read Signal Extended Value Type (SIG_VALTYPE, obsolete) */
-    void readSignalExtendedValueType(std::string & line);
+    void readSignalExtendedValueType(Network & network, std::string & line);
 
     /** Write Signal Extended Value Types (SIG_VALTYPE, obsolete) */
-    void writeSignalExtendedValueTypes(std::ofstream & ofs);
+    void writeSignalExtendedValueTypes(std::ofstream & ofs, Network & network);
 
     /** Read Extended Multiplexor (SG_MUL_VAL) */
-    void readExtendedMultiplexor(std::string & line);
+    void readExtendedMultiplexor(Network & network, std::string & line);
 
     /** Write Extended Multiplexors (SG_MUL_VAL) */
-    void writeExtendedMultiplexors(std::ofstream & ofs);
+    void writeExtendedMultiplexors(std::ofstream & ofs, Network & network);
 };
 
 }

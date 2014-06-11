@@ -19,26 +19,27 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "File.h"
+#include "Network.h"
 
 namespace Vector {
 namespace DBC {
 
-File::File() :
-    progressCallback(nullptr),
-    statusCallback(nullptr)
+Network::Network() :
+    version(),
+    newSymbols(),
+    bitTiming(),
+    nodes(),
+    valueTables(),
+    messages(),
+    environmentVariables(),
+    signalTypes(),
+    comment(),
+    attributeDefinitions(),
+    attributeDefaults(),
+    attributeValues(),
+    attributeRelationValues()
 {
     /* nothing to do here */
-}
-
-void File::setProgressCallback(ProgressCallback function)
-{
-    progressCallback = function;
-}
-
-void File::setStatusCallback(StatusCallback function)
-{
-    statusCallback = function;
 }
 
 }

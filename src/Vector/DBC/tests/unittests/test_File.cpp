@@ -12,7 +12,7 @@
 
 #include "Vector/DBC.h"
 
-void progressCallback(float numerator, float denominator)
+void progressCallback(Vector::DBC::Network & /* network */, float numerator, float denominator)
 {
     std::cout << "Progress: filepos=" << numerator << " percent="<< std::fixed << 100 * (numerator / denominator) << '%' << std::endl;
 }
@@ -21,7 +21,7 @@ void progressCallback(float numerator, float denominator)
 #define WARNED(code) ((int)(code) & 0x40000000)
 #define FAILED(code) ((int)(code) < 0)
 
-void statusCallback(Vector::DBC::Status status)
+void statusCallback(Vector::DBC::Network & /*network*/, Vector::DBC::Status status)
 {
     if (FAILED(status)) {
         std::cerr << "Error: 0x" << std::hex << (int) status << std::endl;
@@ -36,15 +36,21 @@ void statusCallback(Vector::DBC::Status status)
 
 BOOST_AUTO_TEST_CASE(File)
 {
-    Vector::DBC::File file;
-    file.setProgressCallback(&progressCallback);
-    file.setStatusCallback(&statusCallback);
+    Vector::DBC::Network network;
 
     /* load database file */
     boost::filesystem::path infile(CMAKE_CURRENT_SOURCE_DIR "/data/Database.dbc");
-    std::string infilename = infile.string();
-    std::cout << "Input file: " << infilename << std::endl;
-    BOOST_REQUIRE(file.load(infilename) == Vector::DBC::Status::Ok);
+
+    /* put in own namespace to see that File constructs and destructs correctly */
+    {
+        Vector::DBC::File file;
+        file.setProgressCallback(&progressCallback);
+        file.setStatusCallback(&statusCallback);
+
+        std::string infilename = infile.string();
+        std::cout << "Input file: " << infilename << std::endl;
+        BOOST_REQUIRE(file.load(network, infilename) == Vector::DBC::Status::Ok);
+    }
 
     /* create output directory */
     boost::filesystem::path outdir(CMAKE_CURRENT_BINARY_DIR "/data/");
@@ -55,9 +61,14 @@ BOOST_AUTO_TEST_CASE(File)
 
     /* save database file */
     boost::filesystem::path outfile(CMAKE_CURRENT_BINARY_DIR "/data/Database.dbc");
-    std::string outfilename = outfile.string();
-    std::cout << "Output file: " << outfilename << std::endl;
-    BOOST_REQUIRE(file.save(outfilename) == Vector::DBC::Status::Ok);
+
+    /* put in own namespace to see that File constructs and destructs correctly */
+    {
+        Vector::DBC::File file;
+        std::string outfilename = outfile.string();
+        std::cout << "Output file: " << outfilename << std::endl;
+        BOOST_REQUIRE(file.save(network, outfilename) == Vector::DBC::Status::Ok);
+    }
 
     /* loaded and saved file should be equivalent */
     std::ifstream ifs1(infile.c_str());

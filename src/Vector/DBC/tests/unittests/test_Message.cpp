@@ -18,7 +18,7 @@
 #define WARNED(code) ((int)(code) & 0x40000000)
 #define FAILED(code) ((int)(code) < 0)
 
-void statusCallback(Vector::DBC::Status status)
+void statusCallback(Vector::DBC::Network & /* network */, Vector::DBC::Status status)
 {
     if (FAILED(status)) {
         std::cerr << "Error: 0x" << std::hex << (int) status << std::endl;
@@ -33,6 +33,7 @@ void statusCallback(Vector::DBC::Status status)
 
 BOOST_AUTO_TEST_CASE(File)
 {
+    Vector::DBC::Network network;
     Vector::DBC::File file;
     file.setStatusCallback(&statusCallback);
 
@@ -40,7 +41,7 @@ BOOST_AUTO_TEST_CASE(File)
     boost::filesystem::path infile(CMAKE_CURRENT_SOURCE_DIR "/data/Database.dbc");
     std::string infilename = infile.string();
     std::cout << "Input file: " << infilename << std::endl;
-    BOOST_REQUIRE(file.load(infilename) == Vector::DBC::Status::Ok);
+    BOOST_REQUIRE(file.load(network, infilename) == Vector::DBC::Status::Ok);
 
     /* define message data */
     std::vector<uint8_t> messageData;
@@ -54,7 +55,7 @@ BOOST_AUTO_TEST_CASE(File)
     messageData.push_back(0x00);
 
     /* extract signal */
-    Vector::DBC::Message & message = file.messages[0xC0000000];
+    Vector::DBC::Message & message = network.messages[0xC0000000];
     Vector::DBC::Signal & signal = message.signals["Signal_8_Motorola_Unsigned"];
     uint64_t rawValue = message.extractSignal(messageData, signal);
     BOOST_CHECK_EQUAL(rawValue, 0x00000000);

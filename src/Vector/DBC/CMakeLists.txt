@@ -19,6 +19,7 @@ set(source_files
   FileLoad.cpp
   FileSave.cpp
   Message.cpp
+  Network.cpp
   Node.cpp
   Signal.cpp
   SignalGroup.cpp
@@ -37,6 +38,7 @@ set(header_files
   ExtendedMultiplexor.h
   File.h
   Message.h
+  Network.h
   Node.h
   platform.h
   Signal.h

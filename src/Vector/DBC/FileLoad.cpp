@@ -111,23 +111,23 @@ double File::stod(const std::string & str)
 }
 
 /* Version (VERSION) */
-void File::readVersion(std::string & line)
+void File::readVersion(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "VERSION" REGEX_SPACE REGEX_STRING REGEX_EOL);
     if (regex_search(line, m, re)) {
-        version = m[1];
+        network.version = m[1];
         return;
     }
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedVersion);
+        statusCallback(network, Status::MalformedVersion);
     }
 }
 
 /* New Symbols (NS) */
-void File::readNewSymbols(std::ifstream & ifs, std::string & line)
+void File::readNewSymbols(Network & network, std::ifstream & ifs, std::string & line)
 {
     while(ifs.good()) {
         std::getline(ifs, line);
@@ -138,13 +138,13 @@ void File::readNewSymbols(std::ifstream & ifs, std::string & line)
         smatch m;
         regex re(REGEX_SOL REGEX_NAME REGEX_EOL);
         if (regex_search(line, m, re)) {
-            newSymbols.push_back(m[1]);
+            network.newSymbols.push_back(m[1]);
         }
     }
 }
 
 /* Bit Timing (BS) */
-void File::readBitTiming(std::string & line)
+void File::readBitTiming(Network & network, std::string & line)
 {
     if (line == "BS_:") {
         // all ok
@@ -153,21 +153,21 @@ void File::readBitTiming(std::string & line)
         smatch m;
         regex re(REGEX_SOL "BS_:" REGEX_SPACE REGEX_UINT ":" REGEX_UINT ":" REGEX_UINT REGEX_EOL);
         if (regex_search(line, m, re)) {
-            bitTiming.baudrate = stoul(m[1]);
-            bitTiming.btr1 = stoul(m[2]);
-            bitTiming.btr2 = stoul(m[2]);
+            network.bitTiming.baudrate = stoul(m[1]);
+            network.bitTiming.btr1 = stoul(m[2]);
+            network.bitTiming.btr2 = stoul(m[2]);
             return;
         }
     }
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedBitTiming);
+        statusCallback(network, Status::MalformedBitTiming);
     }
 }
 
 /* Nodes (BU) */
-void File::readNodes(std::string & line)
+void File::readNodes(Network & network, std::string & line)
 {
     std::istringstream iss(line);
     std::string node;
@@ -177,18 +177,18 @@ void File::readNodes(std::string & line)
 
     while (iss.good()) {
         iss >> node;
-        nodes[node].name = node;
+        network.nodes[node].name = node;
     }
 }
 
 /* Value Tables (VAL_TABLE) */
-void File::readValueTable(std::string & line)
+void File::readValueTable(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "VAL_TABLE_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string valueTableName = m[1];
-        ValueTable & valueTable = valueTables[valueTableName];
+        ValueTable & valueTable = network.valueTables[valueTableName];
 
         /* Name */
         valueTable.name = valueTableName;
@@ -216,12 +216,12 @@ void File::readValueTable(std::string & line)
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedValueTable);
+        statusCallback(network, Status::MalformedValueTable);
     }
 }
 
 /* Signals (SG) */
-void File::readSignal(Message & message, std::string & line)
+void File::readSignal(Network & network, Message & message, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "SG_" REGEX_SPACE REGEX_NAME "[[:space:]]*((m[[:digit:]]+)|M)?[[:space:]]*:[[:space:]]*" REGEX_UINT "\\|" REGEX_UINT "@([01])([+-])" REGEX_SPACE "\\(" REGEX_DOUBLE "," REGEX_DOUBLE "\\)" REGEX_SPACE "\\[" REGEX_DOUBLE "\\|" REGEX_DOUBLE "\\]" REGEX_SPACE REGEX_STRING REGEX_SPACE REGEX_TO_END REGEX_EOL);
@@ -300,18 +300,18 @@ void File::readSignal(Message & message, std::string & line)
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedSignal);
+        statusCallback(network, Status::MalformedSignal);
     }
 }
 
 /* Messages (BO) */
-void File::readMessage(std::ifstream & ifs, std::string & line)
+void File::readMessage(Network & network, std::ifstream & ifs, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BO_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_DELIM(":") REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_EOL);
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
-        Message & message = messages[messageId];
+        Message & message = network.messages[messageId];
 
         /* Identifier */
         message.id = messageId;
@@ -335,25 +335,25 @@ void File::readMessage(std::ifstream & ifs, std::string & line)
             if (line.empty())
                 return;
 
-            readSignal(message, line);
+            readSignal(network, message, line);
         }
         return;
     }
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedMessage);
+        statusCallback(network, Status::MalformedMessage);
     }
 }
 
 /* Message Transmitters (BO_TX_BU) */
-void File::readMessageTransmitter(std::string & line)
+void File::readMessageTransmitter(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BO_TX_BU_" REGEX_SPACE REGEX_UINT REGEX_DELIM(":") REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
-        Message & message = messages[messageId];
+        Message & message = network.messages[messageId];
 
         /* Message Identifier */
         message.id = messageId;
@@ -370,18 +370,18 @@ void File::readMessageTransmitter(std::string & line)
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedMessageTransmitter);
+        statusCallback(network, Status::MalformedMessageTransmitter);
     }
 }
 
 /* Environment Variables (EV) */
-void File::readEnvironmentVariable(std::string & line)
+void File::readEnvironmentVariable(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "EV_" REGEX_SPACE REGEX_NAME REGEX_DELIM(":") "([01])" REGEX_SPACE "\\[" REGEX_DOUBLE "\\|" REGEX_DOUBLE "\\]" REGEX_SPACE REGEX_STRING REGEX_SPACE REGEX_DOUBLE REGEX_SPACE REGEX_UINT REGEX_SPACE "DUMMY_NODE_VECTOR([[:xdigit:]]+)" REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string envVarName = m[1];
-        EnvironmentVariable & environmentVariable = environmentVariables[envVarName];
+        EnvironmentVariable & environmentVariable = network.environmentVariables[envVarName];
 
         /* Name */
         environmentVariable.name = envVarName;
@@ -431,7 +431,7 @@ void File::readEnvironmentVariable(std::string & line)
             break;
         default:
             if (statusCallback != nullptr) {
-                statusCallback(Status::MalformedEnvironmentVariable);
+                statusCallback(network, Status::MalformedEnvironmentVariable);
             }
         }
 
@@ -449,18 +449,18 @@ void File::readEnvironmentVariable(std::string & line)
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedEnvironmentVariable);
+        statusCallback(network, Status::MalformedEnvironmentVariable);
     }
 }
 
 /* Environment Variable Data (ENVVAR_DATA) */
-void File::readEnvironmentVariableData(std::string & line)
+void File::readEnvironmentVariableData(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "ENVVAR_DATA_" REGEX_SPACE REGEX_NAME REGEX_DELIM(":") REGEX_UINT REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string envVarName = m[1];
-        EnvironmentVariable & environmentVariable = environmentVariables[envVarName];
+        EnvironmentVariable & environmentVariable = network.environmentVariables[envVarName];
 
         /* Name */
         environmentVariable.name = envVarName;
@@ -475,19 +475,19 @@ void File::readEnvironmentVariableData(std::string & line)
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedEnvironmentVariableData);
+        statusCallback(network, Status::MalformedEnvironmentVariableData);
     }
 }
 
 /* Signal Types (SGTYPE, obsolete) */
-void File::readSignalType(std::string & line)
+void File::readSignalType(Network & network, std::string & line)
 {
     // Signal Type
     smatch m;
     regex re(REGEX_SOL "SGTYPE_" REGEX_SPACE REGEX_NAME REGEX_DELIM(":") REGEX_UINT "@([01])([+-])" REGEX_SPACE "\\(" REGEX_DOUBLE "," REGEX_DOUBLE "\\)" REGEX_SPACE "\\[" REGEX_DOUBLE "\\|" REGEX_DOUBLE "\\]" REGEX_SPACE REGEX_STRING REGEX_SPACE REGEX_DOUBLE REGEX_DELIM(",") REGEX_NAME REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string signalTypeName = m[1];
-        SignalType & signalType = signalTypes[signalTypeName];
+        SignalType & signalType = network.signalTypes[signalTypeName];
 
         /* Name */
         signalType.name = signalTypeName;
@@ -543,18 +543,18 @@ void File::readSignalType(std::string & line)
         unsigned int messageId = stoul(mSTR[1]);
         std::string signalName = mSTR[2];
         std::string signalTypeName = mSTR[3];
-        messages[messageId].signals[signalName].type = signalTypeName;
+        network.messages[messageId].signals[signalName].type = signalTypeName;
         return;
     }
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedSignalType);
+        statusCallback(network, Status::MalformedSignalType);
     }
 }
 
 /* Comments (CM) for Networks */
-bool File::readCommentNetwork(std::stack<std::size_t> & lineBreaks, std::string & line)
+bool File::readCommentNetwork(Network & network, std::stack<std::size_t> & lineBreaks, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "CM_" REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
@@ -572,7 +572,7 @@ bool File::readCommentNetwork(std::stack<std::size_t> & lineBreaks, std::string 
             comment2[p+1] = '"';
         }
 
-        comment = comment2;
+        network.comment = comment2;
         return true;
     }
 
@@ -581,7 +581,7 @@ bool File::readCommentNetwork(std::stack<std::size_t> & lineBreaks, std::string 
 }
 
 /* Comments (CM) for Nodes (BU) */
-bool File::readCommentNode(std::stack<std::size_t> & lineBreaks, std::string & line)
+bool File::readCommentNode(Network & network, std::stack<std::size_t> & lineBreaks, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "CM_" REGEX_SPACE "BU_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
@@ -600,7 +600,7 @@ bool File::readCommentNode(std::stack<std::size_t> & lineBreaks, std::string & l
             comment[p+1] = '"';
         }
 
-        nodes[nodeName].comment = comment;
+        network.nodes[nodeName].comment = comment;
         return true;
     }
 
@@ -609,7 +609,7 @@ bool File::readCommentNode(std::stack<std::size_t> & lineBreaks, std::string & l
 }
 
 /* Comments (CM) for Messages (BO) */
-bool File::readCommentMessage(std::stack<std::size_t> & lineBreaks, std::string & line)
+bool File::readCommentMessage(Network & network, std::stack<std::size_t> & lineBreaks, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "CM_" REGEX_SPACE "BO_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
@@ -628,7 +628,7 @@ bool File::readCommentMessage(std::stack<std::size_t> & lineBreaks, std::string 
             comment[p+1] = '"';
         }
 
-        messages[messageId].comment = comment;
+        network.messages[messageId].comment = comment;
         return true;
     }
 
@@ -637,7 +637,7 @@ bool File::readCommentMessage(std::stack<std::size_t> & lineBreaks, std::string 
 }
 
 /* Comments (CM) for Signals (SG) */
-bool File::readCommentSignal(std::stack<std::size_t> & lineBreaks, std::string & line)
+bool File::readCommentSignal(Network & network, std::stack<std::size_t> & lineBreaks, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "CM_" REGEX_SPACE "SG_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
@@ -657,7 +657,7 @@ bool File::readCommentSignal(std::stack<std::size_t> & lineBreaks, std::string &
             comment[p+1] = '"';
         }
 
-        messages[messageId].signals[signalName].comment = comment;
+        network.messages[messageId].signals[signalName].comment = comment;
         return true;
     }
 
@@ -666,7 +666,7 @@ bool File::readCommentSignal(std::stack<std::size_t> & lineBreaks, std::string &
 }
 
 /* Comments (CM) for Environment Variables (EV) */
-bool File::readCommentEnvironmentVariable(std::stack<std::size_t> & lineBreaks, std::string & line)
+bool File::readCommentEnvironmentVariable(Network & network, std::stack<std::size_t> & lineBreaks, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "CM_" REGEX_SPACE "EV_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_STRING REGEX_EOL_DELIM);
@@ -685,7 +685,7 @@ bool File::readCommentEnvironmentVariable(std::stack<std::size_t> & lineBreaks, 
             comment[p+1] = '"';
         }
 
-        environmentVariables[envVarName].comment = comment;
+        network.environmentVariables[envVarName].comment = comment;
         return true;
     }
 
@@ -694,7 +694,7 @@ bool File::readCommentEnvironmentVariable(std::stack<std::size_t> & lineBreaks, 
 }
 
 /* Comments (CM) */
-void File::readComment(std::ifstream & ifs, std::string & line)
+void File::readComment(Network & network, std::ifstream & ifs, std::string & line)
 {
     /* support multi-line comments and escape sequences */
     std::size_t firstCommentCharPos = line.find('"');
@@ -732,38 +732,38 @@ void File::readComment(std::ifstream & ifs, std::string & line)
     }
 
     // for nodes (BU)
-    if (readCommentNode(lineBreaks, line)) {
+    if (readCommentNode(network, lineBreaks, line)) {
         return;
     }
 
     // for messages (BO)
-    if (readCommentMessage(lineBreaks, line)) {
+    if (readCommentMessage(network, lineBreaks, line)) {
         return;
     }
 
     // for signals (SG)
-    if (readCommentSignal(lineBreaks, line)) {
+    if (readCommentSignal(network, lineBreaks, line)) {
         return;
     }
 
     // for environment variables (EV)
-    if (readCommentEnvironmentVariable(lineBreaks, line)) {
+    if (readCommentEnvironmentVariable(network, lineBreaks, line)) {
         return;
     }
 
     // for network
-    if (readCommentNetwork(lineBreaks, line)) {
+    if (readCommentNetwork(network, lineBreaks, line)) {
         return;
     }
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedComment);
+        statusCallback(network, Status::MalformedComment);
     }
 }
 
 /* Attribute Definitions (BA_DEF) */
-void File::readAttributeDefinition(std::string & line)
+void File::readAttributeDefinition(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_DEF_" REGEX_SPACE "(BU_|BO_|SG_|EV_)?[[:space:]]*" REGEX_ATTRIB_NAME REGEX_SPACE "(INT|HEX|FLOAT|STRING|ENUM)[[:space:]]*" REGEX_TO_END REGEX_EOL_DELIM);
@@ -772,7 +772,7 @@ void File::readAttributeDefinition(std::string & line)
         std::string attributeName = m[2];
         std::string attributeValueType = m[3];
         std::istringstream iss(m[4]);
-        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
+        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeName];
         attributeDefinition.name = attributeName;
 
         // for network
@@ -797,7 +797,7 @@ void File::readAttributeDefinition(std::string & line)
         } else
         // format doesn't match
         if (statusCallback != nullptr) {
-            statusCallback(Status::MalformedAttributeDefinition);
+            statusCallback(network, Status::MalformedAttributeDefinition);
         }
 
         // for integer
@@ -844,19 +844,19 @@ void File::readAttributeDefinition(std::string & line)
         } else
         // format doesn't match
         if (statusCallback != nullptr) {
-            statusCallback(Status::MalformedAttributeDefinition);
+            statusCallback(network, Status::MalformedAttributeDefinition);
         }
         return;
     }
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedAttributeDefinition);
+        statusCallback(network, Status::MalformedAttributeDefinition);
     }
 }
 
 /* Attribute Definitions at Relations (BA_DEF_REL) */
-void File::readAttributeDefinitionRelation(std::string & line)
+void File::readAttributeDefinitionRelation(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_DEF_REL_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -865,7 +865,7 @@ void File::readAttributeDefinitionRelation(std::string & line)
         std::string attributeName = m[2];
         std::string attributeValueType = m[3];
         std::istringstream iss(m[4]);
-        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
+        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeName];
         attributeDefinition.name = attributeName;
 
         // Control Unit - Env. Variable
@@ -885,7 +885,7 @@ void File::readAttributeDefinitionRelation(std::string & line)
 
         // format doesn't match
         if (statusCallback != nullptr) {
-            statusCallback(Status::MalformedAttributeDefinitionRelation);
+            statusCallback(network, Status::MalformedAttributeDefinitionRelation);
         }
 
         // Integer
@@ -937,29 +937,29 @@ void File::readAttributeDefinitionRelation(std::string & line)
 
         // format doesn't match
         if (statusCallback != nullptr) {
-            statusCallback(Status::MalformedAttributeDefinitionRelation);
+            statusCallback(network, Status::MalformedAttributeDefinitionRelation);
         }
         return;
     }
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedAttributeDefinitionRelation);
+        statusCallback(network, Status::MalformedAttributeDefinitionRelation);
     }
 }
 
 /* Sigtype Attr Lists (?, obsolete) */
 
 /* Attribute Defaults (BA_DEF_DEF) */
-void File::readAttributeDefault(std::string & line)
+void File::readAttributeDefault(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_DEF_DEF_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string attributeName = m[1];
         std::string attributeValue = m[2];
-        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
-        Attribute & attributeDefault = attributeDefaults[attributeName];
+        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeName];
+        Attribute & attributeDefault = network.attributeDefaults[attributeName];
 
         /* Name */
         attributeDefault.name = attributeName;
@@ -1005,20 +1005,20 @@ void File::readAttributeDefault(std::string & line)
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedAttributeDefault);
+        statusCallback(network, Status::MalformedAttributeDefault);
     }
 }
 
 /* Attribute Defaults at Relations (BA_DEF_DEF_REL) */
-void File::readAttributeDefaultRelation(std::string & line)
+void File::readAttributeDefaultRelation(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_DEF_DEF_REL_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string attributeName = m[1];
         std::string attributeValue = m[2];
-        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
-        Attribute & attributeDefault = attributeDefaults[attributeName];
+        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeName];
+        Attribute & attributeDefault = network.attributeDefaults[attributeName];
 
         /* Name */
         attributeDefault.name = attributeName;
@@ -1064,20 +1064,20 @@ void File::readAttributeDefaultRelation(std::string & line)
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedAttributeDefaultRelation);
+        statusCallback(network, Status::MalformedAttributeDefaultRelation);
     }
 }
 
 /* Attribute Values (BA) for Network */
-bool File::readAttributeValueNetwork(std::string & line)
+bool File::readAttributeValueNetwork(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string attributeName = m[1];
         std::string attributeValue = m[2];
-        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
-        Attribute & attribute = attributeValues[attributeName];
+        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeName];
+        Attribute & attribute = network.attributeValues[attributeName];
 
         /* Name */
         attribute.name = attributeName;
@@ -1123,7 +1123,7 @@ bool File::readAttributeValueNetwork(std::string & line)
 }
 
 /* Attribute Values (BA) for Node (BU) */
-bool File::readAttributeValueNode(std::string & line)
+bool File::readAttributeValueNode(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE "BU_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -1131,9 +1131,9 @@ bool File::readAttributeValueNode(std::string & line)
         std::string attributeName = m[1];
         std::string nodeName = m[2];
         std::string attributeValue = m[3];
-        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
+        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeName];
         attributeDefinition.name = attributeName;
-        Node & node = nodes[nodeName];
+        Node & node = network.nodes[nodeName];
         node.name = nodeName;
         Attribute & attribute = node.attributeValues[attributeName];
 
@@ -1180,7 +1180,7 @@ bool File::readAttributeValueNode(std::string & line)
 }
 
 /* Attribute Values (BA) for Message (BO) */
-bool File::readAttributeValueMessage(std::string & line)
+bool File::readAttributeValueMessage(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE "BO_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -1188,8 +1188,8 @@ bool File::readAttributeValueMessage(std::string & line)
         std::string attributeName = m[1];
         unsigned int messageId = stoul(m[2]);
         std::string attributeValue = m[3];
-        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
-        Attribute & attribute = messages[messageId].attributeValues[attributeName];
+        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeName];
+        Attribute & attribute = network.messages[messageId].attributeValues[attributeName];
 
         /* Name */
         attribute.name = attributeName;
@@ -1235,7 +1235,7 @@ bool File::readAttributeValueMessage(std::string & line)
 }
 
 /* Attribute Values (BA) for Signal (SG) */
-bool File::readAttributeValueSignal(std::string & line)
+bool File::readAttributeValueSignal(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE "SG_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -1244,8 +1244,8 @@ bool File::readAttributeValueSignal(std::string & line)
         unsigned int messageId = stoul(m[2]);
         std::string signalName = m[3];
         std::string attributeValue = m[4];
-        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
-        Attribute & attribute = messages[messageId].signals[signalName].attributeValues[attributeName];
+        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeName];
+        Attribute & attribute = network.messages[messageId].signals[signalName].attributeValues[attributeName];
 
         /* Name */
         attribute.name = attributeName;
@@ -1291,7 +1291,7 @@ bool File::readAttributeValueSignal(std::string & line)
 }
 
 /* Attribute Values (BA) for Environment Variable (EV) */
-bool File::readAttributeValueEnvironmentVariable(std::string & line)
+bool File::readAttributeValueEnvironmentVariable(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BA_" REGEX_SPACE REGEX_ATTRIB_NAME REGEX_SPACE "EV_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -1299,8 +1299,8 @@ bool File::readAttributeValueEnvironmentVariable(std::string & line)
         std::string attributeName = m[1];
         std::string envVarName = m[2];
         std::string attributeValue = m[3];
-        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeName];
-        Attribute & attribute = environmentVariables[envVarName].attributeValues[attributeName];
+        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeName];
+        Attribute & attribute = network.environmentVariables[envVarName].attributeValues[attributeName];
 
         /* Name */
         attribute.name = attributeName;
@@ -1346,41 +1346,41 @@ bool File::readAttributeValueEnvironmentVariable(std::string & line)
 }
 
 /* Attribute Values (BA) */
-void File::readAttributeValue(std::string & line)
+void File::readAttributeValue(Network & network, std::string & line)
 {
     // for nodes (BU)
-    if (readAttributeValueNode(line)) {
+    if (readAttributeValueNode(network, line)) {
         return;
     }
 
     // for messages (BO)
-    if (readAttributeValueMessage(line)) {
+    if (readAttributeValueMessage(network, line)) {
         return;
     }
 
     // for signals (SG)
-    if (readAttributeValueSignal(line)) {
+    if (readAttributeValueSignal(network, line)) {
         return;
     }
 
     // for environment variables (EV)
-    if (readAttributeValueEnvironmentVariable(line)) {
+    if (readAttributeValueEnvironmentVariable(network, line)) {
         return;
     }
 
     // for network
-    if (readAttributeValueNetwork(line)) {
+    if (readAttributeValueNetwork(network, line)) {
         return;
     }
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedAttributeValue);
+        statusCallback(network, Status::MalformedAttributeValue);
     }
 }
 
 /* Attribute Values at Relations (BA_REL) */
-void File::readAttributeRelationValue(std::string & line)
+void File::readAttributeRelationValue(Network & network, std::string & line)
 {
     bool found = false;
     AttributeRelation attributeRelation;
@@ -1424,7 +1424,7 @@ void File::readAttributeRelationValue(std::string & line)
     }
 
     if (found) {
-        AttributeDefinition & attributeDefinition = attributeDefinitions[attributeRelation.name];
+        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeRelation.name];
         attributeRelation.valueType = attributeDefinition.valueType;
         switch(attributeRelation.valueType) {
         // Integer
@@ -1454,25 +1454,25 @@ void File::readAttributeRelationValue(std::string & line)
             attributeRelation.enumValue = stoul(attributeValue);
             break;
         }
-        attributeRelationValues.insert(attributeRelation);
+        network.attributeRelationValues.insert(attributeRelation);
         return;
     }
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedAttributeRelationValue);
+        statusCallback(network, Status::MalformedAttributeRelationValue);
     }
 }
 
 /* Value Descriptions (VAL) for Signals (SG) */
-bool File::readValueDescriptionSignal(std::string & line)
+bool File::readValueDescriptionSignal(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "VAL_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
         std::string signalName = m[2];
-        ValueDescriptions & valueDescriptions = messages[messageId].signals[signalName].valueDescriptions;
+        ValueDescriptions & valueDescriptions = network.messages[messageId].signals[signalName].valueDescriptions;
 
         /* Value Description Pairs */
         std::istringstream iss(m[3]);
@@ -1499,13 +1499,13 @@ bool File::readValueDescriptionSignal(std::string & line)
 }
 
 /* Value Descriptions (VAL) for Environment Variables (EV) */
-bool File::readValueDescriptionEnvironmentVariable(std::string & line)
+bool File::readValueDescriptionEnvironmentVariable(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "VAL_" REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         std::string envVarName = m[1];
-        ValueDescriptions & valueDescriptions = environmentVariables[envVarName].valueDescriptions;
+        ValueDescriptions & valueDescriptions = network.environmentVariables[envVarName].valueDescriptions;
 
         /* Value Description Pairs */
         std::istringstream iss(m[2]);
@@ -1532,21 +1532,21 @@ bool File::readValueDescriptionEnvironmentVariable(std::string & line)
 }
 
 /* Value Descriptions (VAL) */
-void File::readValueDescription(std::string & line)
+void File::readValueDescription(Network & network, std::string & line)
 {
     // for signal
-    if (readValueDescriptionSignal(line)) {
+    if (readValueDescriptionSignal(network, line)) {
         return;
     }
 
     // for environment variable
-    if (readValueDescriptionEnvironmentVariable(line)) {
+    if (readValueDescriptionEnvironmentVariable(network, line)) {
         return;
     }
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedValueDescription);
+        statusCallback(network, Status::MalformedValueDescription);
     }
 }
 
@@ -1560,14 +1560,14 @@ void File::readValueDescription(std::string & line)
 // see above readSignalType
 
 /* Signal Groups (SIG_GROUP) */
-void File::readSignalGroup(std::string & line)
+void File::readSignalGroup(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "SIG_GROUP_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_UINT REGEX_DELIM(":") REGEX_TO_END REGEX_EOL_DELIM);
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
         std::string signalGroupName = m[2];
-        SignalGroup & signalGroup = messages[messageId].signalGroups[signalGroupName];
+        SignalGroup & signalGroup = network.messages[messageId].signalGroups[signalGroupName];
 
         /* Message Identifier */
         signalGroup.messageId = messageId;
@@ -1589,12 +1589,12 @@ void File::readSignalGroup(std::string & line)
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedSignalGroup);
+        statusCallback(network, Status::MalformedSignalGroup);
     }
 }
 
 /* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
-void File::readSignalExtendedValueType(std::string & line)
+void File::readSignalExtendedValueType(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "SIG_VALTYPE_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_DELIM(":") "([012])" REGEX_EOL_DELIM);
@@ -1607,15 +1607,15 @@ void File::readSignalExtendedValueType(std::string & line)
         switch(signalExtendedValueType) {
         // Integer
         case 0:
-            messages[messageId].signals[signalName].extendedValueType = Signal::ExtendedValueType::Integer;
+            network.messages[messageId].signals[signalName].extendedValueType = Signal::ExtendedValueType::Integer;
             break;
         // Float
         case 1:
-            messages[messageId].signals[signalName].extendedValueType = Signal::ExtendedValueType::Float;
+            network.messages[messageId].signals[signalName].extendedValueType = Signal::ExtendedValueType::Float;
             break;
         // Double
         case 2:
-            messages[messageId].signals[signalName].extendedValueType = Signal::ExtendedValueType::Double;
+            network.messages[messageId].signals[signalName].extendedValueType = Signal::ExtendedValueType::Double;
             break;
         }
         return;
@@ -1623,12 +1623,12 @@ void File::readSignalExtendedValueType(std::string & line)
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedSignalExtendedValueType);
+        statusCallback(network, Status::MalformedSignalExtendedValueType);
     }
 }
 
 /* Extended Multiplexors (SG_MUL_VAL) */
-void File::readExtendedMultiplexor(std::string & line)
+void File::readExtendedMultiplexor(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "SG_MUL_VAL_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
@@ -1636,7 +1636,7 @@ void File::readExtendedMultiplexor(std::string & line)
         unsigned int messageId = stoul(m[1]);
         std::string multiplexedSignalName = m[2];
         std::string switchName = m[3];
-        ExtendedMultiplexor & extendedMultiplexor = messages[messageId].signals[multiplexedSignalName].extendedMultiplexors[switchName];
+        ExtendedMultiplexor & extendedMultiplexor = network.messages[messageId].signals[multiplexedSignalName].extendedMultiplexors[switchName];
 
         /* Switch Name */
         extendedMultiplexor.switchName = switchName;
@@ -1662,11 +1662,11 @@ void File::readExtendedMultiplexor(std::string & line)
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
-        statusCallback(Status::MalformedExtendedMultiplexor);
+        statusCallback(network, Status::MalformedExtendedMultiplexor);
     }
 }
 
-Status File::load(const char * filename)
+Status File::load(Network & network, const char * filename)
 {
     std::ifstream ifs;
     std::streampos fileSize;
@@ -1689,7 +1689,7 @@ Status File::load(const char * filename)
     while(ifs.good()) {
         /* call progress function */
         if (progressCallback != nullptr) {
-            progressCallback(ifs.tellg(), fileSize);
+            progressCallback(network, ifs.tellg(), fileSize);
         }
 
         /* get one line */
@@ -1705,94 +1705,94 @@ Status File::load(const char * filename)
 
             /* Version (VERSION) */
             if (name == "VERSION") {
-                readVersion(line);
+                readVersion(network, line);
             } else
 
             /* New Symbols (NS) */
             if (name == "NS_") {
-                readNewSymbols(ifs, line);
+                readNewSymbols(network, ifs, line);
             } else
 
             /* Bit Timing (BS) */
             if (name == "BS_") {
-                readBitTiming(line);
+                readBitTiming(network, line);
             } else
 
             /* Nodes (BU) */
             if (name == "BU_") {
-                readNodes(line);
+                readNodes(network, line);
             } else
 
             /* Value Tables (VAL_TABLE) */
             if (name == "VAL_TABLE_") {
-                readValueTable(line);
+                readValueTable(network, line);
             } else
 
             /* Messages (BO) */
             if (name == "BO_") {
-                readMessage(ifs, line);
+                readMessage(network, ifs, line);
             } else
 
             /* Message Transmitters (BO_TX_BU) */
             if (name == "BO_TX_BU_") {
-                readMessageTransmitter(line);
+                readMessageTransmitter(network, line);
             } else
 
             /* Environment Variables (EV) */
             if (name == "EV_") {
-                readEnvironmentVariable(line);
+                readEnvironmentVariable(network, line);
             } else
 
             /* Environment Variable Data (ENVVAR_DATA) */
             if (name == "ENVVAR_DATA_") {
-                readEnvironmentVariableData(line);
+                readEnvironmentVariableData(network, line);
             } else
 
             /* Signal Types (SGTYPE, obsolete) */
             if (name == "SGTYPE_") {
-                readSignalType(line);
+                readSignalType(network, line);
             } else
 
             /* Comments (CM) */
             if (name == "CM_") {
-                readComment(ifs, line);
+                readComment(network, ifs, line);
             } else
 
             /* Attribute Definitions (BA_DEF) */
             if (name == "BA_DEF_") {
-                readAttributeDefinition(line);
+                readAttributeDefinition(network, line);
             } else
 
             /* Attribute Definitions at Relations (BA_DEF_REL) */
             if (name == "BA_DEF_REL_") {
-                readAttributeDefinitionRelation(line);
+                readAttributeDefinitionRelation(network, line);
             } else
 
             /* Sigtype Attr Lists (?, obsolete) */
 
             /* Attribute Defaults (BA_DEF_DEF) */
             if (name == "BA_DEF_DEF_") {
-                readAttributeDefault(line);
+                readAttributeDefault(network, line);
             } else
 
             /* Attribute Defaults at Relations (BA_DEF_DEF_REL) */
             if (name == "BA_DEF_DEF_REL_") {
-                readAttributeDefaultRelation(line);
+                readAttributeDefaultRelation(network, line);
             } else
 
             /* Attribute Values (BA) */
             if (name == "BA_") {
-                readAttributeValue(line);
+                readAttributeValue(network, line);
             } else
 
             /* Attribute Values at Relations (BA_REL) */
             if (name == "BA_REL_") {
-                readAttributeRelationValue(line);
+                readAttributeRelationValue(network, line);
             } else
 
             /* Value Descriptions (VAL) */
             if (name == "VAL_") {
-                readValueDescription(line);
+                readValueDescription(network, line);
             } else
 
             /* Category Definitions (CAT_DEF, obsolete) */
@@ -1806,22 +1806,22 @@ Status File::load(const char * filename)
 
             /* Signal Groups (SIG_GROUP) */
             if (name == "SIG_GROUP_") {
-                readSignalGroup(line);
+                readSignalGroup(network, line);
             } else
 
             /* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
             if (name == "SIG_VALTYPE_") {
-                readSignalExtendedValueType(line);
+                readSignalExtendedValueType(network, line);
             } else
 
             /* Extended Multiplexors (SG_MUL_VAL) */
             if (name == "SG_MUL_VAL_") {
-                readExtendedMultiplexor(line);
+                readExtendedMultiplexor(network, line);
             } else
 
             /* not supported */
             if (statusCallback != nullptr) {
-                statusCallback(Status::Unknown);
+                statusCallback(network, Status::Unknown);
             }
         }
     }
@@ -1831,9 +1831,9 @@ Status File::load(const char * filename)
     return Status::Ok;
 }
 
-Status File::load(std::string & filename)
+Status File::load(Network & network, std::string & filename)
 {
-    return load(filename.c_str());
+    return load(network, filename.c_str());
 }
 
 }

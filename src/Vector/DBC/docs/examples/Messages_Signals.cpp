@@ -5,6 +5,8 @@
 
 int main(int argc, char *argv[])
 {
+    Vector::DBC::Network network;
+
     if (argc != 2) {
         std::cout << "Messages_Signals <database.dbc>" << std::endl;
         return -1;
@@ -12,12 +14,12 @@ int main(int argc, char *argv[])
 
     /* load database file */
     Vector::DBC::File file;
-    if (file.load(argv[1]) != Vector::DBC::Status::Ok) {
+    if (file.load(network, argv[1]) != Vector::DBC::Status::Ok) {
         return EXIT_FAILURE;
     }
 
     /* loop over messages */
-    for (auto message : file.messages) {
+    for (auto message : network.messages) {
         std::cout << "Message " << message.second.name << std::endl;
 
         /* loop over signals of this messages */
