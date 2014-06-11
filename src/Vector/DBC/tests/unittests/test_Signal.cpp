@@ -8,7 +8,7 @@
 #include <iterator>
 #include <boost/filesystem.hpp>
 
-#include "Vector/DBC/Signal.h"
+#include "Vector/DBC.h"
 
 BOOST_AUTO_TEST_CASE(Signal)
 {

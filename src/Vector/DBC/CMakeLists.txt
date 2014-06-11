@@ -26,6 +26,7 @@ set(source_files
   ValueTable.cpp)
 
 set(header_files
+  ../DBC.h
   Attribute.h
   AttributeDefinition.h
   AttributeRelation.h
