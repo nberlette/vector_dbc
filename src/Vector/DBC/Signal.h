@@ -23,6 +23,7 @@
 
 #include "platform.h"
 
+#include <cstdint>
 #include <map>
 #include <set>
 #include <string>
@@ -88,6 +89,32 @@ public:
     /** Receivers */
     std::set<std::string> receivers;
 
+    /** Signal Extended Value Type (SIG_VALTYPE, obsolete) */
+    enumclass ExtendedValueType : char {
+        Undefined = ' ',
+        Integer = '0',
+        Float = '1',
+        Double = '2'
+    };
+
+    /** Signal Extended Value Type (SIG_VALTYPE, obsolete) */
+    ExtendedValueType extendedValueType;
+
+    /** Value Descriptions (VAL) */
+    ValueDescriptions valueDescriptions;
+
+    /** Signal Type Refs (SGTYPE, obsolete) */
+    std::string type;
+
+    /** Comment (CM) */
+    std::string comment;
+
+    /** Attribute Values (BA) */
+    std::map<std::string, Attribute> attributeValues;
+
+    /** Extended Multiplexors (SG_MUL_VAL) */
+    std::map<std::string, ExtendedMultiplexor> extendedMultiplexors;
+
     /**
      * @brief Convert from Raw to Physical Value
      * @param[in] physicalValue Physical Value
@@ -106,17 +133,6 @@ public:
      */
     double physicalToRawValue(double rawValue);
 
-    /** Signal Extended Value Type (SIG_VALTYPE, obsolete) */
-    enumclass ExtendedValueType : char {
-        Undefined = ' ',
-        Integer = '0',
-        Float = '1',
-        Double = '2'
-    };
-
-    /** Signal Extended Value Type (SIG_VALTYPE, obsolete) */
-    ExtendedValueType extendedValueType;
-
     /**
      * @brief Get minimum Physical Value
      * @return Minimum Physical Value
@@ -133,20 +149,16 @@ public:
      */
     double maximumRawValue();
 
-    /** Value Descriptions (VAL) */
-    ValueDescriptions valueDescriptions;
-
-    /** Signal Type Refs (SGTYPE, obsolete) */
-    std::string type;
-
-    /** Comment (CM) */
-    std::string comment;
-
-    /** Attribute Values (BA) */
-    std::map<std::string, Attribute> attributeValues;
-
-    /** Extended Multiplexors (SG_MUL_VAL) */
-    std::map<std::string, ExtendedMultiplexor> extendedMultiplexors;
+    /**
+     * @brief Extracts a signal from the message data
+     * @param[in] data Data
+     * @return Raw signal value
+     *
+     * Extracts a signal from the message data.
+     *
+     * @note Multiplexors are not taken into account.
+     */
+    std::uint64_t extract(std::vector<std::uint8_t> & data);
 };
 
 }

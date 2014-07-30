@@ -57,6 +57,6 @@ BOOST_AUTO_TEST_CASE(File)
     /* extract signal */
     Vector::DBC::Message & message = network.messages[0xC0000000];
     Vector::DBC::Signal & signal = message.signals["Signal_8_Motorola_Unsigned"];
-    uint64_t rawValue = message.extractSignal(messageData, signal);
+    uint64_t rawValue = signal.extract(messageData);
     BOOST_CHECK_EQUAL(rawValue, 0x00000000);
 }
