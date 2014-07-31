@@ -81,6 +81,8 @@ bool AttributeRelation::operator < (const AttributeRelation & rhs) const
     } else {
         return name < rhs.name;
     }
+
+    return false;
 }
 
 }
