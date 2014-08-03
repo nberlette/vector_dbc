@@ -25,11 +25,7 @@
 #include <string>
 
 /* force Linux to use Windows line endings */
-#ifdef _WINDOWS
-#define endl std::endl
-#else
-constexpr char endl[] = "\r\n";
-#endif
+static const char endl[] = "\r\n";
 
 namespace Vector {
 namespace DBC {

@@ -23,11 +23,15 @@
 
 #include "config.h"
 
+#ifdef __linux__
+
 #if __cplusplus < 201103L
 #define constexpr static const
 #endif
 
-#ifdef _WINDOWS
+#endif
+
+#ifdef _WIN32
 
 /* '..' : class '..' needs to have dll-interface to be used by clients of class '..' */
 #pragma warning (disable: 4251)
