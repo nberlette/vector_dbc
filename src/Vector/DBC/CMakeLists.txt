@@ -27,7 +27,6 @@ set(source_files
   ValueTable.cpp)
 
 set(header_files
-  ../DBC.h
   Attribute.h
   AttributeDefinition.h
   AttributeRelation.h
@@ -76,11 +75,10 @@ install(
   DESTINATION lib)
 
 install(
-  FILES ${CMAKE_CURRENT_BINARY_DIR}/vector_dbc_export.h
-  DESTINATION include/Vector/DBC)
-
-install(
-  FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h ${header_files}
+  FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/vector_dbc_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h
+    ${header_files}
   DESTINATION include/Vector/DBC)
 
 add_subdirectory(docs)
