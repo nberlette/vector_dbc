@@ -59,4 +59,4 @@ add_subdirectory(src)
 
 install(
   FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.GPL
-  DESTINATION share/doc/Vector_DBC)
+  DESTINATION share/doc/${PROJECT_NAME})

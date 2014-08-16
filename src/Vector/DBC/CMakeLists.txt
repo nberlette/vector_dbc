@@ -50,14 +50,14 @@ set(header_files
 
 add_compiler_export_flags()
 
-add_library(Vector_DBC SHARED ${source_files} ${header_files})
+add_library(${PROJECT_NAME} SHARED ${source_files} ${header_files})
 
 if(OPTION_USE_GCOV_LCOV)
-  target_link_libraries(Vector_DBC gcov)
+  target_link_libraries(${PROJECT_NAME} gcov)
   add_definitions(-g -O0 -fprofile-arcs -ftest-coverage)
 endif()
 
-generate_export_header(Vector_DBC)
+generate_export_header(${PROJECT_NAME})
 
 if(CMAKE_COMPILER_IS_GNUCXX)
   add_definitions(-std=c++11)
@@ -67,11 +67,11 @@ if(NOT OPTION_USE_CPP11_REGEX)
   find_package(Boost 1.54 COMPONENTS regex)
   include_directories(${Boost_INCLUDE_DIR})
   link_directories(${Boost_LIBRARY_DIRS})
-  target_link_libraries(Vector_DBC ${Boost_REGEX_LIBRARY})
+  target_link_libraries(${PROJECT_NAME} ${Boost_REGEX_LIBRARY})
 endif()
 
 install(
-  TARGETS Vector_DBC
+  TARGETS ${PROJECT_NAME}
   DESTINATION lib)
 
 install(
