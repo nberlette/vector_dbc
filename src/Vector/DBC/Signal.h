@@ -117,21 +117,21 @@ public:
 
     /**
      * @brief Convert from Raw to Physical Value
-     * @param[in] physicalValue Physical Value
+     * @param[in] rawValue Raw Value
      * @return Raw Value
      *
      * Converts a value from raw to physical representation.
      */
-    double rawToPhysicalValue(double physicalValue);
+    double rawToPhysicalValue(double rawValue);
 
     /**
      * @brief Convert from Physical to Raw Value
-     * @param[in] rawValue Raw Value
+     * @param[in] physicalValue Physical Value
      * @return Physical Value
      *
      * Converts a value from physical to raw representation.
      */
-    double physicalToRawValue(double rawValue);
+    double physicalToRawValue(double physicalValue);
 
     /**
      * @brief Get minimum Physical Value

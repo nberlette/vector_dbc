@@ -147,7 +147,7 @@ std::uint64_t Signal::extract(std::vector<std::uint8_t> & data)
         while(size > 0) {
             /* copy bit */
             if (data[srcBit/8] & (1<<(srcBit%8))) {
-                retVal |= (1<<dstBit);
+                retVal |= (1ULL<<dstBit);
             }
 
             /* calculate next position */
@@ -166,7 +166,7 @@ std::uint64_t Signal::extract(std::vector<std::uint8_t> & data)
         while(size > 0) {
             /* copy bit */
             if (data[srcBit/8] & (1<<(srcBit%8))) {
-                retVal |= (1<<dstBit);
+                retVal |= (1ULL<<dstBit);
             }
 
             /* calculate next position */
@@ -181,7 +181,7 @@ std::uint64_t Signal::extract(std::vector<std::uint8_t> & data)
         uint64_t msb = (retVal >> (size - 1)) & 1;
         if (msb) {
             for (unsigned int i = size; i < 8*sizeof(retVal); ++i) {
-                retVal |= (1<<i);
+                retVal |= (1ULL<<i);
             }
         }
     }
