@@ -52,9 +52,3 @@
 #define regex        boost::regex
 #define regex_search boost::regex_search
 #endif
-
-#ifdef OPTION_USE_CPP11_ENUM_CLASS
-#define enumclass enum class
-#else
-#define enumclass enum
-#endif

@@ -27,6 +27,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "Attribute.h"
 #include "ByteOrder.h"
@@ -90,7 +91,7 @@ public:
     std::set<std::string> receivers;
 
     /** Signal Extended Value Type (SIG_VALTYPE, obsolete) */
-    enumclass ExtendedValueType : char {
+    enum class ExtendedValueType : char {
         Undefined = ' ',
         Integer = '0',
         Float = '1',

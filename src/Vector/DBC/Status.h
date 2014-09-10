@@ -31,7 +31,7 @@ namespace DBC {
 /**
  * Status
  */
-enumclass Status : int {
+enum class Status : int {
     /* Informations */
     Ok = 0, /**< General success */
 

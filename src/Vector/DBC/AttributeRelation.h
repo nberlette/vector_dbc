@@ -41,7 +41,7 @@ public:
     AttributeRelation();
 
     /** Relation Type */
-    enumclass RelationType {
+    enum class RelationType {
         ControlUnitEnvironmentVariable, /**< Control Unit - Env. Variable */
         NodeTxMessage, /**< Node - Tx Message */
         NodeMappedRxSignal /**< Node - Mapped Rx Signal */

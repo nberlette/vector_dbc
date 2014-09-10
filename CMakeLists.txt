@@ -11,9 +11,6 @@ option(OPTION_USE_STRICT_NAMES "Names normally must be C-identifiers" ON)
 # regex support by C++11 or Boost
 option(OPTION_USE_CPP11_REGEX "Use std::regex instead of boost::regex" ON)
 
-# use enum class instead of enum
-option(OPTION_USE_CPP11_ENUM_CLASS "Use enum class instead of enum" OFF)
-
 # source code documentation
 option(OPTION_RUN_DOXYGEN "Run Doxygen" ON)
 

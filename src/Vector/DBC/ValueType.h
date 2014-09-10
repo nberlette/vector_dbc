@@ -31,7 +31,7 @@ namespace DBC {
 /**
  * Value Type
  */
-enumclass ValueType : char {
+enum class ValueType : char {
     Unsigned = '+', /**< Unsigned */
     Signed = '-' /**< Signed */
 };

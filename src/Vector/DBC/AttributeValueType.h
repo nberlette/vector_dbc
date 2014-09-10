@@ -31,7 +31,7 @@ namespace DBC {
 /**
  * Attribute Value Type
  */
-enumclass AttributeValueType {
+enum class AttributeValueType {
     Int, /**< Integer */
     Hex, /**< Hex */
     Float, /**< Float */

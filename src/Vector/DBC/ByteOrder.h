@@ -31,7 +31,7 @@ namespace DBC {
 /**
  * Byte Order Type
  */
-enumclass ByteOrder : char {
+enum class ByteOrder : char {
     Motorola = '0', /** < Motorola / Big Endian */
     BigEndian = '0', /**< Bit Endian / Motorola */
     Intel = '1', /**< Intel / Little Endian */

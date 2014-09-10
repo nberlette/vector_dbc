@@ -47,7 +47,7 @@ public:
     std::string name;
 
     /** Type */
-    enumclass Type : char {
+    enum class Type : char {
         Integer, /**< Integer */
         Float, /**< Float */
         String, /**< String */
@@ -73,7 +73,7 @@ public:
     unsigned int id;
 
     /** Access Type */
-    enumclass AccessType {
+    enum class AccessType {
         Unrestricted = 0, /**< Unrestricted */
         Read = 1, /**< Read */
         Write = 2, /**< Write */

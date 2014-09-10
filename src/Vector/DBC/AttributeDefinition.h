@@ -46,7 +46,7 @@ public:
     std::string name;
 
     /** Object Type */
-    enumclass ObjectType {
+    enum class ObjectType {
         Network, /**< Network */
         Node, /**< Node */
         Message, /**< Message */
