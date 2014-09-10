@@ -32,10 +32,10 @@ namespace DBC {
  * Byte Order Type
  */
 enumclass ByteOrder : char {
-    Motorola = '1', /** < Motorola / Big Endian */
-    Intel = '0', /**< Intel / Little Endian */
-    BigEndian = '1', /**< Bit Endian / Motorola */
-    LittleEndian = '0' /**< Little Endian / Intel */
+    Motorola = '0', /** < Motorola / Big Endian */
+    BigEndian = '0', /**< Bit Endian / Motorola */
+    Intel = '1', /**< Intel / Little Endian */
+    LittleEndian = '1' /**< Little Endian / Intel */
 };
 
 }
