@@ -44,7 +44,7 @@ set(CMAKE_INSTALL_PREFIX /)
 
 # Boost (needed for dynamic tests)
 if(WIN32)
-  set(BOOST_ROOT c:/local/boost_1_54_0)
+  set(BOOST_ROOT c:/local/boost_1_56_0)
   set(BOOST_INCLUDEDIR ${BOOST_ROOT})
   set(BOOST_LIBRARYDIR ${BOOST_ROOT}/lib32-msvc-11.0)
   set(Boost_USE_STATIC_LIBS ON) # only find static libs
