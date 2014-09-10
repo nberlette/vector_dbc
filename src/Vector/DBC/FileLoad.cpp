@@ -26,6 +26,19 @@
 #include <stack>
 #include <string>
 
+/* switch for std/boost regex library */
+#ifdef OPTION_USE_CPP11_REGEX
+#include <regex>
+#define smatch       std::smatch
+#define regex        std::regex
+#define regex_search std::regex_search
+#else
+#include <boost/regex.hpp>
+#define smatch       boost::smatch
+#define regex        boost::regex
+#define regex_search boost::regex_search
+#endif
+
 /* force Linux to use Windows line endings */
 static const char endl[] = "\r\n";
 

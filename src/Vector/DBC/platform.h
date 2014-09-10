@@ -40,15 +40,3 @@
 #pragma warning (disable: 4482)
 
 #endif
-
-#ifdef OPTION_USE_CPP11_REGEX
-#include <regex>
-#define smatch       std::smatch
-#define regex        std::regex
-#define regex_search std::regex_search
-#else
-#include <boost/regex.hpp>
-#define smatch       boost::smatch
-#define regex        boost::regex
-#define regex_search boost::regex_search
-#endif
