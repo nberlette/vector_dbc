@@ -64,7 +64,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 if(NOT OPTION_USE_CPP11_REGEX)
-  find_package(Boost 1.56 COMPONENTS regex)
+  find_package(Boost 1.55 COMPONENTS regex)
   include_directories(${Boost_INCLUDE_DIR})
   link_directories(${Boost_LIBRARY_DIRS})
   target_link_libraries(${PROJECT_NAME} ${Boost_REGEX_LIBRARY})
