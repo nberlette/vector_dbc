@@ -53,7 +53,7 @@ public:
     /** Size */
     unsigned int size;
 
-    /** Transmitter */
+    /** Transmitter (empty string if the number of send nodes is zero or more than one) */
     std::string transmitter;
 
     /** Signals (SG) */
