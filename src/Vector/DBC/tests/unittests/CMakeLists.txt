@@ -12,10 +12,10 @@ add_executable(test_File test_File.cpp)
 add_executable(test_Message test_Message.cpp)
 add_executable(test_Signal test_Signal.cpp)
 
-if(OPTION_USE_GCOV)
+if(OPTION_USE_GCOV_LCOV)
   add_definitions(-g -O0 -fprofile-arcs -ftest-coverage)
-  target_link_libraries(test_File cov)
-  target_link_libraries(test_Message cov)
+  target_link_libraries(test_File gcov)
+  target_link_libraries(test_Message gcov)
   target_link_libraries(test_Signal gcov)
 endif()
 
