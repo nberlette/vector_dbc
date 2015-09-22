@@ -29,14 +29,16 @@
 /* switch for std/boost regex library */
 #ifdef OPTION_USE_CPP11_REGEX
 #include <regex>
-#define smatch       std::smatch
-#define regex        std::regex
-#define regex_search std::regex_search
+#define smatch        std::smatch
+#define regex         std::regex
+#define regex_search  std::regex_search
+#define regex_replace std::regex_replace
 #else
 #include <boost/regex.hpp>
-#define smatch       boost::smatch
-#define regex        boost::regex
-#define regex_search boost::regex_search
+#define smatch        boost::smatch
+#define regex         boost::regex
+#define regex_search  boost::regex_search
+#define regex_replace boost::regex_replace
 #endif
 
 /* force Linux to use Windows line endings */
@@ -86,7 +88,7 @@ static const char endl[] = "\r\n";
 namespace Vector {
 namespace DBC {
 
-/* Removes windows/unix/mac line endings. */
+/* Removes trailing spaces incl. windows/unix/mac line endings. */
 void File::chomp(std::string & line)
 {
     /* don't do anything if line is empty */
@@ -94,15 +96,8 @@ void File::chomp(std::string & line)
         return;
     }
 
-    /* remove trailing \r and \n characters */
-    for(;;) {
-        char back = line.back();
-        if ((back == '\r') || (back == '\n')) {
-            line.pop_back();
-        } else {
-            return;
-        }
-    }
+    /* remove trailing spaces */
+    line = regex_replace(line, regex("[[:space:]]+$"), "");
 }
 
 /* stod without C locale */
