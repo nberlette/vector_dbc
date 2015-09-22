@@ -1473,27 +1473,32 @@ bool File::readValueDescriptionSignal(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "VAL_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_SPACE REGEX_TO_END REGEX_EOL_DELIM);
+
     if (regex_search(line, m, re)) {
         unsigned int messageId = stoul(m[1]);
         std::string signalName = m[2];
         ValueDescriptions & valueDescriptions = network.messages[messageId].signals[signalName].valueDescriptions;
 
         /* Value Description Pairs */
-        std::istringstream iss(m[3]);
-        while (iss.good()) {
-            std::string value;
-            iss >> value;
-            std::string description;
-            iss >> description;
-            while (description.back() != '"') {
-                std::string nextStr;
-                iss >> nextStr;
-                description += " ";
-                description += nextStr;
-            }
-            description.erase(0, 1);
-            description.pop_back();
-            valueDescriptions[stoul(value)] = description;
+        std::string s = m[3];
+        while(!s.empty()) {
+            /* value */
+            unsigned int value = stoul(s);
+
+            /* description */
+            std::size_t leftPos = s.find_first_of('"');
+            if (leftPos == std::string::npos)
+                break;
+            std::size_t rightPos = s.find_first_of('"', leftPos + 1);
+            if (rightPos == std::string::npos)
+                break;
+            std::string description = s.substr(leftPos + 1, rightPos - leftPos - 1);
+
+            /* erase processed part */
+            s.erase(0, rightPos + 2);
+
+            /* assign value description */
+            valueDescriptions[value] = description;
         }
         return true;
     }
@@ -1512,21 +1517,25 @@ bool File::readValueDescriptionEnvironmentVariable(Network & network, std::strin
         ValueDescriptions & valueDescriptions = network.environmentVariables[envVarName].valueDescriptions;
 
         /* Value Description Pairs */
-        std::istringstream iss(m[2]);
-        while (iss.good()) {
-            std::string value;
-            iss >> value;
-            std::string description;
-            iss >> description;
-            while (description.back() != '"') {
-                std::string nextStr;
-                iss >> nextStr;
-                description += " ";
-                description += nextStr;
-            }
-            description.erase(0, 1);
-            description.pop_back();
-            valueDescriptions[stoul(value)] = description;
+        std::string s = m[2];
+        while(!s.empty()) {
+            /* value */
+            unsigned int value = stoul(s);
+
+            /* description */
+            std::size_t leftPos = s.find_first_of('"');
+            if (leftPos == std::string::npos)
+                break;
+            std::size_t rightPos = s.find_first_of('"', leftPos + 1);
+            if (rightPos == std::string::npos)
+                break;
+            std::string description = s.substr(leftPos + 1, rightPos - leftPos - 1);
+
+            /* erase processed part */
+            s.erase(0, rightPos + 2);
+
+            /* assign value description */
+            valueDescriptions[value] = description;
         }
         return true;
     }

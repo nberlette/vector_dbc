@@ -57,4 +57,15 @@ BOOST_AUTO_TEST_CASE(Regression)
     BOOST_CHECK(message.name == "Message_2");
     signal = message.signals["Signal_2"];
     BOOST_CHECK(signal.name == "Signal_2");
+
+    /*
+     * In Value Descriptions a description with leading space let to undefined behavior.
+     * Example: 1 " Error B" 0 " Error A"
+     * The algorithm to evaluate these value/description pairs was rewritten.
+     */
+    message = network.messages[2];
+    signal = message.signals["Signal_2"];
+    Vector::DBC::ValueDescriptions & valueDescriptions = signal.valueDescriptions;
+    BOOST_CHECK(valueDescriptions[0] == " Error A");
+    BOOST_CHECK(valueDescriptions[1] == " Error B");
 }
