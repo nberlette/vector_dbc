@@ -14,6 +14,6 @@ if(CPPCHECK_FOUND)
 
   install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/cppcheck-out.txt ${CMAKE_CURRENT_BINARY_DIR}/cppcheck-err.xml
-    DESTINATION share/doc/Vector_DBC/cppcheck)
+    DESTINATION share/doc/${PROJECT_NAME}/cppcheck)
 
 endif()
