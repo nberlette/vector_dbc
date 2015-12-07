@@ -22,11 +22,9 @@ void statusCallback(Vector::DBC::Network & /* network */, Vector::DBC::Status st
 {
     if (FAILED(status)) {
         std::cerr << "Error: 0x" << std::hex << (int) status << std::endl;
-    } else
-    if (WARNED(status)) {
+    } else if (WARNED(status)) {
         std::cout << "Warning: 0x" << std::hex << (int) status << std::endl;
-    } else
-    if (SUCCEEDED(status)) {
+    } else if (SUCCEEDED(status)) {
         std::cout << "Success: 0x" << std::hex << (int) status << std::endl;
     }
 }
