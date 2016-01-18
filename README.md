@@ -5,6 +5,10 @@ It's optimized towards fast access on loaded data, not on load performance or sa
 
 # Build on Linux (e.g. Debian Testing)
 
+Minimum requirements:
+
+* gcc (>=4.9) or boost::regex (>=1.48)
+
 Building under Linux works as usual:
 
     mkdir build
