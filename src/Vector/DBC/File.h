@@ -283,19 +283,19 @@ private:
     /** Write Attribute Values at Relations (BA_REL) */
     void writeAttributeRelationValues(std::ofstream & ofs, Network & network);
 
-    /* Read Value Description (VAL) for Signal (SG) */
+    /** Read Value Description (VAL) for Signal (SG) */
     bool readValueDescriptionSignal(Network & network, std::string & line);
 
-    /* Read Value Description (VAL) for Environment Variable (EV) */
+    /** Read Value Description (VAL) for Environment Variable (EV) */
     bool readValueDescriptionEnvironmentVariable(Network & network, std::string & line);
 
     /** Read Value Description (VAL) */
     void readValueDescription(Network & network, std::string & line);
 
-    /* Write Value Descriptions (VAL) for Signals (SG) */
+    /** Write Value Descriptions (VAL) for Signals (SG) */
     void writeValueDescriptionsSignals(std::ofstream & ofs, Network & network);
 
-    /* Write Value Descriptions (VAL) for Environment Variables (EV) */
+    /** Write Value Descriptions (VAL) for Environment Variables (EV) */
     void writeValueDescriptionsEnvironmentVariables(std::ofstream & ofs, Network & network);
 
     /* Read Category Definition (?, obsolete) */
