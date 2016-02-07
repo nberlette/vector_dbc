@@ -23,18 +23,13 @@
 
 #include "config.h"
 
-#ifdef __linux__
-
-#if __cplusplus < 201103L
-#define constexpr static const
-#endif
-
-#endif
-
-#ifdef _WIN32
+#ifdef _WINDOWS
 
 /* '..' : class '..' needs to have dll-interface to be used by clients of class '..' */
 #pragma warning (disable: 4251)
+
+/* elements of array '...' will be default initialized */
+#pragma warning (disable: 4351)
 
 /* nonstandard extension used: enum '...' used in qualified name */
 #pragma warning (disable: 4482)
