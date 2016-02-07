@@ -26,7 +26,7 @@ set(source_files
   SignalType.cpp
   ValueTable.cpp)
 
-set(header_files
+set(public_header_files
   Attribute.h
   AttributeDefinition.h
   AttributeRelation.h
@@ -48,9 +48,13 @@ set(header_files
   ValueTable.h
   ValueType.h)
 
+set(private_header_files
+  )
+
 add_compiler_export_flags()
 
-add_library(${PROJECT_NAME} SHARED ${source_files} ${header_files})
+add_library(${PROJECT_NAME} SHARED
+  ${source_files} ${public_header_files} ${private_header_files})
 
 if(OPTION_USE_GCOV_LCOV)
   target_link_libraries(${PROJECT_NAME} gcov)
@@ -78,7 +82,7 @@ install(
   FILES
     ${CMAKE_CURRENT_BINARY_DIR}/vector_dbc_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/config.h
-    ${header_files}
+    ${public_header_files}
   DESTINATION include/Vector/DBC)
 
 add_subdirectory(docs)
