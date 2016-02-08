@@ -87,14 +87,14 @@ double Signal::physicalToRawValue(double physicalValue)
 double Signal::minimumRawValue()
 {
     /* calculate minimum raw value */
-    double minimumRawValue;
+    double minimumRawValue = 0.0;
     switch (extendedValueType) {
     case ExtendedValueType::Undefined:
     case ExtendedValueType::Integer:
         if (valueType == ValueType::Signed) {
             minimumRawValue = -(2<<(bitSize-2)); // bitSize-- because shift instead of pow
         } else {
-            minimumRawValue = 0;
+            minimumRawValue = 0.0;
         }
         break;
 
@@ -112,7 +112,7 @@ double Signal::minimumRawValue()
 double Signal::maximumRawValue()
 {
     /* calculate maximum raw value */
-    double maximumRawValue;
+    double maximumRawValue = 0.0;
     switch (extendedValueType) {
     case ExtendedValueType::Undefined:
     case ExtendedValueType::Integer:
