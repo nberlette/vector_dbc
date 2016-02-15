@@ -1,28 +1,26 @@
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 if(OPTION_RUN_EXAMPLES)
+    add_definitions(
+        -DCMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
+        -DCMAKE_CURRENT_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}")
 
-  add_definitions(
-    -DCMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
-    -DCMAKE_CURRENT_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}")
+    set(CMAKE_STATIC_LIBRARY_PREFIX "${CMAKE_CURRENT_BINARY_DIR}")
+    set(CMAKE_SHARED_LIBRARY_PREFIX "${CMAKE_CURRENT_BINARY_DIR}")
 
-  set(CMAKE_STATIC_LIBRARY_PREFIX "${CMAKE_CURRENT_BINARY_DIR}")
-  set(CMAKE_SHARED_LIBRARY_PREFIX "${CMAKE_CURRENT_BINARY_DIR}")
+    if(WIN32)
+        add_custom_target(Vector_DLL-Copy ALL
+            ${CMAKE_COMMAND} -E copy_if_different
+            "${PROJECT_BINARY_DIR}/src/Vector/DBC/${PROJECT_NAME}.dll"
+            "${CMAKE_CURRENT_BINARY_DIR}"
+        COMMENT "Copy ${PROJECT_BINARY_DIR}/src/Vector/DBC/${PROJECT_NAME}.dll to ${CMAKE_CURRENT_BINARY_DIR}")
+    endif()
 
-  if(WIN32)
-    add_custom_target(Vector_DLL-Copy ALL
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${PROJECT_BINARY_DIR}/src/Vector/DBC/${CMAKE_BUILD_TYPE}/${PROJECT_NAME}.dll"
-      "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
-      COMMENT "Copy ${PROJECT_BINARY_DIR}/src/Vector/DBC/${CMAKE_BUILD_TYPE}/${PROJECT_NAME}.dll to ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
-  endif()
+    add_executable(example_Messages_Signals Messages_Signals.cpp)
 
-  add_executable(example_Messages_Signals Messages_Signals.cpp)
-
-  target_link_libraries(example_Messages_Signals ${PROJECT_NAME})
-
+    target_link_libraries(example_Messages_Signals ${PROJECT_NAME})
 endif()
 
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/Messages_Signals.cpp
-  DESTINATION share/doc/${PROJECT_NAME}/examples)
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/Messages_Signals.cpp
+    DESTINATION ${CMAKE_INSTALL_DOCDIR}/examples)

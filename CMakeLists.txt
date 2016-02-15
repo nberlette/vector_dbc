@@ -23,6 +23,11 @@ option(OPTION_RUN_EXAMPLES "Run examples" OFF)
 option(OPTION_RUN_TESTS "Run tests" OFF)
 option(OPTION_USE_GCOV_LCOV "Use gcov and run lcov" OFF)
 
+# directories
+include(GNUInstallDirs)
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
+set(CMAKE_INSTALL_PREFIX /)
+
 # package
 set(CPACK_PACKAGE_CONTACT "Tobias Lorenz <tobias.lorenz@gmx.net>")
 set(CPACK_PACKAGE_VENDOR "Tobias Lorenz <tobias.lorenz@gmx.net>")
@@ -36,24 +41,13 @@ set(CPACK_NSIS_CONTACT "Tobias Lorenz <tobias.lorenz@gmx.net>")
 set(CPACK_NSIS_MUI_ICON ${CMAKE_CURRENT_SOURCE_DIR}/icon.ico)
 set(CPACK_NSIS_MUI_UNICON ${CMAKE_CURRENT_SOURCE_DIR}/icon.ico)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
-set(CMAKE_INSTALL_PREFIX /)
-
-# Boost (needed for dynamic tests)
-if(WIN32)
-  set(BOOST_ROOT c:/local/boost_1_56_0)
-  set(BOOST_INCLUDEDIR ${BOOST_ROOT})
-  set(BOOST_LIBRARYDIR ${BOOST_ROOT}/lib32-msvc-11.0)
-  set(Boost_USE_STATIC_LIBS ON) # only find static libs
-  set(Boost_USE_MULTITHREADED ON)
-  set(Boost_USE_STATIC_RUNTIME OFF)
-endif()
-
 include(CTest)
 include(CPack)
 
 add_subdirectory(src)
 
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.GPL
-  DESTINATION share/doc/${PROJECT_NAME})
+    FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/README.md
+        ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.GPL
+    DESTINATION ${CMAKE_INSTALL_DOCDIR})
