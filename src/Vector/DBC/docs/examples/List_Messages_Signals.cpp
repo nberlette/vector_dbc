@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     Vector::DBC::Network network;
 
     if (argc != 2) {
-        std::cout << "Messages_Signals <database.dbc>" << std::endl;
+        std::cout << "List_Messages_Signals <database.dbc>" << std::endl;
         return -1;
     }
 

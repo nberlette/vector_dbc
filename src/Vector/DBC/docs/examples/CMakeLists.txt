@@ -16,11 +16,12 @@ if(OPTION_RUN_EXAMPLES)
         COMMENT "Copy ${PROJECT_BINARY_DIR}/src/Vector/DBC/${PROJECT_NAME}.dll to ${CMAKE_CURRENT_BINARY_DIR}")
     endif()
 
-    add_executable(example_Messages_Signals Messages_Signals.cpp)
+    add_executable(example_List_Messages_Signals List_Messages_Signals.cpp)
 
-    target_link_libraries(example_Messages_Signals ${PROJECT_NAME})
+    target_link_libraries(example_List_Messages_Signals ${PROJECT_NAME})
 endif()
 
 install(
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/Messages_Signals.cpp
+    FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/List_Messages_Signals.cpp
     DESTINATION ${CMAKE_INSTALL_DOCDIR}/examples)
