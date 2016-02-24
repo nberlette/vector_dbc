@@ -151,15 +151,26 @@ public:
     double maximumRawValue();
 
     /**
-     * @brief Extracts a signal from the message data
+     * @brief Decodes/Extracts a signal from the message data
      * @param[in] data Data
      * @return Raw signal value
      *
-     * Extracts a signal from the message data.
+     * Decodes/Extracts a signal from the message data.
      *
      * @note Multiplexors are not taken into account.
      */
-    std::uint64_t extract(std::vector<std::uint8_t> & data);
+    std::uint64_t decode(std::vector<std::uint8_t> & data);
+
+    /**
+     * @brief Encodes a signal into the message data
+     * @param[inout] data Data
+     * @param[in] rawValue Raw signal value
+     *
+     * Encode a signal into the message data.
+     *
+     * @note Multiplexors are not taken into account.
+     */
+    void encode(std::vector<std::uint8_t> & data, std::uint64_t rawValue);
 };
 
 }
