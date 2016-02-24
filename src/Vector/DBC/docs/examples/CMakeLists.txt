@@ -17,11 +17,14 @@ if(OPTION_RUN_EXAMPLES)
     endif()
 
     add_executable(example_List_Messages_Signals List_Messages_Signals.cpp)
+    add_executable(example_Message_Encode_Decode Message_Encode_Decode.cpp)
 
     target_link_libraries(example_List_Messages_Signals ${PROJECT_NAME})
+    target_link_libraries(example_Message_Encode_Decode ${PROJECT_NAME})
 endif()
 
 install(
     FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/List_Messages_Signals.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Message_Encode_Decode.cpp
     DESTINATION ${CMAKE_INSTALL_DOCDIR}/examples)
