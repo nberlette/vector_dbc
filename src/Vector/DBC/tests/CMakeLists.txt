@@ -13,3 +13,7 @@ if(OPTION_RUN_TESTS)
         add_subdirectory(lcov)
     endif()
 endif()
+
+if(OPTION_RUN_PERFORMANCE)
+    add_subdirectory(performance)
+endif()
