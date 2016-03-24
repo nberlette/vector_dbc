@@ -2,9 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 include(GenerateExportHeader)
 
-configure_file(
-    config.h.in
-    config.h)
+configure_file(config.h.in config.h)
+configure_file(${PROJECT_NAME}.pc.in ${PROJECT_NAME}.pc @ONLY)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -79,6 +78,10 @@ endif()
 install(
     TARGETS ${PROJECT_NAME}
     DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 install(
     FILES
