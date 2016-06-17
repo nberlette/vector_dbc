@@ -62,6 +62,12 @@ public:
     /** Signal Name */
     std::string signalName;
 
+    /**
+     * Compare Operator
+     *
+     * @param[in] rhs Right Hand Side of operation
+     * @return comparison result
+     */
     bool operator < (const AttributeRelation & rhs) const;
 };
 
