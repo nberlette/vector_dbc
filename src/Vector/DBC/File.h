@@ -157,7 +157,7 @@ private:
     void writeSignals(std::ofstream & ofs, Message & message);
 
     /** Read Message (BO) */
-    void readMessage(Network & network, std::ifstream & ifs, std::string & line);
+    Message * readMessage(Network & network, std::ifstream & ifs, std::string & line);
 
     /** Write Messages (BO) */
     void writeMessages(std::ofstream & ofs, Network & network);

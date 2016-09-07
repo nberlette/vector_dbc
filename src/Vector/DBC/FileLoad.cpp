@@ -309,7 +309,7 @@ void File::readSignal(Network & network, Message & message, std::string & line)
 }
 
 /* Messages (BO) */
-void File::readMessage(Network & network, std::ifstream & ifs, std::string & line)
+Message * File::readMessage(Network & network, std::ifstream & ifs, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BO_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_DELIM(":") REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_EOL);
@@ -332,22 +332,15 @@ void File::readMessage(Network & network, std::ifstream & ifs, std::string & lin
             message.transmitter = transmitter;
         }
 
-        /* Signals (SG) */
-        while(ifs.good()) {
-            std::getline(ifs, line);
-            chomp(line);
-            if (line.empty())
-                return;
-
-            readSignal(network, message, line);
-        }
-        return;
+        return &message;
     }
 
     /* format doesn't match */
     if (statusCallback != nullptr) {
         statusCallback(network, Status::MalformedMessage);
     }
+
+    return nullptr;
 }
 
 /* Message Transmitters (BO_TX_BU) */
@@ -1684,6 +1677,9 @@ Status File::load(Network & network, const char * filename)
     std::ifstream ifs;
     std::streampos fileSize;
 
+    /* in case the line is previous line was a message or signal, messageContext is set to the message */
+    Message * messageContext = nullptr;
+
     /* open stream */
     ifs.open(filename, std::ifstream::in);
     if (!ifs.is_open()) {
@@ -1715,6 +1711,7 @@ Status File::load(Network & network, const char * filename)
         regex re(REGEX_SOL REGEX_NAME);
         if ((!line.empty()) && (regex_search(line, m, re))) {
             std::string name = m[1];
+            Message * newMessageContext = nullptr;
 
             /* Version (VERSION) */
             if (name == "VERSION") {
@@ -1743,7 +1740,19 @@ Status File::load(Network & network, const char * filename)
 
             /* Messages (BO) */
             if (name == "BO_") {
-                readMessage(network, ifs, line);
+                newMessageContext = readMessage(network, ifs, line);
+            } else
+
+            /* Signal (SG) */
+            if (name == "SG_") {
+                if (messageContext) {
+                    readSignal(network, *messageContext, line);
+
+                    /* remember that we are still in context of the same message */
+                    newMessageContext = messageContext;
+                } else {
+                    statusCallback(network, Status::SignalWithoutMessage);
+                }
             } else
 
             /* Message Transmitters (BO_TX_BU) */
@@ -1836,6 +1845,9 @@ Status File::load(Network & network, const char * filename)
             if (statusCallback != nullptr) {
                 statusCallback(network, Status::Unknown);
             }
+
+            /* remember the message context (set if the current line was a message or signal) */
+            messageContext = newMessageContext;
         }
     }
 

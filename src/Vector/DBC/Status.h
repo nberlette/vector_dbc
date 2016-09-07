@@ -59,6 +59,7 @@ enum class Status : int {
     MalformedSignalGroup, /**< Incorrect format of Signal Group (SIG_GROUP) */
     MalformedSignalExtendedValueType, /**< Incorrect format of Signal Extended Value Type (SIG_VALTYPE) */
     MalformedExtendedMultiplexor, /**< Incorrect format of Extended Multiplexor (SG_MUL_VAL) */
+    SignalWithoutMessage, /**< Signal (SG) followed a line, which was not a Message (BO) or Signal (SG) */
 
     /* Errors */
     Error = -1, /**< General error */
