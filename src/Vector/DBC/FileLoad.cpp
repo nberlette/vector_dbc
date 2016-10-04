@@ -309,7 +309,7 @@ void File::readSignal(Network & network, Message & message, std::string & line)
 }
 
 /* Messages (BO) */
-Message * File::readMessage(Network & network, std::ifstream & ifs, std::string & line)
+Message * File::readMessage(Network & network, std::string & line)
 {
     smatch m;
     regex re(REGEX_SOL "BO_" REGEX_SPACE REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_DELIM(":") REGEX_UINT REGEX_SPACE REGEX_NAME REGEX_EOL);
@@ -1740,7 +1740,7 @@ Status File::load(Network & network, const char * filename)
 
             /* Messages (BO) */
             if (name == "BO_") {
-                newMessageContext = readMessage(network, ifs, line);
+                newMessageContext = readMessage(network, line);
             } else
 
             /* Signal (SG) */
