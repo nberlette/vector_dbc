@@ -27,7 +27,7 @@ namespace DBC {
 SignalGroup::SignalGroup() :
     messageId(0),
     name(),
-    repetitions(0),
+    repetitions(1),
     signals()
 {
     /* nothing to do here */

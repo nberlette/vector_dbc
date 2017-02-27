@@ -45,7 +45,13 @@ public:
     /** Name */
     std::string name;
 
-    /** Repetitions */
+    /**
+     * Repetitions
+     *
+     * @note
+     *   According to Vector this value is obsolete and is not read by
+     *   any Vector product any more. This value is always set to 1.
+     */
     unsigned int repetitions;
 
     /** Signals */
