@@ -9,7 +9,7 @@ if(OPTION_RUN_EXAMPLES)
     set(CMAKE_SHARED_LIBRARY_PREFIX "${CMAKE_CURRENT_BINARY_DIR}")
 
     if(WIN32)
-        add_custom_target(Vector_DLL-Copy ALL
+        add_custom_target(Vector_DBC-Copy ALL
             ${CMAKE_COMMAND} -E copy_if_different
             "${PROJECT_BINARY_DIR}/src/Vector/DBC/${PROJECT_NAME}.dll"
             "${CMAKE_CURRENT_BINARY_DIR}"
@@ -25,6 +25,6 @@ endif()
 
 install(
     FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/List_Messages_Signals.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Message_Encode_Decode.cpp
+        List_Messages_Signals.cpp
+        Message_Encode_Decode.cpp
     DESTINATION ${CMAKE_INSTALL_DOCDIR}/examples)

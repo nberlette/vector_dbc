@@ -85,7 +85,7 @@ END
 echo "Generating report"
 pdftk table_*.pdf cat output - > performance_measurement.pdf
 
-# set cpus to max
+# set cpus to powersave
 echo powersave | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 

@@ -8,10 +8,6 @@ endif()
 
 if(OPTION_RUN_TESTS)
     add_subdirectory(unittests)
-
-    if(OPTION_USE_GCOV_LCOV)
-        add_subdirectory(lcov)
-    endif()
 endif()
 
 if(OPTION_RUN_PERFORMANCE)
