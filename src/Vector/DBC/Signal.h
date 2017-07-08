@@ -159,7 +159,7 @@ public:
      *
      * @note Multiplexors are not taken into account.
      */
-    std::uint64_t decode(std::vector<std::uint8_t> & data);
+    uint64_t decode(std::vector<uint8_t> & data);
 
     /**
      * @brief Encodes a signal into the message data
@@ -170,7 +170,7 @@ public:
      *
      * @note Multiplexors are not taken into account.
      */
-    void encode(std::vector<std::uint8_t> & data, std::uint64_t rawValue);
+    void encode(std::vector<uint8_t> & data, uint64_t rawValue);
 };
 
 }

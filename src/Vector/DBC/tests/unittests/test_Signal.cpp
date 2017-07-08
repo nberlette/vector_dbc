@@ -10,7 +10,11 @@
 
 #include "Vector/DBC.h"
 
-BOOST_AUTO_TEST_CASE(Signal)
+/**
+ * Check raw to physical and vice-versa functions.
+ * Check min/max functions.
+ */
+BOOST_AUTO_TEST_CASE(SignalRawPhysicalMinMax)
 {
     Vector::DBC::Signal signal;
 
@@ -19,9 +23,6 @@ BOOST_AUTO_TEST_CASE(Signal)
     signal.offset = 0;
     BOOST_CHECK_EQUAL(signal.rawToPhysicalValue(1.0), 1.0);
     BOOST_CHECK_EQUAL(signal.physicalToRawValue(1.0), 1.0);
-    // division by zero
-    signal.factor = 0;
-    BOOST_CHECK_EQUAL(signal.physicalToRawValue(1.0), 0.0);
 
     /* check for minimum and maximum */
     // undefined
@@ -52,4 +53,32 @@ BOOST_AUTO_TEST_CASE(Signal)
     signal.extendedValueType = Vector::DBC::Signal::ExtendedValueType::Double;
     BOOST_CHECK_EQUAL(signal.minimumRawValue(), 1.7e-308);
     BOOST_CHECK_EQUAL(signal.maximumRawValue(), 1.7e308);
+}
+
+/**
+ * Check signal decode/encode functions.
+ */
+BOOST_AUTO_TEST_CASE(SignalDecodeEncode)
+{
+    /* construct a signal */
+    Vector::DBC::Signal signal;
+    signal.startBit = 1;
+    signal.bitSize = 4;
+    signal.byteOrder = Vector::DBC::ByteOrder::LittleEndian;
+    signal.valueType = Vector::DBC::ValueType::Signed;
+
+    /* extract negative signal */
+    std::vector<uint8_t> data;
+    data.push_back(0x10); // xxx1000x
+    BOOST_CHECK_EQUAL(signal.decode(data),  0xFFFFFFFFFFFFFFF8);
+
+    /* extract positive signal */
+    data[0] = 0x0E; // xxx0111x
+    BOOST_CHECK_EQUAL(signal.decode(data),  0x07);
+
+    /* check bitSize = 0 */
+    signal.bitSize = 0;
+    BOOST_CHECK_EQUAL(signal.decode(data), 0);
+    signal.encode(data, 3);
+    BOOST_CHECK_EQUAL(data[0], 0x0E);
 }

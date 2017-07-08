@@ -76,10 +76,6 @@ double Signal::rawToPhysicalValue(double rawValue)
 
 double Signal::physicalToRawValue(double physicalValue)
 {
-    /* safety check */
-    if (factor == 0)
-        return 0;
-
     /* rawValue = (physicalValue - offset) / factor */
     return (physicalValue - offset) / factor;
 }
@@ -92,7 +88,7 @@ double Signal::minimumRawValue()
     case ExtendedValueType::Undefined:
     case ExtendedValueType::Integer:
         if (valueType == ValueType::Signed) {
-            minimumRawValue = -(2<<(bitSize-2)); // bitSize-- because shift instead of pow
+            minimumRawValue = -(2 << (bitSize - 2)); // bitSize-- because shift instead of pow
         } else {
             minimumRawValue = 0.0;
         }
@@ -117,9 +113,9 @@ double Signal::maximumRawValue()
     case ExtendedValueType::Undefined:
     case ExtendedValueType::Integer:
         if (valueType == ValueType::Signed) {
-            maximumRawValue = (2<<(bitSize-2))-1; // bitSize-- because shift instead of pow
+            maximumRawValue = (2 << (bitSize - 2)) - 1; // bitSize-- because shift instead of pow
         } else {
-            maximumRawValue = (2<<(bitSize-1))-1; // bitSize-- because shift instead of pow
+            maximumRawValue = (2 << (bitSize - 1)) - 1; // bitSize-- because shift instead of pow
         }
         break;
 
@@ -134,20 +130,23 @@ double Signal::maximumRawValue()
     return maximumRawValue;
 }
 
-std::uint64_t Signal::decode(std::vector<std::uint8_t> & data)
+uint64_t Signal::decode(std::vector<uint8_t> & data)
 {
-    std::uint64_t retVal = 0;
-    unsigned int size = bitSize;
+    /* safety check */
+    if (bitSize == 0) {
+        return 0;
+    }
 
     /* copy bits */
+    uint64_t retVal = 0;
     if (byteOrder == ByteOrder::BigEndian) {
         /* start with MSB */
         unsigned int srcBit = startBit;
-        unsigned int dstBit = size - 1;
-        while(size > 0) {
+        unsigned int dstBit = bitSize - 1;
+        for (unsigned int i = 0; i < bitSize; ++i) {
             /* copy bit */
-            if (data[srcBit/8] & (1<<(srcBit%8))) {
-                retVal |= (1ULL<<dstBit);
+            if (data[srcBit / 8] & (1 << (srcBit % 8))) {
+                retVal |= (1ULL << dstBit);
             }
 
             /* calculate next position */
@@ -157,31 +156,28 @@ std::uint64_t Signal::decode(std::vector<std::uint8_t> & data)
                 --srcBit;
             }
             --dstBit;
-            --size;
         }
     } else {
         /* start with LSB */
         unsigned int srcBit = startBit;
         unsigned int dstBit = 0;
-        while(size > 0) {
+        for (unsigned int i = 0; i < bitSize; ++i) {
             /* copy bit */
-            if (data[srcBit/8] & (1<<(srcBit%8))) {
-                retVal |= (1ULL<<dstBit);
+            if (data[srcBit / 8] & (1 << (srcBit % 8))) {
+                retVal |= (1ULL << dstBit);
             }
 
             /* calculate next position */
             ++srcBit;
             ++dstBit;
-            --size;
         }
     }
 
     /* if signed, then fill all bits above MSB with 1 */
     if (valueType == ValueType::Signed) {
-        uint64_t msb = (retVal >> (size - 1)) & 1;
-        if (msb) {
-            for (unsigned int i = size; i < 8*sizeof(retVal); ++i) {
-                retVal |= (1ULL<<i);
+        if (retVal & (1 << (bitSize - 1))) {
+            for (unsigned int i = bitSize; i < 8 * sizeof(retVal); ++i) {
+                retVal |= (1ULL << i);
             }
         }
     }
@@ -189,21 +185,24 @@ std::uint64_t Signal::decode(std::vector<std::uint8_t> & data)
     return retVal;
 }
 
-void Signal::encode(std::vector<std::uint8_t> & data, std::uint64_t rawValue)
+void Signal::encode(std::vector<uint8_t> & data, uint64_t rawValue)
 {
-    unsigned int size = bitSize;
+    /* safety check */
+    if (bitSize == 0) {
+        return;
+    }
 
     /* copy bits */
     if (byteOrder == ByteOrder::BigEndian) {
         /* start with MSB */
         unsigned int srcBit = startBit;
-        unsigned int dstBit = size - 1;
-        while(size > 0) {
+        unsigned int dstBit = bitSize - 1;
+        for (unsigned int i = 0; i < bitSize; ++i) {
             /* copy bit */
-            if (rawValue & (1ULL<<dstBit)) {
-                data[srcBit/8] |= (1<<(srcBit%8));
+            if (rawValue & (1ULL << dstBit)) {
+                data[srcBit / 8] |= (1 << (srcBit % 8));
             } else {
-                data[srcBit/8] &= ~(1<<(srcBit%8));
+                data[srcBit / 8] &= ~(1 << (srcBit % 8));
             }
 
             /* calculate next position */
@@ -213,24 +212,22 @@ void Signal::encode(std::vector<std::uint8_t> & data, std::uint64_t rawValue)
                 --srcBit;
             }
             --dstBit;
-            --size;
         }
     } else {
         /* start with LSB */
         unsigned int srcBit = startBit;
         unsigned int dstBit = 0;
-        while(size > 0) {
+        for (unsigned int i = 0; i < bitSize; ++i) {
             /* copy bit */
-            if (rawValue & (1ULL<<dstBit)) {
-                data[srcBit/8] |= (1<<(srcBit%8));
+            if (rawValue & (1ULL << dstBit)) {
+                data[srcBit / 8] |= (1 << (srcBit % 8));
             } else {
-                data[srcBit/8] &= ~(1<<(srcBit%8));
+                data[srcBit / 8] &= ~(1 << (srcBit % 8));
             }
 
             /* calculate next position */
             ++srcBit;
             ++dstBit;
-            --size;
         }
     }
 }
