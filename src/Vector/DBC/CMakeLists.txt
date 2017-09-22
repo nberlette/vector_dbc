@@ -1,6 +1,9 @@
 # dependencies
 include(GenerateExportHeader)
 
+# targets
+add_library(${PROJECT_NAME} SHARED "")
+
 # search paths
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR})
@@ -10,54 +13,59 @@ if(NOT OPTION_USE_CPP11_REGEX)
 endif()
 
 # sources/headers
-set(source_files
-    Attribute.cpp
-    AttributeDefinition.cpp
-    AttributeRelation.cpp
-    BitTiming.cpp
-    EnvironmentVariable.cpp
-    ExtendedMultiplexor.cpp
-    File.cpp
-    FileLoad.cpp
-    FileSave.cpp
-    Message.cpp
-    Network.cpp
-    Node.cpp
-    Signal.cpp
-    SignalGroup.cpp
-    SignalType.cpp
-    ValueTable.cpp)
-set(public_header_files
-    Attribute.h
-    AttributeDefinition.h
-    AttributeRelation.h
-    AttributeValueType.h
-    BitTiming.h
-    ByteOrder.h
-    EnvironmentVariable.h
-    ExtendedMultiplexor.h
-    File.h
-    Message.h
-    Network.h
-    Node.h
-    platform.h
-    Signal.h
-    SignalGroup.h
-    SignalType.h
-    Status.h
-    ValueDescriptions.h
-    ValueTable.h
-    ValueType.h)
-set(private_header_files
-    )
+target_sources(${PROJECT_NAME}
+    INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/Attribute.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/AttributeDefinition.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/AttributeRelation.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/AttributeValueType.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/BitTiming.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ByteOrder.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/EnvironmentVariable.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ExtendedMultiplexor.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/File.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Message.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Network.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Node.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Signal.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/SignalGroup.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/SignalType.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Status.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ValueDescriptions.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ValueTable.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ValueType.h
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/Attribute.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/AttributeDefinition.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/AttributeRelation.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/BitTiming.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/EnvironmentVariable.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ExtendedMultiplexor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/File.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/FileLoad.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/FileSave.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Message.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Network.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Node.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Signal.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/SignalGroup.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/SignalType.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ValueTable.cpp)
 
 # generated files
 configure_file(config.h.in config.h)
 configure_file(${PROJECT_NAME}.pc.in ${PROJECT_NAME}.pc @ONLY)
+generate_export_header(${PROJECT_NAME})
 
 # compiler/linker settings
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    CXX_STANDARD_REQUIRED 11
+    CXX_VISIBILITY_PRESET "hidden"
+    SOVERSION ${PROJECT_VERSION_MAJOR}
+    VERSION ${PROJECT_VERSION}
+    VISIBILITY_INLINES_HIDDEN 1)
 if(CMAKE_COMPILER_IS_GNUCXX)
-    add_definitions(-std=c++11)
     add_definitions(-D_FORTIFY_SOURCE=2)
     #add_definitions(-fPIE -pie)
     add_definitions(-Wl,-z,relro,-z,now)
@@ -68,18 +76,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
         add_definitions(-g -O0 -fprofile-arcs -ftest-coverage)
     endif()
 endif()
-
-# targets
-add_library(${PROJECT_NAME} SHARED
-    ${source_files} ${public_header_files} ${private_header_files})
-generate_export_header(${PROJECT_NAME})
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}
-    SOVERSION ${PROJECT_VERSION_MAJOR}
-    CXX_VISIBILITY_PRESET "hidden"
-    VISIBILITY_INLINES_HIDDEN 1)
 if(NOT OPTION_USE_CPP11_REGEX)
     target_link_libraries(${PROJECT_NAME} ${Boost_REGEX_LIBRARY})
+endif()
+if(OPTION_USE_GCOV_LCOV)
+    target_link_libraries(${PROJECT_NAME} gcov)
 endif()
 
 # install
@@ -91,9 +92,9 @@ install(
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 install(
     FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/config.h
         ${CMAKE_CURRENT_BINARY_DIR}/vector_dbc_export.h
-        ${public_header_files}
+        ${CMAKE_CURRENT_BINARY_DIR}/config.h
+        $<TARGET_PROPERTY:${PROJECT_NAME},INTERFACE_SOURCES>
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Vector/DBC)
 
 # sub directories

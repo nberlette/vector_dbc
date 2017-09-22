@@ -44,7 +44,7 @@ public:
     std::string switchName;
 
     /** Value Range */
-    typedef std::pair<unsigned int, unsigned int> ValueRange;
+    using ValueRange = std::pair<unsigned int, unsigned int>;
 
     /** Value Range */
     std::set<ValueRange> valueRanges;

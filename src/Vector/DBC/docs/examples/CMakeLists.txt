@@ -10,10 +10,10 @@ if(OPTION_RUN_EXAMPLES)
 
     if(WIN32)
         add_custom_target(Vector_DBC-Copy ALL
-            ${CMAKE_COMMAND} -E copy_if_different
-            "${PROJECT_BINARY_DIR}/src/Vector/DBC/${PROJECT_NAME}.dll"
-            "${CMAKE_CURRENT_BINARY_DIR}"
-        COMMENT "Copy ${PROJECT_BINARY_DIR}/src/Vector/DBC/${PROJECT_NAME}.dll to ${CMAKE_CURRENT_BINARY_DIR}")
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${PROJECT_BINARY_DIR}/src/Vector/DBC/${PROJECT_NAME}.dll"
+                "${CMAKE_CURRENT_BINARY_DIR}"
+            COMMENT "Copy ${PROJECT_BINARY_DIR}/src/Vector/DBC/${PROJECT_NAME}.dll to ${CMAKE_CURRENT_BINARY_DIR}")
     endif()
 
     add_executable(example_List_Messages_Signals List_Messages_Signals.cpp)

@@ -23,6 +23,8 @@
 
 #include "platform.h"
 
+#include <functional>
+
 #include "Network.h"
 #include "Status.h"
 
@@ -82,7 +84,7 @@ public:
     /**
      * Progress Callback function type
      */
-    typedef void (*ProgressCallback)(Network & network, float numerator, float denominator);
+    using ProgressCallback = std::function<void(Network & network, float numerator, float denominator)>;
 
     /**
      * @brief Set Progress Callback function
@@ -96,7 +98,7 @@ public:
     /**
      * Status Callback function type
      */
-    typedef void (*StatusCallback)(Network & network, Status status);
+    using StatusCallback = std::function<void(Network & network, Status status)>;
 
     /**
      * @brief Set Status Callback function

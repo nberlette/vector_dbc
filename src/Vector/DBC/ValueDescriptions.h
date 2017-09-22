@@ -34,7 +34,7 @@ namespace DBC {
 /**
  * Value Descriptions
  */
-typedef std::map<unsigned int, std::string> ValueDescriptions;
+using ValueDescriptions = std::map<unsigned int, std::string>;
 
 }
 }

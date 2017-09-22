@@ -1,3 +1,26 @@
+# combines: targets, sources/headers, compiler/linker settings, tests
+function(add_boost_test test_name exec_name)
+    # targets
+    add_executable(${exec_name} "")
+
+    # sources/headers
+    target_sources(${exec_name} PRIVATE ${ARGN})
+
+    # compiler/linker settings
+    target_link_libraries(${exec_name}
+        PRIVATE
+            ${PROJECT_NAME}
+            ${Boost_SYSTEM_LIBRARY}
+            ${Boost_FILESYSTEM_LIBRARY}
+            ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+    if(OPTION_USE_GCOV_LCOV)
+        target_link_libraries(${exec_name} PRIVATE gcov)
+    endif()
+
+    # tests
+    add_test(${test_name} COMMAND ${exec_name})
+endfunction()
+
 # search paths
 include_directories(
     ${PROJECT_SOURCE_DIR}/src
@@ -10,47 +33,16 @@ add_definitions(
     -DCMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
     -DCMAKE_CURRENT_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}")
 
-# targets
-add_executable(test_File test_File.cpp)
-add_executable(test_Message test_Message.cpp)
-add_executable(test_Signal test_Signal.cpp)
-add_executable(test_Regression test_Regression.cpp)
-target_link_libraries(test_File
-    ${PROJECT_NAME}
-    ${Boost_SYSTEM_LIBRARY}
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-target_link_libraries(test_Message
-    ${PROJECT_NAME}
-    ${Boost_SYSTEM_LIBRARY}
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-target_link_libraries(test_Signal
-    ${PROJECT_NAME}
-    ${Boost_SYSTEM_LIBRARY}
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-target_link_libraries(test_Regression
-    ${PROJECT_NAME}
-    ${Boost_SYSTEM_LIBRARY}
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-
 # tests
 include(CTest)
 enable_testing()
-add_test(File test_File)
-add_test(Message test_Message)
-add_test(Signal test_Signal)
-add_test(Regression test_Regression)
+add_boost_test(File test_File test_File.cpp)
+add_boost_test(Message test_Message test_Message.cpp)
+add_boost_test(Signal test_Signal test_Signal.cpp)
+add_boost_test(Regression test_Regression test_Regression.cpp)
 
 # coverage
 if(OPTION_USE_GCOV_LCOV)
-    target_link_libraries(test_File gcov)
-    target_link_libraries(test_Message gcov)
-    target_link_libraries(test_Signal gcov)
-    target_link_libraries(test_Regression gcov)
-
     add_custom_target(lcov_capture ALL
         COMMAND ${LCOV_EXECUTABLE}
             --capture
