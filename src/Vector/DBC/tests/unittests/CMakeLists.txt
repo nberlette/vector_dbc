@@ -39,7 +39,6 @@ enable_testing()
 add_boost_test(File test_File test_File.cpp)
 add_boost_test(Message test_Message test_Message.cpp)
 add_boost_test(Signal test_Signal test_Signal.cpp)
-add_boost_test(Regression test_Regression test_Regression.cpp)
 
 # coverage
 if(OPTION_USE_GCOV_LCOV)
@@ -51,8 +50,7 @@ if(OPTION_USE_GCOV_LCOV)
         DEPENDS
             test_File
             test_Message
-            test_Signal
-            test_Regression)
+            test_Signal)
 
     add_custom_target(lcov_genhtml ALL
         COMMAND ${LCOV_GENHTML_EXECUTABLE}

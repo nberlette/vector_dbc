@@ -46,13 +46,11 @@ BOOST_AUTO_TEST_CASE(File)
         file.setStatusCallback(&statusCallback);
 
         std::string infilename = infile.string();
-        std::cout << "Input file: " << infilename << std::endl;
         BOOST_REQUIRE(file.load(network, infilename) == Vector::DBC::Status::Ok);
     }
 
     /* create output directory */
     boost::filesystem::path outdir(CMAKE_CURRENT_BINARY_DIR "/data/");
-    std::cout << "Output directory: " << outdir.string() << std::endl;
     if (!exists(outdir)) {
         BOOST_REQUIRE(create_directory(outdir));
     }
@@ -64,7 +62,6 @@ BOOST_AUTO_TEST_CASE(File)
     {
         Vector::DBC::File file;
         std::string outfilename = outfile.string();
-        std::cout << "Output file: " << outfilename << std::endl;
         BOOST_REQUIRE(file.save(network, outfilename) == Vector::DBC::Status::Ok);
     }
 

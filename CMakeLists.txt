@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 
 project(Vector_DBC
-    VERSION 1.0.2
+    VERSION 1.0.3
     DESCRIPTION "Vector DBC")
 
 # build types: None, Debug, Release, RelWithDebInfo, MinSizeRel

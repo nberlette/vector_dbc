@@ -57,8 +57,8 @@ BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
  SG_ Signal_8_Motorola_Signed : 0|8@0- (1,0) [0|0] "" Vector__XXX
  SG_ Signal_8_Motorola_Unsigned : 0|8@0+ (1,0) [0|0] "" Vector__XXX
 
-BO_TX_BU_ 1 : Node_2,Node_1;
-BO_TX_BU_ 2147483649 : Node_2,Node_1;
+BO_TX_BU_ 1 : Node_1 Node_2;
+BO_TX_BU_ 2147483649 : Node_1 Node_2;
 
 
 EV_ Variable_Data_Read: 0 [0|0] "" 0 2 DUMMY_NODE_VECTOR1 Vector__XXX;
