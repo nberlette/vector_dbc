@@ -19,7 +19,7 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "EnvironmentVariable.h"
+#include <Vector/DBC/EnvironmentVariable.h>
 
 namespace Vector {
 namespace DBC {

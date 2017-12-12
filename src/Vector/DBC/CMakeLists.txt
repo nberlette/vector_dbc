@@ -6,7 +6,8 @@ add_library(${PROJECT_NAME} SHARED "")
 
 # search paths
 include_directories(
-    ${CMAKE_CURRENT_BINARY_DIR})
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_BINARY_DIR}/src)
 if(NOT OPTION_USE_CPP11_REGEX)
     include_directories(${Boost_INCLUDE_DIR})
     link_directories(${Boost_LIBRARY_DIRS})
@@ -60,12 +61,15 @@ generate_export_header(${PROJECT_NAME})
 
 # compiler/linker settings
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    CXX_STANDARD_REQUIRED 11
+    CXX_EXTENSIONS OFF
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED ON
     CXX_VISIBILITY_PRESET "hidden"
     SOVERSION ${PROJECT_VERSION_MAJOR}
     VERSION ${PROJECT_VERSION}
     VISIBILITY_INLINES_HIDDEN 1)
 if(CMAKE_COMPILER_IS_GNUCXX)
+    #add_definitions(-pedantic)
     add_definitions(-D_FORTIFY_SOURCE=2)
     #add_definitions(-fPIE -pie)
     add_definitions(-Wl,-z,relro,-z,now)

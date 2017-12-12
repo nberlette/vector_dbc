@@ -19,7 +19,7 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "SignalGroup.h"
+#include <Vector/DBC/SignalGroup.h>
 
 namespace Vector {
 namespace DBC {

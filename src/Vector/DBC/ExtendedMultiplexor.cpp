@@ -19,7 +19,7 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "ExtendedMultiplexor.h"
+#include <Vector/DBC/ExtendedMultiplexor.h>
 
 namespace Vector {
 namespace DBC {

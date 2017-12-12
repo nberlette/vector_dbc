@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "platform.h"
+#include <Vector/DBC/platform.h>
 
 #include <cstdint>
 #include <map>
@@ -29,13 +29,13 @@
 #include <string>
 #include <vector>
 
-#include "Attribute.h"
-#include "ByteOrder.h"
-#include "ExtendedMultiplexor.h"
-#include "ValueDescriptions.h"
-#include "ValueType.h"
+#include <Vector/DBC/Attribute.h>
+#include <Vector/DBC/ByteOrder.h>
+#include <Vector/DBC/ExtendedMultiplexor.h>
+#include <Vector/DBC/ValueDescriptions.h>
+#include <Vector/DBC/ValueType.h>
 
-#include "vector_dbc_export.h"
+#include <Vector/DBC/vector_dbc_export.h>
 
 namespace Vector {
 namespace DBC {

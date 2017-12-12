@@ -19,7 +19,7 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "Attribute.h"
+#include <Vector/DBC/Attribute.h>
 
 namespace Vector {
 namespace DBC {

@@ -21,17 +21,17 @@
 
 #pragma once
 
-#include "platform.h"
+#include <Vector/DBC/platform.h>
 
 #include <map>
 #include <set>
 #include <string>
 
-#include "Attribute.h"
-#include "Signal.h"
-#include "SignalGroup.h"
+#include <Vector/DBC/Attribute.h>
+#include <Vector/DBC/Signal.h>
+#include <Vector/DBC/SignalGroup.h>
 
-#include "vector_dbc_export.h"
+#include <Vector/DBC/vector_dbc_export.h>
 
 namespace Vector {
 namespace DBC {

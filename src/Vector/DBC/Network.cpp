@@ -19,7 +19,7 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "Network.h"
+#include <Vector/DBC/Network.h>
 
 namespace Vector {
 namespace DBC {

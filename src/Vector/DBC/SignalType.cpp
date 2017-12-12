@@ -19,7 +19,7 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "SignalType.h"
+#include <Vector/DBC/SignalType.h>
 
 namespace Vector {
 namespace DBC {

@@ -22,7 +22,7 @@
 #pragma once
 
 /* data model (root) */
-#include "DBC/Network.h"
+#include <Vector/DBC/Network.h>
 
 /* file load/save operations */
-#include "DBC/File.h"
+#include <Vector/DBC/File.h>

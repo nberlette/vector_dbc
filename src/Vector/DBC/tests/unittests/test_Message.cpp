@@ -12,7 +12,7 @@
 #include <vector>
 #include <boost/filesystem.hpp>
 
-#include "Vector/DBC.h"
+#include <Vector/DBC.h>
 
 #define SUCCEEDED(code) ((int)(code) >= 0)
 #define WARNED(code) ((int)(code) & 0x40000000)

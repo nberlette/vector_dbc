@@ -22,7 +22,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "Signal.h"
+#include <Vector/DBC/Signal.h>
 
 namespace Vector {
 namespace DBC {

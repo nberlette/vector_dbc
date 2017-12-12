@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.4] - 2017-12-12
+### [Changed]
+- Includes use <> now instead of ""
+### [Fixed]
+- Fixed C++11 settings that affected AttributeValueType enum class.
+
 ## [1.0.3] - 2017-11-20
 ### [Fixed]
 - Fixed error in test databaes. BO_TX_BU_ had wrong transmitter seperator.

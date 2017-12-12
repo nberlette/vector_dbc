@@ -10,7 +10,7 @@
 #include <string>
 #include <boost/filesystem.hpp>
 
-#include "Vector/DBC.h"
+#include <Vector/DBC.h>
 
 void progressCallback(Vector::DBC::Network & /* network */, float numerator, float denominator)
 {

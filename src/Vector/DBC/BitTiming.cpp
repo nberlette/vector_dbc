@@ -19,7 +19,7 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "BitTiming.h"
+#include <Vector/DBC/BitTiming.h>
 
 namespace Vector {
 namespace DBC {

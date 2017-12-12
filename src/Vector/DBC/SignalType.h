@@ -21,14 +21,14 @@
 
 #pragma once
 
-#include "platform.h"
+#include <Vector/DBC/platform.h>
 
 #include <string>
 
-#include "ByteOrder.h"
-#include "ValueType.h"
+#include <Vector/DBC/ByteOrder.h>
+#include <Vector/DBC/ValueType.h>
 
-#include "vector_dbc_export.h"
+#include <Vector/DBC/vector_dbc_export.h>
 
 namespace Vector {
 namespace DBC {

@@ -19,7 +19,7 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "ValueTable.h"
+#include <Vector/DBC/ValueTable.h>
 
 namespace Vector {
 namespace DBC {

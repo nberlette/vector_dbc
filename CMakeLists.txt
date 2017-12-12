@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 
 project(Vector_DBC
-    VERSION 1.0.3
+    VERSION 1.0.4
     DESCRIPTION "Vector DBC")
 
 # build types: None, Debug, Release, RelWithDebInfo, MinSizeRel
@@ -47,6 +47,7 @@ if(OPTION_RUN_CPPCHECK)
     find_package(Cppcheck REQUIRED)
 endif()
 if(OPTION_RUN_TESTS)
+    enable_testing()
     find_package(Boost 1.55 COMPONENTS system filesystem unit_test_framework REQUIRED)
 endif()
 if(OPTION_USE_GCOV_LCOV)

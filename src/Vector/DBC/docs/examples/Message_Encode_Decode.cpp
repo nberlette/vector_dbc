@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "Vector/DBC.h"
+#include <Vector/DBC.h>
 
 Vector::DBC::Network network;
 

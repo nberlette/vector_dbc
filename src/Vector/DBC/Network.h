@@ -21,26 +21,26 @@
 
 #pragma once
 
-#include "platform.h"
+#include <Vector/DBC/platform.h>
 
 #include <list>
 #include <map>
 #include <stack>
 #include <string>
 
-#include "Attribute.h"
-#include "AttributeDefinition.h"
-#include "AttributeRelation.h"
-#include "BitTiming.h"
-#include "EnvironmentVariable.h"
-#include "Message.h"
-#include "Node.h"
-#include "SignalType.h"
-#include "Status.h"
-#include "ValueDescriptions.h"
-#include "ValueTable.h"
+#include <Vector/DBC/Attribute.h>
+#include <Vector/DBC/AttributeDefinition.h>
+#include <Vector/DBC/AttributeRelation.h>
+#include <Vector/DBC/BitTiming.h>
+#include <Vector/DBC/EnvironmentVariable.h>
+#include <Vector/DBC/Message.h>
+#include <Vector/DBC/Node.h>
+#include <Vector/DBC/SignalType.h>
+#include <Vector/DBC/Status.h>
+#include <Vector/DBC/ValueDescriptions.h>
+#include <Vector/DBC/ValueTable.h>
 
-#include "vector_dbc_export.h"
+#include <Vector/DBC/vector_dbc_export.h>
 
 namespace Vector {
 namespace DBC {

@@ -19,7 +19,7 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "File.h"
+#include <Vector/DBC/File.h>
 
 namespace Vector {
 namespace DBC {
