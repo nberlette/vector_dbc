@@ -23,6 +23,7 @@ option(OPTION_RUN_CPPCHECK "Run Cppcheck" OFF)
 # dynamic tests
 option(OPTION_RUN_EXAMPLES "Run examples" OFF)
 option(OPTION_RUN_TESTS "Run tests" OFF)
+option(OPTION_RUN_PERFORMANCE "Run performance tests" OFF)
 option(OPTION_USE_GCOV_LCOV "Use gcov and run lcov" OFF)
 
 # directories
