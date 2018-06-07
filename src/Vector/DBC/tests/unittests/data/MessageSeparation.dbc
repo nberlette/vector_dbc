@@ -43,4 +43,6 @@ BO_ 2 Message_2: 8 Vector__XXX
 BO_ 3 Message_3: 8 Vector__XXX
  SG_ Signal_3 : 0|8@1- (1,0) [0|0] "" Vector__XXX
 
+CM_ SG_ 1 Signal_1 "Comment
+";
 VAL_ 2 Signal_2 1 " Error B" 0 " Error A" ;

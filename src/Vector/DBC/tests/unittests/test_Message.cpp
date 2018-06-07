@@ -136,3 +136,29 @@ BOOST_AUTO_TEST_CASE(MessageSeparation)
     BOOST_CHECK(valueDescriptions[0] == " Error A");
     BOOST_CHECK(valueDescriptions[1] == " Error B");
 }
+
+/*
+ * Checks multi-line comments, where the last sign is a line-break.
+ * Before the fix this resulting in an string access at position -1.
+ */
+BOOST_AUTO_TEST_CASE(MultiLineComments)
+{
+    Vector::DBC::Network network;
+    Vector::DBC::File file;
+    file.setStatusCallback(&statusCallback);
+
+    /* load database file */
+    boost::filesystem::path infile(CMAKE_CURRENT_SOURCE_DIR "/data/MessageSeparation.dbc");
+    std::string infilename = infile.string();
+    std::cout << "Input file: " << infilename << std::endl;
+    BOOST_REQUIRE(file.load(network, infilename) == Vector::DBC::Status::Ok);
+
+    /* get message and signal */
+    Vector::DBC::Message & message = network.messages[1];
+    BOOST_REQUIRE_EQUAL(message.id, 1);
+    Vector::DBC::Signal & signal = message.signals["Signal_1"];
+    BOOST_REQUIRE_EQUAL(signal.name, "Signal_1");
+
+    /* check if the comment is correctly parsed */
+    BOOST_CHECK_EQUAL(signal.comment, "Comment\r\n");
+}

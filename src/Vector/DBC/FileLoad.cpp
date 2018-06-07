@@ -100,6 +100,14 @@ void File::chomp(std::string & line)
     line = regex_replace(line, regex("[[:space:]]+$"), "");
 }
 
+/* checks if a string ends with ... */
+inline bool endsWith(std::string const & str, std::string const & strEnd)
+{
+    return
+        (str.size() >= strEnd.size()) &&
+        std::equal(strEnd.rbegin(), strEnd.rend(), str.rbegin());
+}
+
 /* stod without C locale */
 double File::stod(const std::string & str)
 {
@@ -698,25 +706,15 @@ void File::readComment(Network & network, std::ifstream & ifs, std::string & lin
     if (firstCommentCharPos == std::string::npos) {
         return;
     }
-    std::size_t lastCommentCharPos = line.rfind('"');
-    std::size_t eolPos = line.rfind(';');
-    bool eol = (lastCommentCharPos > firstCommentCharPos) &&
-            (line[lastCommentCharPos-1] != '\\') &&
-            (eolPos != std::string::npos) &&
-            (eolPos > lastCommentCharPos);
-    firstCommentCharPos++;
     std::stack<std::size_t> lineBreaks;
-    while (!eol) {
+    while (!endsWith(line, "\";") || endsWith(line, "\\\";")) {
+        /* remember line break */
+        lineBreaks.push(line.size() - firstCommentCharPos - 1);
+
+        /* append next line */
         std::string nextLine;
         std::getline(ifs, nextLine);
         chomp(nextLine);
-        lineBreaks.push(line.size() - firstCommentCharPos);
-        lastCommentCharPos = nextLine.rfind('"');
-        eolPos = nextLine.rfind(';');
-        eol = (lastCommentCharPos != std::string::npos) &&
-                (nextLine[lastCommentCharPos-1] != '\\') &&
-                (eolPos != std::string::npos) &&
-                (eolPos > lastCommentCharPos);
         line += nextLine;
     }
 
