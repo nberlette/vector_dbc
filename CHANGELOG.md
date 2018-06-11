@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.5] - 2018-06-11
+### [Fixed]
+- Multiline comments with trailing line feed works now
+
 ## [1.0.4] - 2017-12-12
 ### [Changed]
 - Includes use <> now instead of ""
