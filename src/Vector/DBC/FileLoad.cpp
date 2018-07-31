@@ -208,19 +208,19 @@ void File::readValueTable(Network & network, std::string & line)
 
         /* Value Description Pairs */
         std::istringstream iss(m[2]);
-        while (iss.good()) {
+        for(;;) {
+            /* value */
             std::string value;
-            iss >> value;
-            std::string description;
-            iss >> description;
-            while (description.back() != '"') {
-                std::string nextStr;
-                iss >> nextStr;
-                description += " ";
-                description += nextStr;
+            if (!std::getline(iss, value, '"').good()) {
+                break;
             }
-            description.erase(0, 1);
-            description.pop_back();
+
+            /* description */
+            std::string description;
+            if (!std::getline(iss, description, '"').good()) {
+                break;
+            }
+
             valueDescriptions[stoul(value)] = description;
         }
         return;

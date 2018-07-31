@@ -34,7 +34,7 @@ NS_ :
 BS_:
 
 BU_: Node_1 Node_2
-VAL_TABLE_ Value_Table 0 "Description for the value '0x0'" 1 "Description for the value '0x1'" ;
+VAL_TABLE_ Value_Table 0 "Description for the value '0x0'" 1 " Description for the value '0x1'" ;
 
 
 BO_ 0 Multiplexed_Message: 8 Vector__XXX
