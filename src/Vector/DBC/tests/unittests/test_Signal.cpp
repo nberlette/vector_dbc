@@ -82,3 +82,62 @@ BOOST_AUTO_TEST_CASE(SignalDecodeEncode)
     signal.encode(data, 3);
     BOOST_CHECK_EQUAL(data[0], 0x0E);
 }
+
+/**
+ * Checks that signal decode/encode and raw to physical and vice-versa functions
+ * work in combination.
+ */
+BOOST_AUTO_TEST_CASE(BothFunctionsCombined)
+{
+    /* construct a signal */
+    Vector::DBC::Signal signal;
+    signal.startBit = 0;
+    signal.bitSize = 10;
+    signal.byteOrder = Vector::DBC::ByteOrder::LittleEndian;
+    signal.valueType = Vector::DBC::ValueType::Signed;
+    signal.factor = 0.25;
+    signal.offset = 0.0;
+
+    /* construct raw data */
+    std::vector<uint8_t> data;
+    union {
+        uint64_t unsignedDecodedData;
+        int64_t signedDecodedData;
+    };
+    double rawValue = 0.0;
+    double physicalValue = 0.0;
+
+    /* signed: data = 1000011010b ==> rawValue=0x21A ==> physicalValue = -121.5 */
+    data.clear();
+    data.push_back(0x1A); // 0001 1010
+    data.push_back(0x02); // 10
+    unsignedDecodedData = signal.decode(data);
+    BOOST_CHECK_EQUAL(unsignedDecodedData & 0x3FF, 0x21A);
+    switch(signal.valueType) {
+    case Vector::DBC::ValueType::Unsigned:
+        rawValue = unsignedDecodedData;
+        break;
+    case Vector::DBC::ValueType::Signed:
+        rawValue = signedDecodedData;
+        break;
+    }
+    physicalValue = signal.rawToPhysicalValue(rawValue);
+    BOOST_CHECK_EQUAL(physicalValue, -121.5);
+
+    /* unsigned: data = 0111010011b ==> rawValue=0x1D3 ==> physicalValue = 116.75 */
+    data.clear();
+    data.push_back(0xD3); // 1101 0011
+    data.push_back(0x01); // 01
+    unsignedDecodedData = signal.decode(data);
+    BOOST_CHECK_EQUAL(unsignedDecodedData & 0x3FF, 0x1D3);
+    switch(signal.valueType) {
+    case Vector::DBC::ValueType::Unsigned:
+        rawValue = unsignedDecodedData;
+        break;
+    case Vector::DBC::ValueType::Signed:
+        rawValue = signedDecodedData;
+        break;
+    }
+    physicalValue = signal.rawToPhysicalValue(rawValue);
+    BOOST_CHECK_EQUAL(physicalValue, 116.75);
+}
