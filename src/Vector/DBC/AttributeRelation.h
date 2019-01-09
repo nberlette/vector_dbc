@@ -24,6 +24,7 @@
 #include <Vector/DBC/platform.h>
 
 #include <map>
+#include <ostream>
 #include <string>
 
 #include <Vector/DBC/Attribute.h>
@@ -68,8 +69,10 @@ public:
      * @param[in] rhs Right Hand Side of operation
      * @return comparison result
      */
-    bool operator < (const AttributeRelation & rhs) const;
+    bool operator<(const AttributeRelation & rhs) const;
 };
+
+std::ostream & operator<<(std::ostream & os, AttributeRelation & obj);
 
 }
 }

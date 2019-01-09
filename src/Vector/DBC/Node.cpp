@@ -32,5 +32,12 @@ Node::Node() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, Node & obj)
+{
+    // @todo
+
+    return os;
+}
+
 }
 }

@@ -23,6 +23,7 @@
 
 #include <Vector/DBC/platform.h>
 
+#include <ostream>
 #include <set>
 #include <string>
 #include <utility>
@@ -49,6 +50,8 @@ public:
     /** Value Range */
     std::set<ValueRange> valueRanges;
 };
+
+std::ostream & operator<<(std::ostream & os, ExtendedMultiplexor & obj);
 
 }
 }

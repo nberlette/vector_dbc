@@ -35,5 +35,12 @@ AttributeDefinition::AttributeDefinition() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, AttributeDefinition & obj)
+{
+    // @todo
+
+    return os;
+}
+
 }
 }

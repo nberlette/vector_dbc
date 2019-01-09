@@ -31,5 +31,12 @@ ValueTable::ValueTable() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, ValueTable & obj)
+{
+    // @todo
+
+    return os;
+}
+
 }
 }

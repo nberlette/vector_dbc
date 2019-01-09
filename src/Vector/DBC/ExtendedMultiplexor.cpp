@@ -31,5 +31,12 @@ ExtendedMultiplexor::ExtendedMultiplexor() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, ExtendedMultiplexor & obj)
+{
+    // @todo
+
+    return os;
+}
+
 }
 }

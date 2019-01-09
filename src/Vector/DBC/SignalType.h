@@ -23,6 +23,7 @@
 
 #include <Vector/DBC/platform.h>
 
+#include <ostream>
 #include <string>
 
 #include <Vector/DBC/ByteOrder.h>
@@ -74,6 +75,8 @@ public:
     /** Value Table */
     std::string valueTable;
 };
+
+std::ostream & operator<<(std::ostream & os, SignalType & obj);
 
 }
 }

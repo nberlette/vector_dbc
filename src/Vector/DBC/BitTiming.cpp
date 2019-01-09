@@ -32,5 +32,12 @@ BitTiming::BitTiming() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, BitTiming & obj)
+{
+    // @todo
+
+    return os;
+}
+
 }
 }

@@ -24,6 +24,7 @@
 #include <Vector/DBC/platform.h>
 
 #include <map>
+#include <ostream>
 #include <set>
 #include <string>
 
@@ -98,6 +99,8 @@ public:
     /** Attribute Values (BA) */
     std::map<std::string, Attribute> attributeValues;
 };
+
+std::ostream & operator<<(std::ostream & os, EnvironmentVariable & obj);
 
 }
 }

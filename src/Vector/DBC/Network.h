@@ -25,6 +25,7 @@
 
 #include <list>
 #include <map>
+#include <ostream>
 #include <stack>
 #include <string>
 
@@ -136,6 +137,8 @@ public:
     /* Extended Multiplexors (SG_MUL_VAL) */
     // moved to Signal (SG)
 };
+
+std::ostream & operator<<(std::ostream & os, Network & obj);
 
 }
 }

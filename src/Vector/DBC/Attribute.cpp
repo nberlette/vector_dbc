@@ -33,5 +33,12 @@ Attribute::Attribute() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, Attribute & obj)
+{
+    // @todo
+
+    return os;
+}
+
 }
 }

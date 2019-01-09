@@ -42,5 +42,12 @@ EnvironmentVariable::EnvironmentVariable() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, EnvironmentVariable & obj)
+{
+    // @todo
+
+    return os;
+}
+
 }
 }

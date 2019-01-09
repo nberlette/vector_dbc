@@ -232,5 +232,12 @@ void Signal::encode(std::vector<uint8_t> & data, uint64_t rawValue)
     }
 }
 
+std::ostream & operator<<(std::ostream & os, Signal & obj)
+{
+    // @todo
+
+    return os;
+}
+
 }
 }

@@ -34,7 +34,7 @@ AttributeRelation::AttributeRelation() :
     /* nothing to do here */
 }
 
-bool AttributeRelation::operator < (const AttributeRelation & rhs) const
+bool AttributeRelation::operator<(const AttributeRelation & rhs) const
 {
     /* compare name */
     if (name == rhs.name) {
@@ -83,6 +83,13 @@ bool AttributeRelation::operator < (const AttributeRelation & rhs) const
     }
 
     return false;
+}
+
+std::ostream & operator<<(std::ostream & os, AttributeRelation & obj)
+{
+    // @todo
+
+    return os;
 }
 
 }

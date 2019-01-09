@@ -23,6 +23,7 @@
 
 #include <Vector/DBC/platform.h>
 
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -83,6 +84,8 @@ public:
     /** Values of type AttributeValueType::Enum */
     std::vector<std::string> enumValues;
 };
+
+std::ostream & operator<<(std::ostream & os, AttributeDefinition & obj);
 
 }
 }

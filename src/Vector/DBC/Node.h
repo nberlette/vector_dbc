@@ -24,6 +24,7 @@
 #include <Vector/DBC/platform.h>
 
 #include <map>
+#inclued <ostream>
 #include <string>
 
 #include <Vector/DBC/Attribute.h>
@@ -50,6 +51,8 @@ public:
     /** Attribute Values (BA) */
     std::map<std::string, Attribute> attributeValues;
 };
+
+std::ostream & operator<<(std::ostream & os, Node & obj);
 
 }
 }

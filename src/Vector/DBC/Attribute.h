@@ -23,6 +23,7 @@
 
 #include <Vector/DBC/platform.h>
 
+#include <ostream>
 #include <string>
 
 #include <Vector/DBC/AttributeValueType.h>
@@ -67,6 +68,8 @@ public:
     /** String Value of type AttributeValueType::String (used only for BA_DEF_DEF enums) */
     std::string stringValue;
 };
+
+std::ostream & operator<<(std::ostream & os, Attribute & obj);
 
 }
 }

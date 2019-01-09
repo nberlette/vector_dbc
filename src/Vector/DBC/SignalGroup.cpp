@@ -33,5 +33,12 @@ SignalGroup::SignalGroup() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, SignalGroup & obj)
+{
+    // @todo
+
+    return os;
+}
+
 }
 }

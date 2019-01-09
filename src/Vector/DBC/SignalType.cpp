@@ -40,5 +40,12 @@ SignalType::SignalType() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, SignalType & obj)
+{
+    // @todo
+
+    return os;
+}
+
 }
 }

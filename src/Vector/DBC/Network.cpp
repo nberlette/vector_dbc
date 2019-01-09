@@ -42,5 +42,90 @@ Network::Network() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, Network & obj)
+{
+    /* use english decimal points for floating numbers */
+    os.imbue(std::locale("C"));
+
+    os.precision(16);
+
+    /* Version (VERSION) */
+    // @todo
+
+    /* New Symbols (NS) */
+    // @todo
+
+    /* Bit Timing (BS) */
+    // @todo
+
+    /* Nodes (BU) */
+    // @todo
+
+    /* Value Tables (VAL_TABLE) */
+    // @todo
+
+    /* Messages (BO) */
+    // @todo
+
+    /* Message Transmitters (BO_TX_BU) */
+    // @todo
+
+    /* Environment Variables (EV) */
+    // @todo
+
+    /* Environment Variable Data (ENVVAR_DATA) */
+    // @todo
+
+    /* Signal Types (SGTYPE, obsolete) */
+    // @todo
+
+    /* Comments (CM) */
+    // @todo
+
+    /* Attribute Definitions (BA_DEF) and Attribute Definitions at Relations (BA_DEF_REL) */
+    // @todo
+
+    /* Sigtype Attr Lists (?, obsolete) */
+    // @todo
+
+    /* Attribute Defaults (BA_DEF_DEF) and Attribute Defaults at Relations (BA_DEF_DEF_REL) */
+    // @todo
+
+    /* Attribute Values (BA) */
+    // @todo
+
+    /* Attribute Values at Relations (BA_REL) */
+    // @todo
+
+    /* Value Descriptions (VAL) */
+    // @todo
+
+    /* Category Definitions (CAT_DEF, obsolete) */
+    // @todo
+
+    /* Categories (CAT, obsolete) */
+    // @todo
+
+    /* Filters (FILTER, obsolete) */
+    // @todo
+
+    /* Signal Type Refs (SGTYPE, obsolete) */
+    // @todo
+
+    /* Signal Groups (SIG_GROUP) */
+    // @todo
+
+    /* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
+    // @todo
+
+    /* Extended Multiplexors (SG_MUL_VAL) */
+    // @todo
+
+    /* close stream */
+    ofs << endl;
+
+    return os;
+}
+
 }
 }

@@ -38,5 +38,12 @@ Message::Message() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, Message & obj)
+{
+    // @todo
+
+    return os;
+}
+
 }
 }

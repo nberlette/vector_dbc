@@ -23,6 +23,8 @@
 
 #include <Vector/DBC/platform.h>
 
+#include <ostream>
+
 #include <Vector/DBC/vector_dbc_export.h>
 
 namespace Vector {
@@ -45,6 +47,8 @@ public:
     /** Bit Timing Register 2 */
     unsigned int btr2;
 };
+
+std::ostream & operator<<(std::ostream & os, BitTiming & obj);
 
 }
 }
