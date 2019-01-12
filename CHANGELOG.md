@@ -2,18 +2,24 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0] - 2019-xx-xx
+### Changed
+- Switch from regex to flex/bison
+- Requires change in data model
+- Support for operator <<, >>, instead of read/write
+
 ## [1.0.6] - 2018-07-31
-### [Fixed]
+### Fixed
 - Value table description with first character blank fixed
 
 ## [1.0.5] - 2018-06-11
-### [Fixed]
+### Fixed
 - Multiline comments with trailing line feed works now
 
 ## [1.0.4] - 2017-12-12
-### [Changed]
+### Changed
 - Includes use <> now instead of ""
-### [Fixed]
+### Fixed
 - Fixed C++11 settings that affected AttributeValueType enum class.
 
 ## [1.0.3] - 2017-11-20
@@ -21,10 +27,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Fixed error in test databaes. BO_TX_BU_ had wrong transmitter seperator.
 
 ## [1.0.2] - 2017-09-22
-### [Changed]
+### Changed
 - SignalGroup::repetitions is set to 1 by the constructor
 - Update to latest project template
-### [Fixed]
+### Fixed
 - Allow to read files that have messages without blank line as separator
 
 ## [1.0.1] - 2016-06-17

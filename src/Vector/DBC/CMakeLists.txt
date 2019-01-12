@@ -6,6 +6,7 @@ add_library(${PROJECT_NAME} SHARED "")
 
 # search paths
 include_directories(
+    ${FLEX_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_BINARY_DIR}/src)
 if(NOT OPTION_USE_CPP11_REGEX)
@@ -58,11 +59,20 @@ target_sources(${PROJECT_NAME}
 configure_file(config.h.in config.h)
 configure_file(${PROJECT_NAME}.pc.in ${PROJECT_NAME}.pc @ONLY)
 generate_export_header(${PROJECT_NAME})
+flex_target(Scanner Scanner.ll ${CMAKE_CURRENT_BINARY_DIR}/Scanner.cpp
+    COMPILE_FLAGS --never-interactive)
+bison_target(Parser Parser.yy ${CMAKE_CURRENT_BINARY_DIR}/Parser.cpp
+    VERBOSE)
+add_flex_bison_dependency(Scanner Parser)
+target_sources(${PROJECT_NAME}
+    PRIVATE
+        ${FLEX_Scanner_OUTPUTS}
+        ${BISON_Parser_OUTPUTS})
 
 # compiler/linker settings
 set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_EXTENSIONS OFF
-    CXX_STANDARD 11
+    CXX_STANDARD 14
     CXX_STANDARD_REQUIRED ON
     CXX_VISIBILITY_PRESET "hidden"
     SOVERSION ${PROJECT_VERSION_MAJOR}

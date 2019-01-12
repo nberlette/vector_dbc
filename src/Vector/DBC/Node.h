@@ -24,7 +24,7 @@
 #include <Vector/DBC/platform.h>
 
 #include <map>
-#inclued <ostream>
+#include <ostream>
 #include <string>
 
 #include <Vector/DBC/Attribute.h>

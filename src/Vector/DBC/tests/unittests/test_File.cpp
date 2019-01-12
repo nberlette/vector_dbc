@@ -12,23 +12,19 @@
 
 #include <Vector/DBC.h>
 
-void progressCallback(Vector::DBC::Network & /* network */, float numerator, float denominator)
+BOOST_AUTO_TEST_CASE(NewParser)
 {
-    std::cout << "Progress: filepos=" << numerator << " percent="<< std::fixed << 100 * (numerator / denominator) << '%' << std::endl;
-}
+    Vector::DBC::Network network;
 
-#define SUCCEEDED(code) ((int)(code) >= 0)
-#define WARNED(code) ((int)(code) & 0x40000000)
-#define FAILED(code) ((int)(code) < 0)
+    /* load database file */
+    boost::filesystem::path infile(CMAKE_CURRENT_SOURCE_DIR "/data/Database.dbc");
 
-void statusCallback(Vector::DBC::Network & /*network*/, Vector::DBC::Status status)
-{
-    if (FAILED(status)) {
-        std::cerr << "Error: 0x" << std::hex << (int) status << std::endl;
-    } else if (WARNED(status)) {
-        std::cout << "Warning: 0x" << std::hex << (int) status << std::endl;
-    } else if (SUCCEEDED(status)) {
-        std::cout << "Success: 0x" << std::hex << (int) status << std::endl;
+    /* put in own namespace to see that File constructs and destructs correctly */
+    {
+        std::ifstream file(infile.string());
+        Vector::DBC::Network network;
+        file >> network;
+        BOOST_REQUIRE(network.successfullyParsed);
     }
 }
 
@@ -42,9 +38,6 @@ BOOST_AUTO_TEST_CASE(File)
     /* put in own namespace to see that File constructs and destructs correctly */
     {
         Vector::DBC::File file;
-        file.setProgressCallback(&progressCallback);
-        file.setStatusCallback(&statusCallback);
-
         std::string infilename = infile.string();
         BOOST_REQUIRE(file.load(network, infilename) == Vector::DBC::Status::Ok);
     }

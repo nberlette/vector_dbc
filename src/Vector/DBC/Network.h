@@ -23,6 +23,7 @@
 
 #include <Vector/DBC/platform.h>
 
+#include <iostream>
 #include <list>
 #include <map>
 #include <ostream>
@@ -53,6 +54,9 @@ class VECTOR_DBC_EXPORT Network
 {
 public:
     Network();
+
+    /** successfully parsed */
+    bool successfullyParsed;
 
     /** Version (VERSION) */
     std::string version;
@@ -138,7 +142,8 @@ public:
     // moved to Signal (SG)
 };
 
-std::ostream & operator<<(std::ostream & os, Network & obj);
+VECTOR_DBC_EXPORT std::ostream & operator<<(std::ostream & os, Network & obj);
+VECTOR_DBC_EXPORT std::istream & operator>>(std::istream & is, Network & obj);
 
 }
 }

@@ -21,10 +21,14 @@
 
 #include <Vector/DBC/Network.h>
 
+#include <Vector/DBC/Parser.hpp>
+#include <Vector/DBC/Scanner.h>
+
 namespace Vector {
 namespace DBC {
 
 Network::Network() :
+    successfullyParsed(false),
     version(),
     newSymbols(),
     bitTiming(),
@@ -50,16 +54,16 @@ std::ostream & operator<<(std::ostream & os, Network & obj)
     os.precision(16);
 
     /* Version (VERSION) */
-    // @todo
+    // @todo obj << version;
 
     /* New Symbols (NS) */
-    // @todo
+    // @todo obj << newSymbols;
 
     /* Bit Timing (BS) */
-    // @todo
+    // @todo obj << bitTiming;
 
     /* Nodes (BU) */
-    // @todo
+    // @todo obj << nodes;
 
     /* Value Tables (VAL_TABLE) */
     // @todo
@@ -122,9 +126,22 @@ std::ostream & operator<<(std::ostream & os, Network & obj)
     // @todo
 
     /* close stream */
-    ofs << endl;
 
     return os;
+}
+
+std::istream & operator>>(std::istream & is, Network & obj)
+{
+    /* Flex scanner */
+    Scanner scanner(is);
+
+    /* Bison parser */
+    Parser parser(&scanner, &obj);
+
+    /* parse */
+    obj.successfullyParsed = (parser.parse() == 0);
+
+    return is;
 }
 
 }
