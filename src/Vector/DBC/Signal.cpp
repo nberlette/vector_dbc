@@ -31,9 +31,8 @@ Signal::Signal() :
     name(),
 
     /* multiplexer indicator */
-    multiplexedSignal(false),
+    multiplexor(Multiplexor::NoMultiplexor),
     multiplexerSwitchValue(0),
-    multiplexorSwitch(false),
 
     /* position */
     startBit(0),

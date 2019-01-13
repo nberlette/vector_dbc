@@ -364,10 +364,10 @@ signal
               $$ = Signal();
               $$.name = $signal_name;
               if ($multiplexer_indicator == "*") {
-                  $$.multiplexorSwitch = true;
+                  $$.multiplexor = Signal::Multiplexor::MultiplexorSwitch;
               } else
               if (!$multiplexer_indicator.empty()) {
-                  $$.multiplexedSignal = true;
+                  $$.multiplexor = Signal::Multiplexor::MultiplexedSignal;
                   $$.multiplexerSwitchValue = std::stoul($multiplexer_indicator);
               }
               $$.startBit = $start_bit;

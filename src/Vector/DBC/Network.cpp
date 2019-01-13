@@ -113,14 +113,16 @@ std::ostream & operator<<(std::ostream & os, Network & network)
             os << " SG_ " << signal.second.name << ' ';
 
             /* Multiplexed Signal, Multiplexor Switch/Signal */
-            if (signal.second.multiplexedSignal) {
-                os << 'm' << signal.second.multiplexerSwitchValue;
-            }
-            if (signal.second.multiplexorSwitch) {
-                os << 'M';
-            }
-            if (signal.second.multiplexedSignal || signal.second.multiplexorSwitch) {
+            switch (signal.second.multiplexor) {
+            case Signal::Multiplexor::NoMultiplexor:
                 os << ' ';
+                break;
+            case Signal::Multiplexor::MultiplexedSignal:
+                os << 'm' << signal.second.multiplexerSwitchValue;
+                break;
+            case Signal::Multiplexor::MultiplexorSwitch:
+                os << 'M';
+                break;
             }
             os << ": ";
 

@@ -62,16 +62,12 @@ public:
         /** MultiplexorSwitch */
         MultiplexorSwitch = 'M'
     };
-    // @todo use Multiplexor instead of multiplexedSignal and multiplexorSwitch
 
-    /** Multiplexed Signal (m) */
-    bool multiplexedSignal; // m
+    /** @copydoc Multiplexor */
+    Multiplexor multiplexor;
 
     /** Multiplexer Switch Value */
     uint32_t multiplexerSwitchValue;
-
-    /** Multiplexor Switch (M) */
-    bool multiplexorSwitch; // M
 
     /** Start Bit */
     uint32_t startBit;
