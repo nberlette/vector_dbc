@@ -9,10 +9,6 @@ include_directories(
     ${FLEX_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_BINARY_DIR}/src)
-if(NOT OPTION_USE_CPP11_REGEX)
-    include_directories(${Boost_INCLUDE_DIR})
-    link_directories(${Boost_LIBRARY_DIRS})
-endif()
 
 # sources/headers
 target_sources(${PROJECT_NAME}
@@ -53,7 +49,6 @@ target_sources(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/ValueTable.cpp)
 
 # generated files
-configure_file(config.h.in config.h)
 configure_file(${PROJECT_NAME}.pc.in ${PROJECT_NAME}.pc @ONLY)
 generate_export_header(${PROJECT_NAME})
 flex_target(Scanner Scanner.ll ${CMAKE_CURRENT_BINARY_DIR}/Scanner.cpp
@@ -69,28 +64,30 @@ target_sources(${PROJECT_NAME}
 # compiler/linker settings
 set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_EXTENSIONS OFF
-    CXX_STANDARD 17
+    CXX_STANDARD 14
     CXX_STANDARD_REQUIRED ON
     CXX_VISIBILITY_PRESET "hidden"
     SOVERSION ${PROJECT_VERSION_MAJOR}
     VERSION ${PROJECT_VERSION}
     VISIBILITY_INLINES_HIDDEN 1)
 if(CMAKE_COMPILER_IS_GNUCXX)
-    #add_definitions(-pedantic)
+    add_definitions(-pedantic)
     add_definitions(-D_FORTIFY_SOURCE=2)
     #add_definitions(-fPIE -pie)
     add_definitions(-Wl,-z,relro,-z,now)
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.9)
         add_definitions(-fstack-protector-strong)
     endif()
-    if(OPTION_USE_GCOV_LCOV)
+    if(OPTION_USE_GCOV)
         add_definitions(-g -O0 -fprofile-arcs -ftest-coverage)
     endif()
+    if(OPTION_USE_GPROF)
+         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
+         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
+         set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pg")
+     endif()
 endif()
-if(NOT OPTION_USE_CPP11_REGEX)
-    target_link_libraries(${PROJECT_NAME} ${Boost_REGEX_LIBRARY})
-endif()
-if(OPTION_USE_GCOV_LCOV)
+if(OPTION_USE_GCOV)
     target_link_libraries(${PROJECT_NAME} gcov)
 endif()
 
@@ -104,7 +101,6 @@ install(
 install(
     FILES
         ${CMAKE_CURRENT_BINARY_DIR}/vector_dbc_export.h
-        ${CMAKE_CURRENT_BINARY_DIR}/config.h
         $<TARGET_PROPERTY:${PROJECT_NAME},INTERFACE_SOURCES>
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Vector/DBC)
 

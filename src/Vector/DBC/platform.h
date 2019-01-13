@@ -25,8 +25,6 @@
 
 #pragma once
 
-#include <Vector/DBC/config.h>
-
 /* GCC */
 #ifdef __GNUC__
 
