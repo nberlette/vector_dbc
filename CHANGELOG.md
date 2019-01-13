@@ -2,10 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.0] - 2019-xx-xx
+## [2.0.0] - 2019-01-13
 ### Changed
 - Switch from regex to flex/bison
-- Requires change in data model
+- Changes in Data Model
 - Support for operator <<, >>, instead of read/write
 
 ## [1.0.6] - 2018-07-31
