@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -24,7 +24,6 @@
 #include <Vector/DBC/platform.h>
 
 #include <map>
-#include <ostream>
 #include <string>
 
 #include <Vector/DBC/Attribute.h>
@@ -51,8 +50,6 @@ public:
     /** Attribute Values (BA) */
     std::map<std::string, Attribute> attributeValues;
 };
-
-std::ostream & operator<<(std::ostream & os, Node & obj);
 
 }
 }

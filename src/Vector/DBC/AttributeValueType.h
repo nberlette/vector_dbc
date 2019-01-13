@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -23,20 +23,63 @@
 
 #include <Vector/DBC/platform.h>
 
+#include <cstdint>
+#include <string>
+#include <vector>
+
 #include <Vector/DBC/vector_dbc_export.h>
 
 namespace Vector {
 namespace DBC {
 
-/**
- * Attribute Value Type
- */
-enum class AttributeValueType {
-    Int, /**< Integer */
-    Hex, /**< Hex */
-    Float, /**< Float */
-    String, /**< String */
-    Enum /**< Enum */
+/** Attribute Value Type */
+class VECTOR_DBC_EXPORT AttributeValueType {
+public:
+    AttributeValueType();
+
+    /** Type */
+    enum class Type {
+        /** Integer */
+        Int,
+
+        /** Hex */
+        Hex,
+
+        /** Float */
+        Float,
+
+        /** String */
+        String,
+
+        /** Enum */
+        Enum
+    };
+
+    /** @copydoc Type */
+    Type type;
+
+    /** Value Union */
+    union {
+        struct {
+            int32_t minimum; /**< Min Value of type AttributeValueType::Int */
+            int32_t maximum; /**< Min Value of type AttributeValueType::Int */
+        } integerValue;
+
+        struct {
+            int32_t minimum; /**< Min Value of type AttributeValueType::Hex */
+            int32_t maximum; /**< Max Value of type AttributeValueType::Hex */
+        } hexValue;
+
+        struct {
+            double minimum; /**< Min Value of type AttributeValueType::Float */
+            double maximum; /**< Max Value of type AttributeValueType::Float */
+        } floatValue;
+
+        // std::string has no default
+    };
+
+    /** Values of type AttributeValueType::Enum */
+    std::vector<std::string> enumValues;
 };
 
 }

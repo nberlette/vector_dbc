@@ -19,13 +19,13 @@ target_sources(${PROJECT_NAME}
     INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/Attribute.h
         ${CMAKE_CURRENT_SOURCE_DIR}/AttributeDefinition.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/AttributeObjectType.h
         ${CMAKE_CURRENT_SOURCE_DIR}/AttributeRelation.h
         ${CMAKE_CURRENT_SOURCE_DIR}/AttributeValueType.h
         ${CMAKE_CURRENT_SOURCE_DIR}/BitTiming.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ByteOrder.h
         ${CMAKE_CURRENT_SOURCE_DIR}/EnvironmentVariable.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ExtendedMultiplexor.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/File.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Message.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Network.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Node.h
@@ -33,7 +33,6 @@ target_sources(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/Signal.h
         ${CMAKE_CURRENT_SOURCE_DIR}/SignalGroup.h
         ${CMAKE_CURRENT_SOURCE_DIR}/SignalType.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/Status.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ValueDescriptions.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ValueTable.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ValueType.h
@@ -41,12 +40,10 @@ target_sources(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/Attribute.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/AttributeDefinition.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/AttributeRelation.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/AttributeValueType.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/BitTiming.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/EnvironmentVariable.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ExtendedMultiplexor.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/File.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/FileLoad.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/FileSave.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Message.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Network.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Node.cpp
@@ -72,7 +69,7 @@ target_sources(${PROJECT_NAME}
 # compiler/linker settings
 set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_EXTENSIONS OFF
-    CXX_STANDARD 14
+    CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
     CXX_VISIBILITY_PRESET "hidden"
     SOVERSION ${PROJECT_VERSION_MAJOR}

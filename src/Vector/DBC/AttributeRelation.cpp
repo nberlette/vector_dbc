@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -26,8 +26,8 @@ namespace DBC {
 
 AttributeRelation::AttributeRelation() :
     Attribute(),
-    relationType(AttributeRelation::RelationType::ControlUnitEnvironmentVariable),
     nodeName(),
+    environmentVariableName(),
     messageId(0),
     signalName()
 {
@@ -40,11 +40,11 @@ bool AttributeRelation::operator<(const AttributeRelation & rhs) const
     if (name == rhs.name) {
 
         /* compare relationType */
-        if (relationType == rhs.relationType) {
+        if (objectType == rhs.objectType) {
 
             /* relationType based optimizations */
-            switch(relationType) {
-            case RelationType::ControlUnitEnvironmentVariable:
+            switch(objectType) {
+            case AttributeObjectType::ControlUnitEnvironmentVariable:
                 /* only compare nodeName, environmentVariableName */
                 if (nodeName == rhs.nodeName) {
                     return environmentVariableName < rhs.environmentVariableName;
@@ -53,7 +53,7 @@ bool AttributeRelation::operator<(const AttributeRelation & rhs) const
                 }
                 break;
 
-            case RelationType::NodeTxMessage:
+            case AttributeObjectType::NodeTxMessage:
                 /* only compare nodeName, messageId */
                 if (nodeName == rhs.nodeName) {
                     return messageId < rhs.messageId;
@@ -62,7 +62,7 @@ bool AttributeRelation::operator<(const AttributeRelation & rhs) const
                 }
                 break;
 
-            case RelationType::NodeMappedRxSignal:
+            case AttributeObjectType::NodeMappedRxSignal:
                 /* only compare nodeName, messageId, signalName */
                 if (nodeName == rhs.nodeName) {
                     if (messageId == rhs.messageId) {
@@ -76,20 +76,13 @@ bool AttributeRelation::operator<(const AttributeRelation & rhs) const
                 break;
             }
         } else {
-            return relationType < rhs.relationType;
+            return objectType < rhs.objectType;
         }
     } else {
         return name < rhs.name;
     }
 
     return false;
-}
-
-std::ostream & operator<<(std::ostream & os, AttributeRelation & obj)
-{
-    // @todo
-
-    return os;
 }
 
 }

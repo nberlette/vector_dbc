@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -24,7 +24,7 @@
 #include <Vector/DBC/platform.h>
 
 #include <map>
-#include <ostream>
+#include <cstdint>
 #include <set>
 #include <string>
 
@@ -46,13 +46,13 @@ public:
     Message();
 
     /** Identifier (with bit 31 set this is extended CAN frame) */
-    unsigned int id;
+    uint32_t id;
 
     /** Name */
     std::string name;
 
     /** Size */
-    unsigned int size;
+    uint32_t size;
 
     /** Transmitter (empty string if the number of send nodes is zero or more than one) */
     std::string transmitter;
@@ -72,8 +72,6 @@ public:
     /** Attribute Values (BA) */
     std::map<std::string, Attribute> attributeValues;
 };
-
-std::ostream & operator<<(std::ostream & os, Message & obj);
 
 }
 }

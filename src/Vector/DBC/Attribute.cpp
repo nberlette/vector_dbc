@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -26,18 +26,11 @@ namespace DBC {
 
 Attribute::Attribute() :
     name(),
-    valueType(AttributeValueType::Int),
+    objectType(AttributeObjectType::Network),
     integerValue(0),
     stringValue()
 {
     /* nothing to do here */
-}
-
-std::ostream & operator<<(std::ostream & os, Attribute & obj)
-{
-    // @todo
-
-    return os;
 }
 
 }

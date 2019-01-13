@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -23,7 +23,7 @@
 
 #include <Vector/DBC/platform.h>
 
-#include <ostream>
+#include <cstdint>
 #include <set>
 #include <string>
 #include <utility>
@@ -45,13 +45,11 @@ public:
     std::string switchName;
 
     /** Value Range */
-    using ValueRange = std::pair<unsigned int, unsigned int>;
+    using ValueRange = std::pair<uint32_t, uint32_t>;
 
     /** Value Range */
     std::set<ValueRange> valueRanges;
 };
-
-std::ostream & operator<<(std::ostream & os, ExtendedMultiplexor & obj);
 
 }
 }

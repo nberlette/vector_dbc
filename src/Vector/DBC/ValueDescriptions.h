@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -23,6 +23,7 @@
 
 #include <Vector/DBC/platform.h>
 
+#include <cstdint>
 #include <map>
 #include <string>
 
@@ -34,7 +35,7 @@ namespace DBC {
 /**
  * Value Descriptions
  */
-using ValueDescriptions = std::map<unsigned int, std::string>;
+using ValueDescriptions = std::map<uint32_t, std::string>;
 
 }
 }

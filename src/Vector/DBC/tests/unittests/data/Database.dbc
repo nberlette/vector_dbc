@@ -224,7 +224,6 @@ BA_REL_ "AttrDef_Node_MappedRxSignal_Enum" BU_SG_REL_ Node_1 SG_ 1 Signal_8_VtSi
 BA_REL_ "AttrDef_Node_MappedRxSignal_Floa" BU_SG_REL_ Node_1 SG_ 1 Signal_8_VtSig 2;
 BA_REL_ "AttrDef_Node_MappedRxSignal_Hex" BU_SG_REL_ Node_1 SG_ 1 Signal_8_VtSig 2;
 BA_REL_ "AttrDef_Node_MappedRxSignal_Int" BU_SG_REL_ Node_1 SG_ 1 Signal_8_VtSig 1;
-BA_REL_ "AttrDef_Node_MappedRxSignal_Int" BU_SG_REL_ Node_1 SG_ 2147483649 Signal_8 1;
 BA_REL_ "AttrDef_Node_MappedRxSignal_Str" BU_SG_REL_ Node_1 SG_ 1 Signal_8_VtSig "Changed";
 BA_REL_ "AttrDef_Node_TxMessage_Enum" BU_BO_REL_ Node_1 1 2;
 BA_REL_ "AttrDef_Node_TxMessage_Float" BU_BO_REL_ Node_1 1 2;

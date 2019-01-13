@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -44,8 +44,8 @@ Signal::Signal() :
     /* raw/physical conversion */
     factor(0.0),
     offset(0.0),
-    minimumPhysicalValue(0.0),
-    maximumPhysicalValue(0.0),
+    minimum(0.0),
+    maximum(0.0),
 
     /* unit */
     unit(),
@@ -230,13 +230,6 @@ void Signal::encode(std::vector<uint8_t> & data, uint64_t rawValue)
             ++dstBit;
         }
     }
-}
-
-std::ostream & operator<<(std::ostream & os, Signal & obj)
-{
-    // @todo
-
-    return os;
 }
 
 }

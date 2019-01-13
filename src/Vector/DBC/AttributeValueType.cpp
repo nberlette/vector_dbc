@@ -19,16 +19,15 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include <Vector/DBC/SignalGroup.h>
+#include <Vector/DBC/AttributeValueType.h>
 
 namespace Vector {
 namespace DBC {
 
-SignalGroup::SignalGroup() :
-    messageId(0),
-    name(),
-    repetitions(1),
-    signals()
+AttributeValueType::AttributeValueType() :
+    type(Type::Int),
+    integerValue(),
+    enumValues()
 {
     /* nothing to do here */
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -23,10 +23,10 @@
 
 #include <Vector/DBC/platform.h>
 
-#include <ostream>
+#include <cstdint>
 #include <string>
 
-#include <Vector/DBC/AttributeValueType.h>
+#include <Vector/DBC/AttributeObjectType.h>
 
 #include <Vector/DBC/vector_dbc_export.h>
 
@@ -34,7 +34,8 @@ namespace Vector {
 namespace DBC {
 
 /**
- * Attribute Value (BA) and
+ * Attribute Value (BA)
+ *
  * Attribute Default (BA_DEF_DEF) and
  * Attribute Default Value on Relation (BA_DEF_DEF_REL)
  */
@@ -47,29 +48,27 @@ public:
     std::string name;
 
     /** Value Type */
-    AttributeValueType valueType;
+    AttributeObjectType objectType;
 
     union {
         /** Integer Value of type AttributeValueType::Int */
-        int integerValue;
+        int32_t integerValue;
 
         /** Hex Value of type AttributeValueType::Hex */
-        int hexValue;
+        int32_t hexValue;
 
         /** Float Value of type AttributeValueType::Float */
         double floatValue;
 
-        /** Enum Value of type AttributeValueType::Enum (used only for BA enums) */
-        int enumValue;
-
         // std::string doesn't work in a union, so it's below
+
+        /** Enum Value of type AttributeValueType::Enum (used only for BA enums) */
+        int32_t enumValue;
     };
 
     /** String Value of type AttributeValueType::String (used only for BA_DEF_DEF enums) */
     std::string stringValue;
 };
-
-std::ostream & operator<<(std::ostream & os, Attribute & obj);
 
 }
 }

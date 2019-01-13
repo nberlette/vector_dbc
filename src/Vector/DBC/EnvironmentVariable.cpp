@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -40,13 +40,6 @@ EnvironmentVariable::EnvironmentVariable() :
     attributeValues()
 {
     /* nothing to do here */
-}
-
-std::ostream & operator<<(std::ostream & os, EnvironmentVariable & obj)
-{
-    // @todo
-
-    return os;
 }
 
 }

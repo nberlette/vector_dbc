@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -23,10 +23,11 @@
 
 #include <Vector/DBC/platform.h>
 
-#include <ostream>
+#include <cstdint>
 #include <string>
 #include <vector>
 
+#include <Vector/DBC/AttributeObjectType.h>
 #include <Vector/DBC/AttributeValueType.h>
 
 #include <Vector/DBC/vector_dbc_export.h>
@@ -47,45 +48,11 @@ public:
     std::string name;
 
     /** Object Type */
-    enum class ObjectType {
-        Network, /**< Network */
-        Node, /**< Node */
-        Message, /**< Message */
-        Signal, /**< Signal */
-        EnvironmentVariable, /**< Environment Variable */
-        ControlUnitEnvironmentVariable, /**< Control Unit - Env. Variable */
-        NodeTxMessage, /**< Node - Tx Message */
-        NodeMappedRxSignal /**< Node - Mapped Rx Signal */
-    };
+    AttributeObjectType objectType;
 
-    /** Object Type */
-    ObjectType objectType;
-
-    /** Attribute Value Type */
+    /** Value Type */
     AttributeValueType valueType;
-
-    union {
-        struct {
-            int minimumIntegerValue; /**< Min Value of type AttributeValueType::Int */
-            int maximumIntegerValue; /**< Min Value of type AttributeValueType::Int */
-        };
-
-        struct {
-            int minimumHexValue; /**< Min Value of type AttributeValueType::Hex */
-            int maximumHexValue; /**< Max Value of type AttributeValueType::Hex */
-        };
-
-        struct {
-            double minimumFloatValue; /**< Min Value of type AttributeValueType::Float */
-            double maximumFloatValue; /**< Max Value of type AttributeValueType::Float */
-        };
-    };
-
-    /** Values of type AttributeValueType::Enum */
-    std::vector<std::string> enumValues;
 };
-
-std::ostream & operator<<(std::ostream & os, AttributeDefinition & obj);
 
 }
 }

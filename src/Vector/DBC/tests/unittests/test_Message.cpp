@@ -6,39 +6,22 @@
 
 #include <cstdint>
 #include <fstream>
-#include <iostream>
-#include <iterator>
 #include <string>
 #include <vector>
 #include <boost/filesystem.hpp>
 
 #include <Vector/DBC.h>
 
-#define SUCCEEDED(code) ((int)(code) >= 0)
-#define WARNED(code) ((int)(code) & 0x40000000)
-#define FAILED(code) ((int)(code) < 0)
-
-void statusCallback(Vector::DBC::Network & /* network */, Vector::DBC::Status status)
-{
-    if (FAILED(status)) {
-        std::cerr << "Error: 0x" << std::hex << (int) status << std::endl;
-    } else if (WARNED(status)) {
-        std::cout << "Warning: 0x" << std::hex << (int) status << std::endl;
-    } else if (SUCCEEDED(status)) {
-        std::cout << "Success: 0x" << std::hex << (int) status << std::endl;
-    }
-}
-
 BOOST_AUTO_TEST_CASE(Message)
 {
     Vector::DBC::Network network;
-    Vector::DBC::File file;
-    file.setStatusCallback(&statusCallback);
 
     /* load database file */
     boost::filesystem::path infile(CMAKE_CURRENT_SOURCE_DIR "/data/Database.dbc");
     std::string infilename = infile.string();
-    BOOST_REQUIRE(file.load(network, infilename) == Vector::DBC::Status::Ok);
+    std::ifstream ifs(infilename);
+    ifs >> network;
+    BOOST_REQUIRE(network.successfullyParsed);
 
     /* define message data */
     std::vector<uint8_t> messageData;
@@ -87,13 +70,13 @@ BOOST_AUTO_TEST_CASE(Message)
 BOOST_AUTO_TEST_CASE(MessageSeparation)
 {
     Vector::DBC::Network network;
-    Vector::DBC::File file;
-    file.setStatusCallback(&statusCallback);
 
     /* load database file */
     boost::filesystem::path infile(CMAKE_CURRENT_SOURCE_DIR "/data/MessageSeparation.dbc");
     std::string infilename = infile.string();
-    BOOST_REQUIRE(file.load(network, infilename) == Vector::DBC::Status::Ok);
+    std::ifstream ifs(infilename);
+    ifs >> network;
+    BOOST_REQUIRE(network.successfullyParsed);
 
     Vector::DBC::Message & message = network.messages[1];
     BOOST_REQUIRE(message.id == 1);
@@ -144,14 +127,14 @@ BOOST_AUTO_TEST_CASE(MessageSeparation)
 BOOST_AUTO_TEST_CASE(MultiLineComments)
 {
     Vector::DBC::Network network;
-    Vector::DBC::File file;
-    file.setStatusCallback(&statusCallback);
 
     /* load database file */
     boost::filesystem::path infile(CMAKE_CURRENT_SOURCE_DIR "/data/MessageSeparation.dbc");
     std::string infilename = infile.string();
     std::cout << "Input file: " << infilename << std::endl;
-    BOOST_REQUIRE(file.load(network, infilename) == Vector::DBC::Status::Ok);
+    std::ifstream ifs(infilename);
+    ifs >> network;
+    BOOST_REQUIRE(network.successfullyParsed);
 
     /* get message and signal */
     Vector::DBC::Message & message = network.messages[1];

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -19,27 +19,41 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include <Vector/DBC/File.h>
+#pragma once
+
+#include <Vector/DBC/platform.h>
+
+#include <Vector/DBC/vector_dbc_export.h>
 
 namespace Vector {
 namespace DBC {
 
-File::File() :
-    progressCallback(nullptr),
-    statusCallback(nullptr)
-{
-    /* nothing to do here */
-}
+/** Attribute Object Type */
+enum class AttributeObjectType {
+    /** Network */
+    Network,
 
-void File::setProgressCallback(ProgressCallback function)
-{
-    progressCallback = function;
-}
+    /** Node */
+    Node,
 
-void File::setStatusCallback(StatusCallback function)
-{
-    statusCallback = function;
-}
+    /** Message */
+    Message,
+
+    /** Signal */
+    Signal,
+
+    /** Environment Variable */
+    EnvironmentVariable,
+
+    /** Control Unit - Env. Variable */
+    ControlUnitEnvironmentVariable,
+
+    /** Node - Tx Message */
+    NodeTxMessage,
+
+    /** Node - Mapped Rx Signal */
+    NodeMappedRxSignal
+};
 
 }
 }

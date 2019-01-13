@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -25,7 +25,6 @@
 
 #include <cstdint>
 #include <map>
-#include <ostream>
 #include <set>
 #include <string>
 #include <vector>
@@ -52,20 +51,33 @@ public:
     /** Name */
     std::string name;
 
+    /** Multiplexor */
+    enum class Multiplexor : char {
+        /** No Multiplexor */
+        NoMultiplexor = 0,
+
+        /** Multiplexed Signal */
+        MultiplexedSignal = 'm',
+
+        /** MultiplexorSwitch */
+        MultiplexorSwitch = 'M'
+    };
+    // @todo use Multiplexor instead of multiplexedSignal and multiplexorSwitch
+
     /** Multiplexed Signal (m) */
     bool multiplexedSignal; // m
 
     /** Multiplexer Switch Value */
-    unsigned int multiplexerSwitchValue;
+    uint32_t multiplexerSwitchValue;
 
     /** Multiplexor Switch (M) */
     bool multiplexorSwitch; // M
 
     /** Start Bit */
-    unsigned int startBit;
+    uint32_t startBit;
 
     /** Bit Size */
-    unsigned int bitSize;
+    uint32_t bitSize;
 
     /** Byte Order */
     ByteOrder byteOrder;
@@ -80,10 +92,10 @@ public:
     double offset;
 
     /** Minimun Physical Value (or 0 if auto calculated) */
-    double minimumPhysicalValue;
+    double minimum;
 
     /** Maximum Physical Value (or 0 if auto calculated) */
-    double maximumPhysicalValue;
+    double maximum;
 
     /** Unit */
     std::string unit;
@@ -93,9 +105,16 @@ public:
 
     /** Signal Extended Value Type (SIG_VALTYPE, obsolete) */
     enum class ExtendedValueType : char {
-        Undefined = ' ',
+        /** Undefined */
+        Undefined = 0,
+
+        /** Integer */
         Integer = '0',
+
+        /** Float */
         Float = '1',
+
+        /** Double */
         Double = '2'
     };
 
@@ -173,8 +192,6 @@ public:
      */
     void encode(std::vector<uint8_t> & data, uint64_t rawValue);
 };
-
-std::ostream & operator<<(std::ostream & os, Signal & obj);
 
 }
 }

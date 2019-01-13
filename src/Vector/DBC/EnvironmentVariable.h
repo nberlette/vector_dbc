@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -23,8 +23,8 @@
 
 #include <Vector/DBC/platform.h>
 
+#include <cstdint>
 #include <map>
-#include <ostream>
 #include <set>
 #include <string>
 
@@ -49,19 +49,26 @@ public:
 
     /** Type */
     enum class Type : char {
-        Integer, /**< Integer */
-        Float, /**< Float */
-        String, /**< String */
-        Data /**< Data */
+        /** Integer */
+        Integer = '0', // on write for Integer/String/Data
+
+        /** Float */
+        Float = '1', // on write for Float
+
+        /** String */
+        String = 's', // set on read when AccessType & 0x8000
+
+        /** Data */
+        Data = 'd' // set on read when ENVVAR_DATA exists
     };
 
     /** Type */
     Type type;
 
-    /** Minimum */
+    /** Minimum Physical Value */
     double minimum;
 
-    /** Maximum */
+    /** Maximum Physical Value */
     double maximum;
 
     /** Unit */
@@ -71,14 +78,21 @@ public:
     double initialValue;
 
     /** Identifier */
-    unsigned int id;
+    uint32_t id;
 
     /** Access Type */
-    enum class AccessType {
-        Unrestricted = 0, /**< Unrestricted */
-        Read = 1, /**< Read */
-        Write = 2, /**< Write */
-        ReadWrite = 3 /**< Read and Write */
+    enum class AccessType : uint16_t {
+        /** Unrestricted */
+        Unrestricted = 0x0000,
+
+        /** Read */
+        Read = 0x0001,
+
+        /** Write */
+        Write = 0x0002,
+
+        /** Read and Write */
+        ReadWrite = 0x0003
     };
 
     /** Access Type */
@@ -91,7 +105,7 @@ public:
     ValueDescriptions valueDescriptions;
 
     /** Environment Variables Data (ENVVAR_DATA) */
-    unsigned int dataSize;
+    uint32_t dataSize;
 
     /** Comment (CM) */
     std::string comment;
@@ -99,8 +113,6 @@ public:
     /** Attribute Values (BA) */
     std::map<std::string, Attribute> attributeValues;
 };
-
-std::ostream & operator<<(std::ostream & os, EnvironmentVariable & obj);
 
 }
 }

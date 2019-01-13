@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -24,6 +24,9 @@
 #include <Vector/DBC/Parser.hpp>
 #include <Vector/DBC/Scanner.h>
 
+/* force Linux to use Windows line endings */
+static const char endl[] = "\r\n";
+
 namespace Vector {
 namespace DBC {
 
@@ -46,7 +49,7 @@ Network::Network() :
     /* nothing to do here */
 }
 
-std::ostream & operator<<(std::ostream & os, Network & obj)
+std::ostream & operator<<(std::ostream & os, Network & network)
 {
     /* use english decimal points for floating numbers */
     os.imbue(std::locale("C"));
@@ -54,92 +57,670 @@ std::ostream & operator<<(std::ostream & os, Network & obj)
     os.precision(16);
 
     /* Version (VERSION) */
-    // @todo obj << version;
+    os << "VERSION \"" << network.version << "\"" << endl;
+    os << endl;
 
     /* New Symbols (NS) */
-    // @todo obj << newSymbols;
+    os << endl;
+    os << "NS_ : " << endl;
+    for (auto & newSymbol : network.newSymbols) {
+        os << "\t" << newSymbol << endl;
+    }
+    os << endl;
 
     /* Bit Timing (BS) */
-    // @todo obj << bitTiming;
+    os << "BS_:";
+    if (network.bitTiming.baudrate || network.bitTiming.btr1 || network.bitTiming.btr2) {
+        os << ' ' << network.bitTiming.baudrate << ':' << network.bitTiming.btr1 << ':' << network.bitTiming.btr2;
+    }
+    os << endl;
+    os << endl;
 
     /* Nodes (BU) */
-    // @todo obj << nodes;
+    os << "BU_:";
+    for (auto & node : network.nodes) {
+        os << " " << node.second.name;
+    }
+    os << endl;
 
     /* Value Tables (VAL_TABLE) */
-    // @todo
+    for (auto & valueTable : network.valueTables) {
+        os << "VAL_TABLE_ " << valueTable.second.name;
+        for (auto & valueDescription : valueTable.second.valueDescriptions) {
+            os << " " << valueDescription.first;
+            os << " \"" << valueDescription.second << "\"";
+        }
+        os << " ;" << endl;
+    }
+    os << endl;
+    os << endl;
 
     /* Messages (BO) */
-    // @todo
+    for (auto & message : network.messages) {
+        os << "BO_ " << message.second.id;
+        os << " " << message.second.name;
+        os << ": " << message.second.size << " ";
+        if (message.second.transmitter.empty()) {
+            os << "Vector__XXX";
+        } else {
+            os << message.second.transmitter;
+        }
+        os << endl;
+
+        /* Signals (SG) */
+        for (auto & signal : message.second.signals) {
+            /* Name */
+            os << " SG_ " << signal.second.name << ' ';
+
+            /* Multiplexed Signal, Multiplexor Switch/Signal */
+            if (signal.second.multiplexedSignal) {
+                os << 'm' << signal.second.multiplexerSwitchValue;
+            }
+            if (signal.second.multiplexorSwitch) {
+                os << 'M';
+            }
+            if (signal.second.multiplexedSignal || signal.second.multiplexorSwitch) {
+                os << ' ';
+            }
+            os << ": ";
+
+            /* Start Bit, Size, Byte Order, Value Type */
+            os << signal.second.startBit << '|' << signal.second.bitSize << '@' << char(signal.second.byteOrder) << char(signal.second.valueType);
+
+            /* Factor, Offset */
+            os << " (" << signal.second.factor << ',' << signal.second.offset << ')';
+
+            /* Minimum, Maximum */
+            os << " [" << signal.second.minimum << '|' << signal.second.maximum << ']';
+
+            /* Unit */
+            os << " \"" << signal.second.unit << "\" ";
+
+            /* Receivers */
+            if (signal.second.receivers.empty()) {
+                os << "Vector__XXX";
+            } else {
+                for (auto & receiver : signal.second.receivers) {
+                    os << " " << receiver;
+                }
+            }
+            os << endl;
+        }
+
+        os << endl;
+    }
 
     /* Message Transmitters (BO_TX_BU) */
-    // @todo
+    for (auto & message : network.messages) {
+        if (!message.second.transmitters.empty()) {
+            os << "BO_TX_BU_ " << message.second.id << " :";
+            for (auto & transmitter : message.second.transmitters) {
+                os << ' ' << transmitter;
+            }
+            os << ';' << endl;
+        }
+    }
+    os << endl;
 
     /* Environment Variables (EV) */
-    // @todo
+    for (auto & environmentVariable : network.environmentVariables) {
+        os << endl;
+        os << "EV_ " << environmentVariable.second.name << ": ";
+
+        /* Type */
+        switch (environmentVariable.second.type) {
+        case EnvironmentVariable::Type::Integer:
+            [[fallthrough]];
+        case EnvironmentVariable::Type::String:
+            [[fallthrough]];
+        case EnvironmentVariable::Type::Data:
+            os << '0';
+            break;
+        case EnvironmentVariable::Type::Float:
+            os << '1';
+            break;
+        }
+
+        /* Minimum, Maximum */
+        os << " [";
+        os << environmentVariable.second.minimum;
+        os << '|';
+        os << environmentVariable.second.maximum;
+        os << ']';
+
+        /* Unit */
+        os << " \"";
+        os << environmentVariable.second.unit;
+        os << "\" ";
+
+        /* Initial Value */
+        os << environmentVariable.second.initialValue;
+        os << ' ';
+
+        /* ID */
+        os << environmentVariable.second.id;
+
+        /* Access Type */
+        os << " DUMMY_NODE_VECTOR";
+        os << std::hex;
+        if (environmentVariable.second.type == EnvironmentVariable::Type::String) {
+            os << (static_cast<uint16_t>(environmentVariable.second.accessType) | 0x8000);
+        } else {
+            os << static_cast<uint16_t>(environmentVariable.second.accessType);
+        }
+        os << std::dec;
+        os << ' ';
+
+        /* Access Nodes */
+        if (environmentVariable.second.accessNodes.empty()) {
+            os << "Vector__XXX";
+        } else {
+            os << ' ';
+            bool first = true;
+            for (auto & accessNode : environmentVariable.second.accessNodes) {
+                if (first) {
+                    first = false;
+                } else {
+                    os << ',';
+                }
+                os << accessNode;
+            }
+        }
+        os << ";" << endl;
+    }
 
     /* Environment Variable Data (ENVVAR_DATA) */
-    // @todo
+    for (auto & environmentVariable : network.environmentVariables) {
+        if (environmentVariable.second.type == EnvironmentVariable::Type::Data) {
+            os << "ENVVAR_DATA_ " << environmentVariable.second.name;
+            os << ": " << environmentVariable.second.dataSize;
+            os << ";" << endl;
+        }
+    }
+    os << endl; // this might go below SGTYPE
 
     /* Signal Types (SGTYPE, obsolete) */
-    // @todo
+    // @todo writeSignalTypes(ofs, network);
 
     /* Comments (CM) */
-    // @todo
+    if (!network.comment.empty()) {
+        os << "CM_ \"" << network.comment << "\";" << endl;
+    }
+    for (auto & node : network.nodes) {
+        if (!node.second.comment.empty()) {
+            os << "CM_ BU_ " << node.second.name << " \"" << node.second.comment << "\";" << endl;
+        }
+    }
+    for (auto & message : network.messages) {
+        if (!message.second.comment.empty()) {
+            os << "CM_ BO_ " << message.second.id << " \"" << message.second.comment << "\";" << endl;
+        }
+    }
+    for (auto & message : network.messages) {
+        for (auto & signal : message.second.signals) {
+            if (!signal.second.comment.empty()) {
+                os << "CM_ SG_ " << message.second.id << ' ' << signal.second.name << " \"" << signal.second.comment << "\";" << endl;
+            }
+        }
+    }
+    for (auto & environmentVariable : network.environmentVariables) {
+        if (!environmentVariable.second.comment.empty()) {
+            os << "CM_ EV_ " << environmentVariable.second.name << " \"" << environmentVariable.second.comment << "\";" << endl;
+        }
+    }
 
     /* Attribute Definitions (BA_DEF) and Attribute Definitions at Relations (BA_DEF_REL) */
-    // @todo
+    for (auto & attributeDefinition : network.attributeDefinitions) {
+        /* Object Type */
+        switch (attributeDefinition.second.objectType) {
+        case AttributeObjectType::Network:
+            os << "BA_DEF_ ";
+            break;
+        case AttributeObjectType::Node:
+            os << "BA_DEF_ BU_ ";
+            break;
+        case AttributeObjectType::Message:
+            os << "BA_DEF_ BO_ ";
+            break;
+        case AttributeObjectType::Signal:
+            os << "BA_DEF_ SG_ ";
+            break;
+        case AttributeObjectType::EnvironmentVariable:
+            os << "BA_DEF_ EV_ ";
+            break;
+        case AttributeObjectType::ControlUnitEnvironmentVariable:
+            os << "BA_DEF_REL_ BU_EV_REL_ ";
+            break;
+        case AttributeObjectType::NodeTxMessage:
+            os << "BA_DEF_REL_ BU_BO_REL_ ";
+            break;
+        case AttributeObjectType::NodeMappedRxSignal:
+            os << "BA_DEF_REL_ BU_SG_REL_ ";
+            break;
+        }
+
+        /* Name */
+        os << " \"" << attributeDefinition.second.name << "\" ";
+
+        /* Value Type */
+        switch (attributeDefinition.second.valueType.type) {
+        // integer
+        case AttributeValueType::Type::Int:
+            os << "INT ";
+            os << attributeDefinition.second.valueType.integerValue.minimum;
+            os << " ";
+            os << attributeDefinition.second.valueType.integerValue.maximum;
+            break;
+
+        // hexadecimal
+        case AttributeValueType::Type::Hex:
+            os << "HEX ";
+            os << attributeDefinition.second.valueType.hexValue.minimum;
+            os << " ";
+            os << attributeDefinition.second.valueType.hexValue.maximum;
+            break;
+
+        // float
+        case AttributeValueType::Type::Float:
+            os << "FLOAT ";
+            os << attributeDefinition.second.valueType.floatValue.minimum;
+            os << " ";
+            os << attributeDefinition.second.valueType.floatValue.maximum;
+            break;
+
+        // string
+        case AttributeValueType::Type::String:
+            os << "STRING ";
+            break;
+
+        // enumeration
+        case AttributeValueType::Type::Enum:
+            os << "ENUM  ";
+            bool first = true;
+            for (auto & enumValue : attributeDefinition.second.valueType.enumValues) {
+                if (first) {
+                    first = false;
+                } else {
+                    os << ',';
+                }
+                os << "\"" << enumValue << "\"";
+            }
+            break;
+        }
+
+        os << ";" << endl;
+    }
 
     /* Sigtype Attr Lists (?, obsolete) */
-    // @todo
 
     /* Attribute Defaults (BA_DEF_DEF) and Attribute Defaults at Relations (BA_DEF_DEF_REL) */
-    // @todo
+    for (auto & attributeDefault : network.attributeDefaults) {
+        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeDefault.second.name];
+
+        /* Object Type */
+        switch (attributeDefinition.objectType) {
+        case AttributeObjectType::Network:
+        case AttributeObjectType::Node:
+        case AttributeObjectType::Message:
+        case AttributeObjectType::Signal:
+        case AttributeObjectType::EnvironmentVariable:
+            os << "BA_DEF_DEF_ ";
+            break;
+        case AttributeObjectType::ControlUnitEnvironmentVariable:
+        case AttributeObjectType::NodeTxMessage:
+        case AttributeObjectType::NodeMappedRxSignal:
+            os << "BA_DEF_DEF_REL_";
+            break;
+        }
+
+        /* Name */
+        os << " \"" << attributeDefault.second.name << "\" ";
+
+        /* Value */
+        switch (attributeDefinition.valueType.type) {
+        case AttributeValueType::Type::Int:
+            os << attributeDefault.second.integerValue;
+            break;
+        case AttributeValueType::Type::Hex:
+            os << attributeDefault.second.hexValue;
+            break;
+        case AttributeValueType::Type::Float:
+            os << attributeDefault.second.floatValue;
+            break;
+        case AttributeValueType::Type::String:
+            os << '"' << attributeDefault.second.stringValue << '"';
+            break;
+        case AttributeValueType::Type::Enum:
+            os << '"' << attributeDefault.second.stringValue << '"';
+            break;
+        }
+        os << ';' << endl;
+    }
 
     /* Attribute Values (BA) */
-    // @todo
+    for (auto & attributeValue : network.attributeValues) {
+        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeValue.second.name];
+
+        /* Name */
+        os << "BA_ \"" << attributeValue.second.name << "\" ";
+
+        /* Value */
+        switch (attributeDefinition.valueType.type) {
+        case AttributeValueType::Type::Int:
+            os << attributeValue.second.integerValue;
+            break;
+        case AttributeValueType::Type::Hex:
+            os << attributeValue.second.hexValue;
+            break;
+        case AttributeValueType::Type::Float:
+            os << attributeValue.second.floatValue;
+            break;
+        case AttributeValueType::Type::String:
+            os << '"' << attributeValue.second.stringValue << '"';
+            break;
+        case AttributeValueType::Type::Enum:
+            os << attributeValue.second.enumValue;
+            break;
+        }
+        os << ';' << endl;
+    }
+    for (auto & node : network.nodes) {
+        for (auto & attributeValue : node.second.attributeValues) {
+            AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeValue.second.name];
+
+            /* Name */
+            os << "BA_ \"" << attributeValue.second.name << "\" ";
+
+            /* Node Name */
+            os << "BU_ " << node.second.name << ' ';
+
+            /* Value */
+            switch (attributeDefinition.valueType.type) {
+            case AttributeValueType::Type::Int:
+                os << attributeValue.second.integerValue;
+                break;
+            case AttributeValueType::Type::Hex:
+                os << attributeValue.second.hexValue;
+                break;
+            case AttributeValueType::Type::Float:
+                os << attributeValue.second.floatValue;
+                break;
+            case AttributeValueType::Type::String:
+                os << '"' << attributeValue.second.stringValue << '"';
+                break;
+            case AttributeValueType::Type::Enum:
+                os << attributeValue.second.enumValue;
+                break;
+            }
+            os << ';' << endl;
+        }
+    }
+    for (auto & message : network.messages) {
+        for (auto & attributeValue : message.second.attributeValues) {
+            AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeValue.second.name];
+
+            /* Name */
+            os << "BA_ \"" << attributeValue.second.name << "\" ";
+
+            /* Message Name */
+            os << "BO_ " << message.second.id << ' ';
+
+            /* Value */
+            switch (attributeDefinition.valueType.type) {
+            case AttributeValueType::Type::Int:
+                os << attributeValue.second.integerValue;
+                break;
+            case AttributeValueType::Type::Hex:
+                os << attributeValue.second.hexValue;
+                break;
+            case AttributeValueType::Type::Float:
+                os << attributeValue.second.floatValue;
+                break;
+            case AttributeValueType::Type::String:
+                os << '"' << attributeValue.second.stringValue << '"';
+                break;
+            case AttributeValueType::Type::Enum:
+                os << attributeValue.second.enumValue;
+                break;
+            }
+            os << ';' << endl;
+        }
+    }
+    for (auto & message : network.messages) {
+        for (auto & signal : message.second.signals) {
+            for (auto & attributeValue : signal.second.attributeValues) {
+                AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeValue.second.name];
+
+                /* Name */
+                os << "BA_ \"" << attributeValue.second.name << "\" ";
+
+                /* Message Identifier, Signal Name */
+                os << "SG_ " << message.second.id << ' ' << signal.second.name << ' ';
+
+                /* Value */
+                switch (attributeDefinition.valueType.type) {
+                case AttributeValueType::Type::Int:
+                    os << attributeValue.second.integerValue;
+                    break;
+                case AttributeValueType::Type::Hex:
+                    os << attributeValue.second.hexValue;
+                    break;
+                case AttributeValueType::Type::Float:
+                    os << attributeValue.second.floatValue;
+                    break;
+                case AttributeValueType::Type::String:
+                    os << '"' << attributeValue.second.stringValue << '"';
+                    break;
+                case AttributeValueType::Type::Enum:
+                    os << attributeValue.second.enumValue;
+                    break;
+                }
+                os << ';' << endl;
+            }
+        }
+    }
+    for (auto & environmentVariable : network.environmentVariables) {
+        for (auto & attributeValue : environmentVariable.second.attributeValues) {
+            AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeValue.second.name];
+
+            /* Name */
+            os << "BA_ \"" << attributeValue.second.name << "\" ";
+
+            /* Environment Variable Name */
+            os << "EV_ " << environmentVariable.second.name << ' ';
+
+            /* Value */
+            switch (attributeDefinition.valueType.type) {
+            case AttributeValueType::Type::Int:
+                os << attributeValue.second.integerValue;
+                break;
+            case AttributeValueType::Type::Hex:
+                os << attributeValue.second.hexValue;
+                break;
+            case AttributeValueType::Type::Float:
+                os << attributeValue.second.floatValue;
+                break;
+            case AttributeValueType::Type::String:
+                os << '"' << attributeValue.second.stringValue << '"';
+                break;
+            case AttributeValueType::Type::Enum:
+                os << attributeValue.second.enumValue;
+                break;
+            }
+            os << ';' << endl;
+        }
+    }
 
     /* Attribute Values at Relations (BA_REL) */
-    // @todo
+    for (auto & attributeRelationValue : network.attributeRelationValues) {
+        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeRelationValue.second.name];
+
+        /* Name */
+        os << "BA_REL_ \"" << attributeRelationValue.second.name << "\" ";
+
+        /* Relation Type */
+        switch (attributeRelationValue.second.objectType) {
+        case AttributeObjectType::ControlUnitEnvironmentVariable:
+            os << "BU_EV_REL_ ";
+            os << attributeRelationValue.second.nodeName;
+            os << ' ';
+            os << attributeRelationValue.second.environmentVariableName;
+            break;
+        case AttributeObjectType::NodeTxMessage:
+            os << "BU_BO_REL_ ";
+            os << attributeRelationValue.second.nodeName;
+            os << ' ';
+            os << attributeRelationValue.second.messageId;
+            break;
+        case AttributeObjectType::NodeMappedRxSignal:
+            os << "BU_SG_REL_ ";
+            os << attributeRelationValue.second.nodeName;
+            os << " SG_ ";
+            os << attributeRelationValue.second.messageId;
+            os << ' ';
+            os << attributeRelationValue.second.signalName;
+            break;
+        }
+        os << ' ';
+
+        /* Value Type */
+        switch (attributeDefinition.valueType.type) {
+        case AttributeValueType::Type::Int:
+            os << attributeRelationValue.second.integerValue;
+            break;
+        case AttributeValueType::Type::Hex:
+            os << attributeRelationValue.second.hexValue;
+            break;
+        case AttributeValueType::Type::Float:
+            os << attributeRelationValue.second.floatValue;
+            break;
+        case AttributeValueType::Type::String:
+            os << '"' << attributeRelationValue.second.stringValue << '"';
+            break;
+        case AttributeValueType::Type::Enum:
+            os << attributeRelationValue.second.enumValue;
+            break;
+        }
+        os << ';' << endl;
+    }
 
     /* Value Descriptions (VAL) */
-    // @todo
+    for (auto & message : network.messages) {
+        for (auto & signal : message.second.signals) {
+            if (!signal.second.valueDescriptions.empty()) {
+                os << "VAL_ " << message.second.id << ' ' << signal.second.name;
+                for (auto & valueDescription : signal.second.valueDescriptions) {
+                    os << " " << valueDescription.first;
+                    os << " \"" << valueDescription.second << "\"";
+                }
+                os << " ;" << endl;
+            }
+        }
+    }
+    for (auto & environmentVariable : network.environmentVariables) {
+        if (!environmentVariable.second.valueDescriptions.empty()) {
+            os << "VAL_ " << environmentVariable.second.name;
+            for (auto & valueDescription : environmentVariable.second.valueDescriptions) {
+                os << " " << valueDescription.first;
+                os << " \"" << valueDescription.second << "\"";
+            }
+            os << " ;" << endl;
+        }
+    }
 
     /* Category Definitions (CAT_DEF, obsolete) */
-    // @todo
 
     /* Categories (CAT, obsolete) */
-    // @todo
 
     /* Filters (FILTER, obsolete) */
-    // @todo
 
     /* Signal Type Refs (SGTYPE, obsolete) */
-    // @todo
+    for (auto & signalType : network.signalTypes) {
+        os << "SGTYPE_ " << signalType.second.name;
+        os << " : " << signalType.second.size;
+        os << '@' << char(signalType.second.byteOrder);
+        os << ' ' << char(signalType.second.valueType);
+        os << ' ' << signalType.second.defaultValue;
+        os << ", " << signalType.second.valueTable;
+        os << ';' << endl;
+    }
+    for (auto & message : network.messages) {
+        for (auto & signal : message.second.signals) {
+            if (!signal.second.type.empty()) {
+                os << "SGTYPE_ " << message.second.id << ' ' << signal.second.name << " : " << signal.second.type << ";" << endl;
+            }
+        }
+    }
 
     /* Signal Groups (SIG_GROUP) */
-    // @todo
+    for (auto & message : network.messages) {
+        for (auto & signalGroup : message.second.signalGroups) {
+            os << "SIG_GROUP_ " << message.second.id << ' ' << signalGroup.second.name;
+            os << ' ' << signalGroup.second.repetitions;
+            bool first = true;
+            for (auto & signal : signalGroup.second.signals) {
+                if (first) {
+                    first = false;
+                } else {
+                    os << ',';
+                }
+                os << signal;
+            }
+            os << ';' << endl;
+        }
+    }
 
     /* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
-    // @todo
+    for (auto & message : network.messages) {
+        for (auto & signal : message.second.signals) {
+            if (signal.second.extendedValueType  !=  Signal::ExtendedValueType::Undefined) {
+                os << "SIG_VALTYPE_ " << message.second.id << ' ' << signal.second.name;
+                os << " : " << char(signal.second.extendedValueType);
+                os << ';' << endl;
+            }
+        }
+    }
 
     /* Extended Multiplexors (SG_MUL_VAL) */
-    // @todo
+    for (auto & message : network.messages) {
+        for (auto & signal : message.second.signals) {
+            for (auto & extendedMultiplexor : signal.second.extendedMultiplexors) {
+                /* Identifier, Name */
+                os << "SG_MUL_VAL_ " << message.second.id << ' ' << signal.second.name;
 
-    /* close stream */
+                /* Switch Name */
+                os << ' ' << extendedMultiplexor.second.switchName;
+
+                /* Value Ranges */
+                bool first = true;
+                for (auto & valueRange : extendedMultiplexor.second.valueRanges) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        os << ", ";
+                    }
+                    os << valueRange.first << '-' << valueRange.second;
+                }
+                os << ';' << endl;
+            }
+        }
+    }
+
+    os << endl;
 
     return os;
 }
 
-std::istream & operator>>(std::istream & is, Network & obj)
+std::istream & operator>>(std::istream & is, Network & network)
 {
     /* Flex scanner */
     Scanner scanner(is);
 
     /* Bison parser */
-    Parser parser(&scanner, &obj);
+    Parser parser(&scanner, &network);
 
     /* parse */
-    obj.successfullyParsed = (parser.parse() == 0);
+    network.successfullyParsed = (parser.parse() == 0);
 
     return is;
 }

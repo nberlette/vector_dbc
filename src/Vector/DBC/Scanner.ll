@@ -18,7 +18,7 @@
 %option nounput
 %option noinput
 %option batch
-%option yyclass="LIN::NCF::Scanner"
+%option yyclass="Vector::DBC::Scanner"
 %option noyywrap
 %option c++
 
@@ -36,14 +36,20 @@ HEXADECIMAL_DIGIT       [0-9a-fA-F]
     /* 4 Version and New Symbol Specification */
 "VERSION" {
     return Vector::DBC::Parser::make_VERSION(loc); }
-"NS_ : \r\n" {
+"NS_" {
     BEGIN(NS);
-    return Vector::DBC::Parser::make_NS_START(loc); }
-<NS>[ \t]+({NONDIGIT})+"\r\n" {
-    return Vector::DBC::Parser::make_DBC_IDENTIFIER(yytext, loc); }
-<NS>"\r\n" {
+    return Vector::DBC::Parser::make_NS(loc); }
+<NS>"BS_" {
     BEGIN(INITIAL);
-    return Vector::DBC::Parser::make_NS_END(loc); }
+    return Vector::DBC::Parser::make_BS(loc); }
+<NS>{NONDIGIT}+ {
+    return Vector::DBC::Parser::make_NS_VALUE(yytext, loc); }
+<NS>":" {
+    return Vector::DBC::Parser::make_COLON(loc); }
+<NS>("\r\n")+ {
+    return Vector::DBC::Parser::make_EOL(loc); }
+<NS>[ \t] {
+    }
 
     /* 5 Bit Timing Definition */
 "BS_" {
@@ -62,7 +68,7 @@ HEXADECIMAL_DIGIT       [0-9a-fA-F]
     /* 8 Message Definitions */
 "BO_" {
     return Vector::DBC::Parser::make_BO(loc); }
-"VECTOR__XXX" {
+"Vector__XXX" {
     return Vector::DBC::Parser::make_VECTOR_XXX(loc); }
 
     /* 8.1 Pseudo-message */
@@ -193,7 +199,10 @@ HEXADECIMAL_DIGIT       [0-9a-fA-F]
 {DIGIT}*"."{DIGIT}+ {
     return Vector::DBC::Parser::make_DOUBLE(yytext, loc); }
 \"(\\.|[^\\"])*\" {
-    return Vector::DBC::Parser::make_CHAR_STRING(yytext, loc); }
+    std::string str(yytext);
+    str.erase(0, 1);
+    str.erase(str.size() - 1);
+    return Vector::DBC::Parser::make_CHAR_STRING(str, loc); }
 {NONDIGIT}({NONDIGIT}|{DIGIT})* {
     return Vector::DBC::Parser::make_DBC_IDENTIFIER(yytext, loc); }
 

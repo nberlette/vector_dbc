@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -23,8 +23,7 @@
 
 #include <Vector/DBC/platform.h>
 
-#include <map>
-#include <ostream>
+#include <cstdint>
 #include <string>
 
 #include <Vector/DBC/Attribute.h>
@@ -41,16 +40,6 @@ class VECTOR_DBC_EXPORT AttributeRelation : public Attribute {
 public:
     AttributeRelation();
 
-    /** Relation Type */
-    enum class RelationType {
-        ControlUnitEnvironmentVariable, /**< Control Unit - Env. Variable */
-        NodeTxMessage, /**< Node - Tx Message */
-        NodeMappedRxSignal /**< Node - Mapped Rx Signal */
-    };
-
-    /** Relation Type */
-    RelationType relationType;
-
     /** Node Name */
     std::string nodeName;
 
@@ -58,7 +47,7 @@ public:
     std::string environmentVariableName;
 
     /** Message Identifier */
-    unsigned int messageId;
+    uint32_t messageId;
 
     /** Signal Name */
     std::string signalName;
@@ -71,8 +60,6 @@ public:
      */
     bool operator<(const AttributeRelation & rhs) const;
 };
-
-std::ostream & operator<<(std::ostream & os, AttributeRelation & obj);
 
 }
 }

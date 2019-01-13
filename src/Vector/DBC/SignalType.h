@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -23,7 +23,7 @@
 
 #include <Vector/DBC/platform.h>
 
-#include <ostream>
+#include <cstdint>
 #include <string>
 
 #include <Vector/DBC/ByteOrder.h>
@@ -46,7 +46,7 @@ public:
     std::string name;
 
     /** Size */
-    unsigned int size;
+    uint32_t size;
 
     /** Byte Order */
     ByteOrder byteOrder;
@@ -60,10 +60,10 @@ public:
     /** Offset */
     double offset;
 
-    /** Minimum */
+    /** Minimum Physical Value */
     double minimum;
 
-    /** Maximum */
+    /** Maximum Physical Value */
     double maximum;
 
     /** Unit */
@@ -75,8 +75,6 @@ public:
     /** Value Table */
     std::string valueTable;
 };
-
-std::ostream & operator<<(std::ostream & os, SignalType & obj);
 
 }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tobias Lorenz.
+ * Copyright (C) 2013-2019 Tobias Lorenz.
  * Contact: tobias.lorenz@gmx.net
  *
  * This file is part of Tobias Lorenz's Toolkit.
@@ -23,7 +23,7 @@
 
 #include <Vector/DBC/platform.h>
 
-#include <ostream>
+#include <cstdint>
 
 #include <Vector/DBC/vector_dbc_export.h>
 
@@ -39,16 +39,14 @@ public:
     BitTiming();
 
     /** Baud rate */
-    unsigned int baudrate;
+    uint32_t baudrate;
 
     /** Bit Timing Register 1 */
-    unsigned int btr1;
+    uint32_t btr1;
 
     /** Bit Timing Register 2 */
-    unsigned int btr2;
+    uint32_t btr2;
 };
-
-std::ostream & operator<<(std::ostream & os, BitTiming & obj);
 
 }
 }

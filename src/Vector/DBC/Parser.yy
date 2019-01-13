@@ -41,6 +41,22 @@ class Network;
 #define yylex scanner->yylex
 
 #define loc scanner->location
+
+#if 0
+/* stod without C locale */
+static double stod(const std::string & str)
+{
+    std::istringstream iss(str);
+
+    /* use english decimal points for floating numbers */
+    iss.imbue(std::locale("C"));
+
+    double d;
+    iss >> d;
+
+    return d;
+}
+#endif
 }
 
     // %destructor { delete($$); ($$) = nullptr; } <network>
@@ -55,158 +71,120 @@ class Network;
 %type <std::string> dbc_identifier
 
     /* 3 Structure of the DBC File */
-//%type <File> file
 
     /* 4 Version and New Symbol Specification */
-%token VERSION NS_START NS_END
-//%type <std::string> version
-//%type <std::string> candb_version_string
-//%type <std::vector<std::string>> new_symbols
-//%type <std::vector<std::string>> new_symbol_values
+%token VERSION NS
+%token <std::string> NS_VALUE
+%type <std::string> candb_version_string
+%type <std::vector<std::string>> new_symbol_values
 
     /* 5 Bit Timing Definition */
 %token BS
-//%type <BitTiming> bit_timing
-//%type <uint32_t> baudrate
-//%type <uint32_t> btr1
-//%type <uint32_t> btr2
+%type <uint32_t> baudrate
+%type <uint32_t> btr1
+%type <uint32_t> btr2
 
     /* 6 Node Definitions */
 %token BU
-//%type <std::set<std::string>> nodes
-//%type <std::set<std::string>> node_names
-//%type <std::string> node_name
+%type <std::string> node_name
 
     /* 7 Value Table Definitions */
 %token VAL_TABLE
-//%type <std::map<std::string, ValueTable>> value_tables
-//%type <ValueTable> value_table
-//%type <std::string> value_table_name
+%type <ValueTable> value_table
+%type <std::string> value_table_name
 
     /* 7.1 Value Descriptions (Value Encodings) */
-//%type <std::map<uint32_t, std::string>> value_encoding_descriptions
-//%type <std::pair<uint32_t, std::string>> value_encoding_description
+%type <std::map<uint32_t, std::string>> value_encoding_descriptions
+%type <std::pair<uint32_t, std::string>> value_encoding_description
 
     /* 8 Message Definitions */
 %token BO VECTOR_XXX
-//%type <std::map<uint32_t, Message>> messages
-//%type <Message> message
-//%type <uint32_t> message_id
-//%type <std::string> message_name
-//%type <uint32_t> message_size
-//%type <std::string> transmitter
+%type <Message> message
+%type <uint32_t> message_id
+%type <std::string> message_name
+%type <uint32_t> message_size
+%type <std::string> transmitter
 
     /* 8.1 Pseudo-message */
 
     /* 8.2 Signal Definitions */
 %token SG LOWER_M UPPER_M SIG_VALTYPE
-//%type <std::map<std::string, Signal>> signals
-//%type <Signal> signal
-//%type <std::string> signal_name
-//%type <std::vector<std::string>> signal_names
-//%type <MultiplexerIndicator> multiplexer_indicator
-//%type <uint32_t> multiplexer_switch_value
-//%type <uint32_t> start_bit
-//%type <uint32_t> signal_size
-//%type <char> byte_order
-//%type <char> value_type
-//%type <double> factor
-//%type <double> offset
-//%type <double> minimum
-//%type <double> maximum
-//%type <std::string> unit
-//%type <std::vector<std::string>> receivers
-//%type <std::string> receiver
-//%type <SignalExtendedValueTypeList> signal_extended_value_type_list
-//%type <char> signal_extended_value_type
+%type <std::map<std::string, Signal>> signals
+%type <Signal> signal
+%type <std::string> signal_name
+%type <std::set<std::string>> signal_names
+%type <std::string> multiplexer_indicator
+%type <uint32_t> multiplexer_switch_value
+%type <uint32_t> start_bit
+%type <uint32_t> signal_size
+%type <ByteOrder> byte_order
+%type <ValueType> value_type
+%type <double> factor
+%type <double> offset
+%type <double> minimum
+%type <double> maximum
+%type <std::string> unit
+%type <std::set<std::string>> receivers
+%type <std::string> receiver
+%type <Signal::ExtendedValueType> signal_extended_value_type_type
 
     /* 8.3 Definition of Message Transmitters */
 %token BO_TX_BU
-//%type <std::map<uint32_t, MessageTransmitter>> message_transmitters
-//%type <MessageTransmitter> message_transmitter
-//%type <std::vector<std::string>> transmitters
+%type <std::set<std::string>> transmitters
 
     /* 8.4 Signal Value Descriptions (Value Encodings) */
 %token VAL
-//%type <ValueDescriptions> value_descriptions
-//%type <ValueDescriptionsForSignal> value_descriptions_for_signal
 
     /* 9 Environment Variable Definitions */
 %token EV
-%token DUMMY_NODE_VECTOR0
-%token DUMMY_NODE_VECTOR1
-%token DUMMY_NODE_VECTOR2
-%token DUMMY_NODE_VECTOR3
-%token DUMMY_NODE_VECTOR8000
-%token DUMMY_NODE_VECTOR8001
-%token DUMMY_NODE_VECTOR8002
-%token DUMMY_NODE_VECTOR8003
+%token DUMMY_NODE_VECTOR0 DUMMY_NODE_VECTOR1 DUMMY_NODE_VECTOR2 DUMMY_NODE_VECTOR3
+%token DUMMY_NODE_VECTOR8000 DUMMY_NODE_VECTOR8001 DUMMY_NODE_VECTOR8002 DUMMY_NODE_VECTOR8003
 %token ENVVAR_DATA
-//%type <std::map<std::string, EnvironmentVariable>> environment_variables
-//%type <EnvironmentVariable> environment_variable
-//%type <std::string> env_var_name
-//%type <char> env_var_type
-//%type <double> initial_value
-//%type <uint32_t> ev_id
-//%type <uint16_t> access_type
-//%type <std::vector<std::string>> access_nodes
-//%type <std::string> access_node
-//%type <std::map<std::string, EnvironmentVariableData>> environment_variables_data
-//%type <EnvironmentVariableData> environment_variable_data
-//%type <uint32_t> data_size
+%type <std::string> env_var_name
+%type <EnvironmentVariable::Type> env_var_type
+%type <double> initial_value
+%type <uint32_t> ev_id
+%type <uint16_t> access_type
+%type <std::set<std::string>> access_nodes
+%type <std::string> access_node
+%type <uint32_t> data_size
 
     /* 9.1 Environment Variable Value Descriptions */
-//%type <ValueDescriptionsForEnvVar> value_descriptions_for_env_var
 
     /* 10 Signal Type and Signal Group Definitions */
 %token SGTYPE SIG_GROUP
-//%type <std::map<std::string, SignalType>> signal_types
-//%type <SignalType> signal_type
-//%type <std::string> signal_type_name
-//%type <double> default_value
-//%type <std::vector<SignalTypeRef>> signal_type_refs
-//%type <SignalTypeRef> signal_type_ref
-//%type <SignalGroups> signal_groups
-//%type <std::string> signal_group_name
-//%type <uint32_t> repetitions
+%type <std::string> signal_type_name
+%type <double> default_value
+%type <std::string> signal_group_name
+%type <uint32_t> repetitions
 
     /* 11 Comment Definitions */
 %token CM
-//%type <std::vector<Comment>> comments
-//%type <Comment> comment
 
     /* 12 User Defined Attribute Definitions */
 
     /* 12.1 Attribute Definitions */
 %token BA_DEF INT HEX FLOAT STRING ENUM
 %token BA_DEF_REL BU_EV_REL BU_BO_REL BU_SG_REL
-//%type <std::vector<AttributeDefinition>> attribute_definitions
-//%type <AttributeDefinition> attribute_definition
-//%type <uint8_t> object_type
-//%type <std::string> attribute_name
-//%type <AttributeValueType> attribute_value_type
+%type <AttributeObjectType> object_type
+%type <std::string> attribute_name
+%type <AttributeValueType> attribute_value_type
 
     /* Attribute Defaults */
 %token BA_DEF_DEF
 %token BA_DEF_DEF_REL
-//%type <std::vector<AttributeDefault>> attribute_defaults
-//%type <AttributeDefault> attribute_default
-//%type <AttributeValue> attribute_value
 
     /* 12.2 Attribute Values */
 %token BA
 %token BA_REL
-//%type <std::vector<AttributeValueForObject>> attribute_values
-//%type <void *> attribute_value_for_object
+%type <std::string> attribute_value
 
     /* 13 Extended Multiplexing */
 %token SG_MUL_VAL
-//%type <std::vector<MultiplexedSignal>> extended_multiplexing
-//%type <MultiplexedSignal> multiplexed_signal
-//%type <std::string> multiplexed_signal_name
-//%type <std::string> multiplexor_switch_name
-//%type <std::vector<MultiplexorValueRange>> multiplexor_value_ranges
-//%type <MultiplexorValueRange> multiplexor_value_range
+%type <std::string> multiplexed_signal_name
+%type <std::string> multiplexor_switch_name
+%type <std::set<ExtendedMultiplexor::ValueRange>> multiplexor_value_ranges
+%type <ExtendedMultiplexor::ValueRange> multiplexor_value_range
 
     /* Punctuators */
 %token OPEN_BRACKET CLOSE_BRACKET OPEN_PARENTHESIS CLOSE_PARENTHESIS
@@ -221,7 +199,7 @@ class Network;
 %%
 
     /* 3 Structure of the DBC File */
-file
+network
         : version                           // VERSION
           new_symbols                       // NS_
           bit_timing                        // BS_
@@ -237,9 +215,15 @@ file
           attribute_defaults                // BA_DEF_DEF_(REL_)
           attribute_values                  // BA_(REL_)
           value_descriptions                // VAL_
+          /*
+          category_definitions              // CAT_DEF_
+          categories                        // CAT_
+          filter                            // FILTER_
+          signal_type_refs                  // SGTYPE_
+          */
           signal_groups                     // SIG_GROUP_
           signal_extended_value_types       // SIG_VALTYPE_
-          extended_multiplexing {}          // SG_MUL_VAL
+          extended_multiplexing             // SG_MUL_VAL
         ;
 
     /* 2 General Definitions */
@@ -268,372 +252,769 @@ dbc_identifier
 
     /* 4 Version and New Symbol Specification */
 version
-        : VERSION candb_version_string EOL /* { $$ = $2; } */
+        : VERSION candb_version_string EOL { network->version = $2; }
         ;
 candb_version_string
-        : char_string /* { $$ = $1; } */
+        : char_string { $$ = $1; }
         ;
 new_symbols
         : %empty
-        | NS_START
-          new_symbol_values /* { $$ = $3; } */
-          NS_END
+        | NS COLON EOL
+          new_symbol_values { network->newSymbols = $4; }
         ;
 new_symbol_values
-        : %empty /* { $$ = std::vector<std::string>(); } */
-        | new_symbol_values DBC_IDENTIFIER /* { $$ = $1; $$.push_back($2); } */
+        : %empty { $$ = std::vector<std::string>(); }
+        | new_symbol_values NS_VALUE EOL { $$ = $1; $$.push_back($2); }
         ;
 
     /* 5 Bit Timing Definition */
 bit_timing
-        : BS COLON EOL /* { $$ = BitTiming(); } */
-        | BS COLON baudrate COLON btr1 COMMA btr2 EOL /* { $$ = BitTiming($2, $4, $6); } */
+        : BS COLON EOL
+        | BS COLON baudrate COLON btr1 COMMA btr2 EOL {
+              network->bitTiming.baudrate = $baudrate;
+              network->bitTiming.btr1 = $btr1;
+              network->bitTiming.btr2 = $btr2;
+          }
         ;
 baudrate
-        : unsigned_integer /* { $$ = $1; } */
+        : unsigned_integer { $$ = $1; }
         ;
 btr1
-        : unsigned_integer /* { $$ = $1; } */
+        : unsigned_integer { $$ = $1; }
         ;
 btr2
-        : unsigned_integer /* { $$ = $1; } */
+        : unsigned_integer { $$ = $1; }
         ;
 
     /* 6 Node Definitions */
 nodes
-        : BU COLON node_names EOL /* { $$ = $2; } */
+        : BU COLON node_names EOL
         ;
 node_names
-        : %empty /* { $$ = std::vector<std::string>(); } */
-        | node_names node_name /* { $$ = $1; $$.push_back($2); } */
+        : %empty
+        | node_names node_name { network->nodes[$node_name].name = $node_name; }
         ;
 node_name
-        : dbc_identifier /* { $$ = $1; } */
+        : dbc_identifier { $$ = $1; }
         ;
 
     /* 7 Value Table Definitions */
 value_tables
-        : %empty /* { $$ = std::map<std::string, ValueTable>(); } */
-        | value_tables value_table /* { $$ = $1; $$[$2.name] = $2; } */
+        : %empty
+        | value_tables value_table { network->valueTables[$value_table.name] = $value_table; }
         ;
 value_table
-        : VAL_TABLE value_table_name value_encoding_descriptions SEMICOLON EOL /* { $$ = ValueTable($2, $3); } */
+        : VAL_TABLE value_table_name value_encoding_descriptions SEMICOLON EOL {
+              $$ = ValueTable();
+              $$.name = $value_table_name;
+              $$.valueDescriptions = $value_encoding_descriptions;
+          }
         ;
 value_table_name
-        : dbc_identifier /* { $$ = $1; } */
+        : dbc_identifier { $$ = $1; }
         ;
 
     /* 7.1 Value Descriptions (Value Encodings) */
 value_encoding_descriptions
-        : %empty /* { std::map<uint32_t, std::string>(); } */
-        | value_encoding_descriptions value_encoding_description /* { $$ = $1; $$.insert($2); } */
+        : %empty { $$ = std::map<uint32_t, std::string>(); }
+        | value_encoding_descriptions value_encoding_description { $$ = $1; $$.insert($2); }
         ;
 value_encoding_description
-        : unsigned_integer char_string /* { $$ = std::pair<uint32_t, std::string>($1, $2); } */;
+        : unsigned_integer char_string { $$ = std::make_pair($1, $2); }
         ;
 
     /* 8 Message Definitions */
 messages
-        : %empty /* { $$ = std::map<uint32_t, Message>(); } */
-        | messages message /* { $$ = $1; $$[$2.id] = $2; } */
+        : %empty
+        | messages message { network->messages[$message.id] = $message; }
         ;
 message
-        : BO message_id message_name COLON message_size transmitter EOL signals /* { $$ = Message($2, $3, $5, $6, $7); } */
+        : BO message_id message_name COLON message_size transmitter EOL signals {
+              $$ = Message();
+              $$.id = $message_id;
+              $$.name = $message_name;
+              $$.size = $message_size;
+              $$.transmitter = $transmitter;
+              $$.signals = $signals;
+          }
         ;
 message_id
-        : unsigned_integer /* { $$ = $1; } */
+        : unsigned_integer { $$ = $1; }
         ;
 message_name
-        : dbc_identifier /* { $$ = $1; } */
+        : dbc_identifier { $$ = $1; }
         ;
 message_size
-        : unsigned_integer /* { $$ = $1; } */
+        : unsigned_integer { $$ = $1; }
         ;
 transmitter
-        : node_name /* { $$ = $1; } */
-        | VECTOR_XXX /* { $$ = $1; } */
+        : node_name { $$ = $1; }
+        | VECTOR_XXX { $$ = ""; }
         ;
 
     /* 8.1 Pseudo-message */
 
     /* 8.2 Signal Definitions */
 signals
-        : %empty /* { $$ = std::map<std::string, Signal>(); } */
-        | signals signal /* { $$ = $1; $$[$2.name] = $2; } */
+        : %empty { $$ = std::map<std::string, Signal>(); }
+        | signals signal { $$ = $1; $$[$2.name] = $2; }
         ;
 signal
-        : SG signal_name multiplexer_indicator COLON start_bit VERTICAL_BAR signal_size AT byte_order value_type OPEN_PARENTHESIS factor COMMA offset CLOSE_PARENTHESIS OPEN_BRACKET minimum VERTICAL_BAR maximum CLOSE_BRACKET unit receivers EOL /* { $$ = Signal($2, $3, $5, $7, $9, $10, $12, $14, $17, $19, $21, $22); } */
+        : SG signal_name multiplexer_indicator COLON start_bit VERTICAL_BAR signal_size AT byte_order value_type OPEN_PARENTHESIS factor COMMA offset CLOSE_PARENTHESIS OPEN_BRACKET minimum VERTICAL_BAR maximum CLOSE_BRACKET unit receivers EOL {
+              $$ = Signal();
+              $$.name = $signal_name;
+              if ($multiplexer_indicator == "*") {
+                  $$.multiplexorSwitch = true;
+              } else
+              if (!$multiplexer_indicator.empty()) {
+                  $$.multiplexedSignal = true;
+                  $$.multiplexerSwitchValue = std::stoul($multiplexer_indicator);
+              }
+              $$.startBit = $start_bit;
+              $$.bitSize = $signal_size;
+              $$.byteOrder = $byte_order;
+              $$.valueType = $value_type;
+              $$.factor = $factor;
+              $$.offset = $offset;
+              $$.minimum = $minimum;
+              $$.maximum = $maximum;
+              $$.unit = $unit;
+              $$.receivers = $receivers;
+          }
         ;
 signal_name
-        : dbc_identifier /* { $$ = $1; } */
+        : dbc_identifier { $$ = $1; }
         ;
 signal_names
-        : %empty /* { $$ = std::vector<std::string>(); } */
-        | signal_names signal_name /* { $$ = $1; $$.push_back($2); } */
+        : %empty { $$ = std::set<std::string>(); }
+        | signal_names signal_name { $$ = $1; $$.insert($2); }
         ;
 multiplexer_indicator
-        : %empty
-        | DBC_IDENTIFIER /*LOWER_M multiplexer_switch_value*/ /* { $$ = MultiplexerIndicator(2, $2); } */
-        | UPPER_M /* { $$ = MultiplexerIndicator(3); } */
+        : %empty { $$ = ""; }
+        | DBC_IDENTIFIER { $$ = $1; $$.erase(0, 1); }
+        | UPPER_M { $$ = "*"; }
         ;
 multiplexer_switch_value
-        : unsigned_integer /* { $$ = $1; } */
+        : unsigned_integer { $$ = $1; }
         ;
 start_bit
-        : unsigned_integer /* { $$ = $1; } */
+        : unsigned_integer { $$ = $1; }
         ;
 signal_size
-        : unsigned_integer /* { $$ = $1; } */
+        : unsigned_integer { $$ = $1; }
         ;
 byte_order
-        : UNSIGNED_INTEGER /* { $$ = $1; } */
+        : UNSIGNED_INTEGER {
+              if ($1 == "0") { $$ = ByteOrder::BigEndian; }
+              if ($1 == "1") { $$ = ByteOrder::LittleEndian; }
+          }
         ;
 value_type
-        : PLUS /* { $$ = '+'; } */
-        | MINUS /* { $$ = '-'; } */
+        : PLUS { $$ = ValueType::Unsigned; }
+        | MINUS { $$ = ValueType::Signed; }
         ;
 factor
-        : double /* { $$ = $1; } */
+        : double { $$ = $1; }
         ;
 offset
-        : double /* { $$ = $1; } */
+        : double { $$ = $1; }
         ;
 minimum
-        : double /* { $$ = $1; } */
+        : double { $$ = $1; }
         ;
 maximum
-        : double /* { $$ = $1; } */
+        : double { $$ = $1; }
         ;
 unit
-        : char_string /* { $$ = $1; } */
+        : char_string { $$ = $1; }
         ;
 receivers
-        : receiver /* { $$ = std::vector<std::string>(); } */
-        | receivers COMMA receiver /* { $$ = $1; $$.push_back($3); } */
+        : receiver {
+              $$ = std::set<std::string>();
+              if (!$receiver.empty()) {
+                  $$.insert($receiver);
+              }
+          }
+        | receivers COMMA receiver {
+              $$ = $1;
+              if (!$receiver.empty()) {
+                  $$.insert($receiver);
+              }
+          }
         ;
 receiver
-        : node_name /* { $$ = $1; } */
-        /* | VECTOR__XXX { $$ = $1; } */
+        : node_name { $$ = $1; }
+        | VECTOR_XXX { $$ = ""; }
         ;
 signal_extended_value_types
         : %empty
         | signal_extended_value_types signal_extended_value_type
         ;
 signal_extended_value_type
-        : SIG_VALTYPE message_id signal_name COLON UNSIGNED_INTEGER SEMICOLON EOL /* { $$ = SignalExtendedValueTypeList($2, $3, $4); } */
+        : SIG_VALTYPE message_id signal_name COLON signal_extended_value_type_type SEMICOLON EOL {
+              network->messages[$message_id].signals[$signal_name].extendedValueType = $signal_extended_value_type_type;
+          }
+        ;
+signal_extended_value_type_type
+        : unsigned_integer {
+              switch ($unsigned_integer) {
+              case 0:
+                  $$ = Signal::ExtendedValueType::Integer;
+                  break;
+              case 1:
+                  $$ = Signal::ExtendedValueType::Float;
+                  break;
+              case 2:
+                  $$ = Signal::ExtendedValueType::Double;
+                  break;
+              }
+          }
         ;
 
     /* 8.3 Definition of Message Transmitters */
 message_transmitters
-        : %empty /* { $$ = std::map<uint32_t, MessageTransmitter>(); } */
-        | message_transmitters message_transmitter /* { $$ = $1; $$[$2.id] = $2; } */
+        : %empty
+        | message_transmitters message_transmitter
         ;
 message_transmitter
-        : BO_TX_BU message_id COLON transmitters SEMICOLON EOL /* { $$ = MessageTransmitter($2, $4); } */
+        : BO_TX_BU message_id COLON transmitters SEMICOLON EOL { network->messages[$message_id].transmitters = $transmitters; }
         ;
 transmitters
-        : %empty /* { $$ = std::vector<std::string>(); } */
-        | transmitters transmitter /* { $$ = $1; $$.push_back($2); } */
+        : %empty { $$ = std::set<std::string>(); }
+        | transmitters transmitter { $$ = $1; $$.insert($2); }
         ;
 
     /* 8.4 Signal Value Descriptions (Value Encodings) */
 value_descriptions
-        : %empty {}
-        | value_descriptions value_descriptions_for_signal /* { $$ = ValueDescriptions(1, $1); } */
-        | value_descriptions value_descriptions_for_env_var /* { $$ = ValueDescriptions(2, $1); } */
+        : %empty
+        | value_descriptions value_descriptions_for_signal
+        | value_descriptions value_descriptions_for_env_var
         ;
 value_descriptions_for_signal
-        : VAL message_id signal_name value_encoding_descriptions SEMICOLON EOL /* { $$ = ValueDescriptionsForSignal($2, $3, $4); } */
+        : VAL message_id signal_name value_encoding_descriptions SEMICOLON EOL {
+              network->messages[$message_id].signals[$signal_name].valueDescriptions = $value_encoding_descriptions;
+          }
         ;
 
     /* 9 Environment Variable Definitions */
 environment_variables
-        : %empty /* { $$ = std::map<std::string, EnvironmentVariable>(); } */
-        | environment_variables environment_variable /* { $$ = $1; $$[$2.name] = $2; } */
+        : %empty
+        | environment_variables environment_variable
         ;
 environment_variable
-        : EV env_var_name COLON env_var_type OPEN_BRACKET minimum VERTICAL_BAR maximum CLOSE_BRACKET unit initial_value ev_id access_type access_nodes SEMICOLON EOL /* { $$ = EnvironmentVariable($2, $4, $6, $8, $10, $11, $12, $13, $14); } */
+        : EV env_var_name COLON env_var_type OPEN_BRACKET minimum VERTICAL_BAR maximum CLOSE_BRACKET unit initial_value ev_id access_type access_nodes SEMICOLON EOL {
+              EnvironmentVariable & environmentVariable = network->environmentVariables[$env_var_name];
+              environmentVariable.name = $env_var_name;
+              environmentVariable.type = $env_var_type;
+              environmentVariable.minimum = $minimum;
+              environmentVariable.maximum = $maximum;
+              environmentVariable.unit = $unit;
+              environmentVariable.initialValue = $initial_value;
+              environmentVariable.id = $ev_id;
+              if ($access_type >> 15) {
+                  environmentVariable.type = EnvironmentVariable::Type::String;
+              }
+              switch($access_type & 0xff) {
+                  case 0:
+                      environmentVariable.accessType = EnvironmentVariable::AccessType::Unrestricted;
+                      break;
+                  case 1:
+                      environmentVariable.accessType = EnvironmentVariable::AccessType::Read;
+                      break;
+                  case 2:
+                      environmentVariable.accessType = EnvironmentVariable::AccessType::Write;
+                      break;
+                  case 3:
+                      environmentVariable.accessType = EnvironmentVariable::AccessType::ReadWrite;
+                      break;
+              }
+              environmentVariable.accessNodes = $access_nodes;
+          }
         ;
 env_var_name
-        : dbc_identifier /* { $$ = $1; } */
+        : dbc_identifier { $$ = $1; }
         ;
 env_var_type
-        : UNSIGNED_INTEGER /* { $$ = '0'; } */
+        : UNSIGNED_INTEGER {
+              if ($1 == "0") { $$ = EnvironmentVariable::Type::Integer; }
+              if ($1 == "1") { $$ = EnvironmentVariable::Type::Float; }
+              if ($1 == "2") { $$ = EnvironmentVariable::Type::String; }
+          }
         ;
 initial_value
-        : double /* { $$ = $1; } */
+        : double { $$ = $1; }
         ;
 ev_id
-        : unsigned_integer /* { $$ = $1; } */
+        : unsigned_integer { $$ = $1; }
         ;
 access_type
-        : DUMMY_NODE_VECTOR0 /* { $$ = 0x0000; } */
-        | DUMMY_NODE_VECTOR1 /* { $$ = 0x0001; } */
-        | DUMMY_NODE_VECTOR2 /* { $$ = 0x0002; } */
-        | DUMMY_NODE_VECTOR3 /* { $$ = 0x0003; } */
-        | DUMMY_NODE_VECTOR8000 /* { $$ = 0x8000; } */
-        | DUMMY_NODE_VECTOR8001 /* { $$ = 0x8001; } */
-        | DUMMY_NODE_VECTOR8002 /* { $$ = 0x8002; } */
-        | DUMMY_NODE_VECTOR8003 /* { $$ = 0x8003; } */
+        : DUMMY_NODE_VECTOR0 { $$ = 0x0000; }
+        | DUMMY_NODE_VECTOR1 { $$ = 0x0001; }
+        | DUMMY_NODE_VECTOR2 { $$ = 0x0002; }
+        | DUMMY_NODE_VECTOR3 { $$ = 0x0003; }
+        | DUMMY_NODE_VECTOR8000  { $$ = 0x8000; }
+        | DUMMY_NODE_VECTOR8001  { $$ = 0x8001; }
+        | DUMMY_NODE_VECTOR8002  { $$ = 0x8002; }
+        | DUMMY_NODE_VECTOR8003  { $$ = 0x8003; }
         ;
 access_nodes
-        : access_node /* { $$ = std::vector<std::string>(); } */
-        | access_nodes COMMA access_node /* { $$ = $1; $$.push_back($3); } */
+        : access_node {
+              $$ = std::set<std::string>();
+              if (!$access_node.empty()) {
+                  $$.insert($access_node);
+              }
+          }
+        | access_nodes COMMA access_node {
+              $$ = $1;
+              if (!$access_node.empty()) {
+                  $$.insert($access_node);
+              }
+          }
         ;
 access_node
-        : node_name /* { $$ = $1; } */
-        /* | VECTOR__XXX { $$ = $1; } */
+        : node_name { $$ = $1; }
+        | VECTOR_XXX { $$ = ""; }
         ;
 environment_variables_data
-        : %empty /* { $$ = std::map<std::string, EnvironmentVariableData>(); } */
-        | environment_variables_data environment_variable_data /* { $$ = $1; $$[$2.name] = $2; } */
+        : %empty
+        | environment_variables_data environment_variable_data
         ;
 environment_variable_data
-        : ENVVAR_DATA env_var_name COLON data_size SEMICOLON EOL /* { $$ = EnvironmentVariableData($2, $4); } */
+        : ENVVAR_DATA env_var_name COLON data_size SEMICOLON EOL {
+              network->environmentVariables[$env_var_name].type = EnvironmentVariable::Type::Data;
+              network->environmentVariables[$env_var_name].dataSize = $data_size;
+          }
         ;
 data_size
-        : unsigned_integer /* { $$ = $1; } */
+        : unsigned_integer { $$ = $1; }
         ;
 
     /* 9.1 Environment Variable Value Descriptions */
 value_descriptions_for_env_var
-        : VAL env_var_name value_encoding_descriptions SEMICOLON EOL /* { $$ = ValueDescriptionsForEnvVar($2, $3); } */
+        : VAL env_var_name value_encoding_descriptions SEMICOLON EOL {
+              network->environmentVariables[$env_var_name].valueDescriptions = $value_encoding_descriptions;
+          }
         ;
 
     /* 10 Signal Type and Signal Group Definitions */
 signal_types
-        : %empty /* { $$ = std::map<std::string, SignalType>(); } */
-        | signal_types signal_type /* { $$ = $1; $$[$2.name] = $2; } */
+        : %empty
+        | signal_types signal_type
         ;
 signal_type
         : SGTYPE signal_type_name COLON signal_size VERTICAL_BAR byte_order value_type
           OPEN_PARENTHESIS factor COMMA offset CLOSE_PARENTHESIS
           OPEN_BRACKET minimum VERTICAL_BAR maximum CLOSE_BRACKET
-          unit default_value COMMA value_table_name SEMICOLON EOL /* { $$ = SignalType($2, $4, $6, $7, $9, $11, $14, $16, $18, $19, $21); } */
+          unit default_value COMMA value_table_name SEMICOLON EOL {
+              SignalType & signalType = network->signalTypes[$signal_type_name];
+              signalType.name = $signal_type_name;
+              signalType.size = $signal_size;
+              signalType.byteOrder = $byte_order;
+              signalType.valueType = $value_type;
+              signalType.factor = $factor;
+              signalType.offset = $offset;
+              signalType.minimum = $minimum;
+              signalType.maximum = $maximum;
+              signalType.unit = $unit;
+              signalType.defaultValue = $default_value;
+              signalType.valueTable = $value_table_name;
+          }
         ;
 signal_type_name
-        : dbc_identifier /* { $$ = $1; } */
+        : dbc_identifier { $$ = $1; }
         ;
 default_value
-        : double /* { $$ = $1; } */
+        : double { $$ = $1; }
         ;
 signal_type_refs
-        : %empty /* { $$ = std::vector<SignalTypeRef>(); } */
-        | signal_type_refs signal_type_ref /* { $$ = $1; $$.push_back($2); } */
+        : %empty
+        | signal_type_refs signal_type_ref
         ;
 signal_type_ref
-        : SGTYPE message_id signal_name COLON signal_type_name SEMICOLON EOL /* { $$ = SignalTypeRef($2, $3, $5); } */
+        : SGTYPE message_id signal_name COLON signal_type_name SEMICOLON EOL {
+              network->messages[$message_id].signals[$signal_name].type = $signal_type_name;
+          }
         ;
 signal_groups
         : %empty
         | signal_groups signal_group
         ;
 signal_group
-        : SIG_GROUP message_id signal_group_name repetitions COLON signal_names SEMICOLON EOL /* { $$ = SignalGroup($2, $3, $4, $6); } */
+        : SIG_GROUP message_id signal_group_name repetitions COLON signal_names SEMICOLON EOL {
+              SignalGroup & signalGroup = network->messages[$message_id].signalGroups[$signal_group_name];
+              signalGroup.messageId = $message_id;
+              signalGroup.name = $signal_group_name;
+              signalGroup.repetitions = $repetitions;
+              signalGroup.signals = $signal_names;
+          }
         ;
 signal_group_name
-        : dbc_identifier /* { $$ = $1; } */
+        : dbc_identifier { $$ = $1; }
         ;
 repetitions
-        : unsigned_integer /* { $$ = $1; } */
+        : unsigned_integer { $$ = $1; }
         ;
 
     /* 11 Comment Definitions */
 comments
-        : %empty /* { $$ = std::vector<Comment>(); } */
-        | comments comment /* { $$ = $1; $$.push_back($2); } */
+        : %empty
+        | comments comment
         ;
 comment
-        : CM char_string SEMICOLON EOL /* { $$ = Comment(1, $2); } */
-        | CM BU node_name char_string SEMICOLON EOL /* { $$ = Comment(2, $2, $3); } */
-        | CM BO message_id char_string SEMICOLON EOL /* { $$ = Comment(3, $2, $3); } */
-        | CM SG message_id signal_name char_string SEMICOLON EOL /* { $$ = Comment(4, $2, $3, $4); } */
-        | CM EV env_var_name char_string SEMICOLON EOL /* { $$ = Comment(5, $2, $3); } */
+        : CM char_string SEMICOLON EOL { network->comment = $char_string; }
+        | CM BU node_name char_string SEMICOLON EOL { network->nodes[$node_name].comment = $char_string; }
+        | CM BO message_id char_string SEMICOLON EOL { network->messages[$message_id].comment = $char_string; }
+        | CM SG message_id signal_name char_string SEMICOLON EOL { network->messages[$message_id].signals[$signal_name].comment = $char_string; }
+        | CM EV env_var_name char_string SEMICOLON EOL { network->environmentVariables[$env_var_name].comment = $char_string; }
         ;
 
     /* 12 User Defined Attribute Definitions */
 
     /* 12.1 Attribute Definitions */
 attribute_definitions
-        : %empty /* { $$ = std::vector<AttributeDefinition>(); } */
-        | attribute_definitions attribute_definition /* { $$ = $1; $$.push_back($2); } */
+        : %empty
+        | attribute_definitions attribute_definition
         ;
 attribute_definition
-        : BA_DEF object_type attribute_name attribute_value_type SEMICOLON EOL /* { $$ = AttributeDefinition($2, $3, $4); } */
-        | BA_DEF_REL BU_EV_REL attribute_name attribute_value_type SEMICOLON EOL {}
-        | BA_DEF_REL BU_BO_REL attribute_name attribute_value_type SEMICOLON EOL {}
-        | BA_DEF_REL BU_SG_REL attribute_name attribute_value_type SEMICOLON EOL {}
+        : BA_DEF object_type attribute_name attribute_value_type SEMICOLON EOL {
+              AttributeDefinition & attributeDefinition = network->attributeDefinitions[$attribute_name];
+              attributeDefinition.name = $attribute_name;
+              attributeDefinition.objectType = $object_type;
+              attributeDefinition.valueType = $attribute_value_type;
+          }
+        | BA_DEF_REL object_type attribute_name attribute_value_type SEMICOLON EOL {
+              AttributeDefinition & attributeDefinition = network->attributeDefinitions[$attribute_name];
+              attributeDefinition.name = $attribute_name;
+              attributeDefinition.objectType = $object_type;
+              attributeDefinition.valueType = $attribute_value_type;
+          }
         ;
 object_type
-        : %empty /* { $$ = 1; } */
-        | BU /* { $$ = 2; } */
-        | BO /* { $$ = 3; } */
-        | SG /* { $$ = 4; } */
-        | EV /* { $$ = 5; } */
+        : %empty { $$ = AttributeObjectType::Network; }
+        | BU { $$ = AttributeObjectType::Node; }
+        | BO { $$ = AttributeObjectType::Message; }
+        | SG { $$ = AttributeObjectType::Signal; }
+        | EV { $$ = AttributeObjectType::EnvironmentVariable; }
+        | BU_EV_REL { $$ = AttributeObjectType::ControlUnitEnvironmentVariable; }
+        | BU_BO_REL { $$ = AttributeObjectType::NodeTxMessage; }
+        | BU_SG_REL { $$ = AttributeObjectType::NodeMappedRxSignal; }
         ;
 attribute_name
-        : char_string /* { $$ = $1; } */
+        : char_string { $$ = $1; }
         ;
 attribute_value_type
-        : INT signed_integer signed_integer /* { $$ = AttributeValueType(1, $2, $3); } */
-        | HEX signed_integer signed_integer /* { $$ = AttributeValueType(2, $2, $3); } */
-        | FLOAT double double /* { $$ = AttributeValueType(3, $2, $3); } */
-        | STRING /* { $$ = AttributeValueType(4); } */
-        | ENUM char_strings /* { $$ = AttributeValueType(5, $2); } */
+        : INT signed_integer signed_integer {
+              $$ = AttributeValueType();
+              $$.type = AttributeValueType::Type::Int;
+              $$.integerValue.minimum = $2;
+              $$.integerValue.maximum = $3;
+          }
+        | HEX signed_integer signed_integer {
+              $$ = AttributeValueType();
+              $$.type = AttributeValueType::Type::Hex;
+              $$.hexValue.minimum = $2;
+              $$.hexValue.maximum = $3;
+          }
+        | FLOAT double double {
+              $$ = AttributeValueType();
+              $$.type = AttributeValueType::Type::Float;
+              $$.floatValue.minimum = $2;
+              $$.floatValue.maximum = $3;
+          }
+        | STRING {
+              $$ = AttributeValueType();
+              $$.type = AttributeValueType::Type::String;
+          }
+        | ENUM char_strings {
+              $$ = AttributeValueType();
+              $$.type = AttributeValueType::Type::Enum;
+              $$.enumValues = $char_strings;
+          }
         ;
 
     /* Attribute Defaults */
 attribute_defaults
-        : %empty /* { $$ = std::vector<AttributeDefault>(); } */
-        | attribute_defaults attribute_default /* { $$ = $1; $$.push_back($2); } */
+        : %empty
+        | attribute_defaults attribute_default
         ;
 attribute_default
-        : BA_DEF_DEF attribute_name attribute_value SEMICOLON EOL /* { $$ = AttributeDefault($2, $3); } */
-        | BA_DEF_DEF_REL attribute_name attribute_value SEMICOLON EOL/* @todo */
+        : BA_DEF_DEF attribute_name attribute_value SEMICOLON EOL {
+              AttributeDefinition & attributeDefinition = network->attributeDefinitions[$attribute_name];
+              Attribute & attributeDefault = network->attributeDefaults[$attribute_name];
+              attributeDefault.name = $attribute_name;
+              attributeDefault.objectType = attributeDefinition.objectType;
+              switch(attributeDefinition.valueType.type) {
+              case AttributeValueType::Type::Int:
+                  attributeDefault.integerValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Hex:
+                  attributeDefault.hexValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Float:
+                  attributeDefault.floatValue = std::stod($attribute_value);
+                  break;
+              case AttributeValueType::Type::String:
+                  attributeDefault.stringValue = $attribute_value;
+                  break;
+              case AttributeValueType::Type::Enum:
+                  attributeDefault.stringValue = $attribute_value;
+                  break;
+              }
+          }
+        | BA_DEF_DEF_REL attribute_name attribute_value SEMICOLON EOL {
+              AttributeDefinition & attributeDefinition = network->attributeDefinitions[$attribute_name];
+              Attribute & attributeDefault = network->attributeDefaults[$attribute_name];
+              attributeDefault.name = $attribute_name;
+              attributeDefault.objectType = attributeDefinition.objectType;
+              switch(attributeDefinition.valueType.type) {
+              case AttributeValueType::Type::Int:
+                  attributeDefault.integerValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Hex:
+                  attributeDefault.hexValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Float:
+                  attributeDefault.floatValue = std::stod($attribute_value);
+                  break;
+              case AttributeValueType::Type::String:
+                  attributeDefault.stringValue = $attribute_value;
+                  break;
+              case AttributeValueType::Type::Enum:
+                  attributeDefault.stringValue = $attribute_value;
+                  break;
+              }
+          }
         ;
 attribute_value
-        : unsigned_integer /* { $$ = AttributeValue(1, $1); } */
-        | signed_integer /* { $$ = AttributeValue(2, $1); } */
-        | double /* { $$ = AttributeValue(3, $1); } */
-        | char_string /* { $$ = AttributeValue(4, $1); } */
+        : UNSIGNED_INTEGER { $$ = $1; }
+        | SIGNED_INTEGER { $$ = $1; }
+        | DOUBLE { $$ = $1; }
+        | CHAR_STRING { $$ = $1; }
         ;
 
     /* 12.2 Attribute Values */
 attribute_values
-        : %empty /* { $$ = std::vector<AttributeValueForObject>(); } */
-        | attribute_values attribute_value_for_object /* { $$ = $1; $$.push_back($2); } */
+        : %empty
+        | attribute_values attribute_value_for_object
         ;
 attribute_value_for_object
-        : BA attribute_name attribute_value SEMICOLON EOL /* { $$ = AttributeValueForObject(1, $2, $3); } */
-        | BA attribute_name BU node_name attribute_value SEMICOLON EOL /* { $$ = AttributeValueForObject(2, $2, $4, $5); } */
-        | BA attribute_name BO message_id attribute_value SEMICOLON EOL /* { $$ = AttributeValueForObject(3, $2, $4, $5); } */
-        | BA attribute_name SG message_id signal_name attribute_value SEMICOLON EOL /* { $$ = AttributeValueForObject(4, $2, $4, $5, $6); } */
-        | BA attribute_name EV env_var_name attribute_value SEMICOLON EOL /* { $$ = AttributeValueForObject(5, $2, $4, $5); } */
-        | BA_REL attribute_name BU_EV_REL node_name env_var_name attribute_value SEMICOLON EOL
-        | BA_REL attribute_name BU_BO_REL node_name message_id attribute_value SEMICOLON EOL
-        | BA_REL attribute_name BU_SG_REL node_name SG message_id signal_name attribute_value SEMICOLON EOL
+        : BA attribute_name attribute_value SEMICOLON EOL {
+              AttributeDefinition & attributeDefinition = network->attributeDefinitions[$attribute_name];
+              Attribute & attribute = network->attributeValues[$attribute_name];
+              attribute.name = $attribute_name;
+              attribute.objectType = AttributeObjectType::Network;
+              switch(attributeDefinition.valueType.type) {
+              case AttributeValueType::Type::Int:
+                  attribute.integerValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Hex:
+                  attribute.hexValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Float:
+                  attribute.floatValue = std::stod($attribute_value);
+                  break;
+              case AttributeValueType::Type::String:
+                  attribute.stringValue = $attribute_value;
+                  break;
+              case AttributeValueType::Type::Enum:
+                  attribute.enumValue = std::stol($attribute_value);
+                  break;
+              }
+          }
+        | BA attribute_name BU node_name attribute_value SEMICOLON EOL {
+              AttributeDefinition & attributeDefinition = network->attributeDefinitions[$attribute_name];
+              Attribute & attribute = network->nodes[$node_name].attributeValues[$attribute_name];
+              attribute.name = $attribute_name;
+              attribute.objectType = AttributeObjectType::Node;
+              switch(attributeDefinition.valueType.type) {
+              case AttributeValueType::Type::Int:
+                  attribute.integerValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Hex:
+                  attribute.hexValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Float:
+                  attribute.floatValue = std::stod($attribute_value);
+                  break;
+              case AttributeValueType::Type::String:
+                  attribute.stringValue = $attribute_value;
+                  break;
+              case AttributeValueType::Type::Enum:
+                  attribute.enumValue = std::stol($attribute_value);
+                  break;
+              }
+          }
+        | BA attribute_name BO message_id attribute_value SEMICOLON EOL {
+              AttributeDefinition & attributeDefinition = network->attributeDefinitions[$attribute_name];
+              Attribute & attribute = network->messages[$message_id].attributeValues[$attribute_name];
+              attribute.name = $attribute_name;
+              attribute.objectType = AttributeObjectType::Message;
+              switch(attributeDefinition.valueType.type) {
+              case AttributeValueType::Type::Int:
+                  attribute.integerValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Hex:
+                  attribute.hexValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Float:
+                  attribute.floatValue = std::stod($attribute_value);
+                  break;
+              case AttributeValueType::Type::String:
+                  attribute.stringValue = $attribute_value;
+                  break;
+              case AttributeValueType::Type::Enum:
+                  attribute.enumValue = std::stol($attribute_value);
+                  break;
+              }
+          }
+        | BA attribute_name SG message_id signal_name attribute_value SEMICOLON EOL {
+              AttributeDefinition & attributeDefinition = network->attributeDefinitions[$attribute_name];
+              Attribute & attribute = network->messages[$message_id].signals[$signal_name].attributeValues[$attribute_name];
+              attribute.name = $attribute_name;
+              attribute.objectType = AttributeObjectType::Signal;
+              switch(attributeDefinition.valueType.type) {
+              case AttributeValueType::Type::Int:
+                  attribute.integerValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Hex:
+                  attribute.hexValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Float:
+                  attribute.floatValue = std::stod($attribute_value);
+                  break;
+              case AttributeValueType::Type::String:
+                  attribute.stringValue = $attribute_value;
+                  break;
+              case AttributeValueType::Type::Enum:
+                  attribute.enumValue = std::stol($attribute_value);
+                  break;
+              }
+          }
+        | BA attribute_name EV env_var_name attribute_value SEMICOLON EOL {
+              AttributeDefinition & attributeDefinition = network->attributeDefinitions[$attribute_name];
+              Attribute & attribute = network->environmentVariables[$env_var_name].attributeValues[$attribute_name];
+              attribute.name = $attribute_name;
+              attribute.objectType = AttributeObjectType::EnvironmentVariable;
+              switch(attributeDefinition.valueType.type) {
+              case AttributeValueType::Type::Int:
+                  attribute.integerValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Hex:
+                  attribute.hexValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Float:
+                  attribute.floatValue = std::stod($attribute_value);
+                  break;
+              case AttributeValueType::Type::String:
+                  attribute.stringValue = $attribute_value;
+                  break;
+              case AttributeValueType::Type::Enum:
+                  attribute.enumValue = std::stol($attribute_value);
+                  break;
+              }
+          }
+        | BA_REL attribute_name BU_EV_REL node_name env_var_name attribute_value SEMICOLON EOL {
+              AttributeDefinition & attributeDefinition = network->attributeDefinitions[$attribute_name];
+              AttributeRelation & attributeRelation = network->attributeRelationValues[$attribute_name];
+              attributeRelation.name = $attribute_name;
+              attributeRelation.objectType = AttributeObjectType::ControlUnitEnvironmentVariable;
+              attributeRelation.nodeName = $node_name;
+              attributeRelation.environmentVariableName = $env_var_name;
+              switch(attributeDefinition.valueType.type) {
+              case AttributeValueType::Type::Int:
+                  attributeRelation.integerValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Hex:
+                  attributeRelation.hexValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Float:
+                  attributeRelation.floatValue = std::stod($attribute_value);
+                  break;
+              case AttributeValueType::Type::String:
+                  attributeRelation.stringValue = $attribute_value;
+                  break;
+              case AttributeValueType::Type::Enum:
+                  attributeRelation.enumValue = std::stol($attribute_value);
+                  break;
+              }
+          }
+        | BA_REL attribute_name BU_BO_REL node_name message_id attribute_value SEMICOLON EOL {
+              AttributeDefinition & attributeDefinition = network->attributeDefinitions[$attribute_name];
+              AttributeRelation & attributeRelation = network->attributeRelationValues[$attribute_name];
+              attributeRelation.name = $attribute_name;
+              attributeRelation.objectType = AttributeObjectType::NodeTxMessage;
+              attributeRelation.nodeName = $node_name;
+              attributeRelation.messageId = $message_id;
+              switch(attributeDefinition.valueType.type) {
+              case AttributeValueType::Type::Int:
+                  attributeRelation.integerValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Hex:
+                  attributeRelation.hexValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Float:
+                  attributeRelation.floatValue = std::stod($attribute_value);
+                  break;
+              case AttributeValueType::Type::String:
+                  attributeRelation.stringValue = $attribute_value;
+                  break;
+              case AttributeValueType::Type::Enum:
+                  attributeRelation.enumValue = std::stol($attribute_value);
+                  break;
+              }
+          }
+        | BA_REL attribute_name BU_SG_REL node_name SG message_id signal_name attribute_value SEMICOLON EOL {
+              AttributeDefinition & attributeDefinition = network->attributeDefinitions[$attribute_name];
+              AttributeRelation & attributeRelation = network->attributeRelationValues[$attribute_name];
+              attributeRelation.name = $attribute_name;
+              attributeRelation.objectType = AttributeObjectType::NodeMappedRxSignal;
+              attributeRelation.nodeName = $node_name;
+              attributeRelation.messageId = $message_id;
+              attributeRelation.signalName = $signal_name;
+              switch(attributeDefinition.valueType.type) {
+              case AttributeValueType::Type::Int:
+                  attributeRelation.integerValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Hex:
+                  attributeRelation.hexValue = std::stol($attribute_value);
+                  break;
+              case AttributeValueType::Type::Float:
+                  attributeRelation.floatValue = std::stod($attribute_value);
+                  break;
+              case AttributeValueType::Type::String:
+                  attributeRelation.stringValue = $attribute_value;
+                  break;
+              case AttributeValueType::Type::Enum:
+                  attributeRelation.enumValue = std::stol($attribute_value);
+                  break;
+              }
+          }
         ;
 
     /* 13 Extended Multiplexing */
 extended_multiplexing
-        : %empty /* { $$ = std::vector<MultiplexedSignal>(); } */
-        | extended_multiplexing multiplexed_signal /* { $$ = $1; $$.push_back($2); } */
+        : %empty
+        | extended_multiplexing multiplexed_signal
         ;
 multiplexed_signal
-        : SG_MUL_VAL message_id multiplexed_signal_name multiplexor_switch_name multiplexor_value_ranges SEMICOLON EOL /* { $$ = MultiplexedSignal($2, $3, $4, $5); } */
+        : SG_MUL_VAL message_id multiplexed_signal_name multiplexor_switch_name multiplexor_value_ranges SEMICOLON EOL {
+              ExtendedMultiplexor & extendedMultiplexor = network->messages[$message_id].signals[$multiplexed_signal_name].extendedMultiplexors[$multiplexor_switch_name];
+              extendedMultiplexor.switchName = $multiplexor_switch_name;
+              extendedMultiplexor.valueRanges = $multiplexor_value_ranges;
+          }
         ;
 multiplexed_signal_name
-        : dbc_identifier /* { $$ = $1; } */
+        : dbc_identifier { $$ = $1; }
         ;
 multiplexor_switch_name
-        : dbc_identifier /* { $$ = $1; } */
+        : dbc_identifier { $$ = $1; }
         ;
 multiplexor_value_ranges
-        : %empty /* { $$ = std::vector<MultiplexorValueRange>(); } */
-        | multiplexor_value_ranges multiplexor_value_range /* { $$ = $1; $$.push_back($2); } */
+        : %empty { $$ = std::set<ExtendedMultiplexor::ValueRange>(); }
+        | multiplexor_value_ranges multiplexor_value_range { $$ = $1; $$.insert($2); }
         ;
 multiplexor_value_range
-        : unsigned_integer MINUS unsigned_integer /* { $$ = MultiplexorValueRange($1, $3); } */
+        : unsigned_integer MINUS unsigned_integer { $$ = std::make_pair($1, $3); }
         ;
 
 %%
