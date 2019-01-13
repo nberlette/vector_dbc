@@ -201,7 +201,7 @@ static double stod(const std::string & str)
     /* 3 Structure of the DBC File */
 network
         : version                           // VERSION
-          new_symbols                       // NS_
+          new_symbols                       // NS_(DESC_)
           bit_timing                        // BS_
           nodes                             // BU_
           value_tables                      // VAL_TABLE_
@@ -209,7 +209,7 @@ network
           message_transmitters              // BO_TX_BU_
           environment_variables             // EV_
           environment_variables_data        // ENVVAR_DATA_
-          signal_types                      // SGTYPE_
+          signal_types                      // SGTYPE_ SGTYPE_VAL_ BA_DEF_SGTYPE_ BA_SGTYPE_
           comments                          // CM_ ...
           attribute_definitions             // BA_DEF_(REL_)
           attribute_defaults                // BA_DEF_DEF_(REL_)
@@ -219,11 +219,11 @@ network
           category_definitions              // CAT_DEF_
           categories                        // CAT_
           filter                            // FILTER_
-          signal_type_refs                  // SGTYPE_
+          signal_type_refs                  // SIG_TYPE_REF_
           */
           signal_groups                     // SIG_GROUP_
-          signal_extended_value_types       // SIG_VALTYPE_
-          extended_multiplexing             // SG_MUL_VAL
+          signal_extended_value_types       // SIG_VALTYPE_ SIGTYPE_VALTYPE_
+          extended_multiplexing             // SG_MUL_VAL_
         ;
 
     /* 2 General Definitions */

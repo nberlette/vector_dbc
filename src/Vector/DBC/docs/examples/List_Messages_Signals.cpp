@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 
 #include <Vector/DBC.h>
@@ -13,8 +14,14 @@ int main(int argc, char *argv[])
     }
 
     /* load database file */
-    Vector::DBC::File file;
-    if (file.load(network, argv[1]) != Vector::DBC::Status::Ok) {
+    std::ifstream ifs(argv[1]);
+    if (!ifs.is_open()) {
+        std::cout << "Unable to open file" << std::endl;
+        return EXIT_FAILURE;
+    }
+    ifs >> network;
+    if (!network.successfullyParsed) {
+        std::cout << "Unable to parse file" << std::endl;
         return EXIT_FAILURE;
     }
 
