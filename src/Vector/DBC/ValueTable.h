@@ -23,6 +23,7 @@
 
 #include <Vector/DBC/platform.h>
 
+#include <ostream>
 #include <string>
 
 #include <Vector/DBC/ValueDescriptions.h>
@@ -46,6 +47,8 @@ public:
     /** Value Descriptions */
     ValueDescriptions valueDescriptions;
 };
+
+std::ostream & operator<<(std::ostream & os, ValueTable & valueTable);
 
 }
 }

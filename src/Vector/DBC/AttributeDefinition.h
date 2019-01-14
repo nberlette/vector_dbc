@@ -24,6 +24,7 @@
 #include <Vector/DBC/platform.h>
 
 #include <cstdint>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -53,6 +54,8 @@ public:
     /** Value Type */
     AttributeValueType valueType;
 };
+
+std::ostream & operator<<(std::ostream & os, AttributeDefinition & attributeDefinition);
 
 }
 }

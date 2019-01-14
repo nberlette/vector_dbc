@@ -42,5 +42,73 @@ EnvironmentVariable::EnvironmentVariable() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, EnvironmentVariable & environmentVariable)
+{
+    os << "EV_ " << environmentVariable.name << ": ";
+
+    /* Type */
+    switch (environmentVariable.type) {
+    case EnvironmentVariable::Type::Integer:
+        [[fallthrough]];
+    case EnvironmentVariable::Type::String:
+        [[fallthrough]];
+    case EnvironmentVariable::Type::Data:
+        os << '0';
+        break;
+    case EnvironmentVariable::Type::Float:
+        os << '1';
+        break;
+    }
+
+    /* Minimum, Maximum */
+    os << " [";
+    os << environmentVariable.minimum;
+    os << '|';
+    os << environmentVariable.maximum;
+    os << ']';
+
+    /* Unit */
+    os << " \"";
+    os << environmentVariable.unit;
+    os << "\" ";
+
+    /* Initial Value */
+    os << environmentVariable.initialValue;
+    os << ' ';
+
+    /* ID */
+    os << environmentVariable.id;
+
+    /* Access Type */
+    os << " DUMMY_NODE_VECTOR";
+    os << std::hex;
+    if (environmentVariable.type == EnvironmentVariable::Type::String) {
+        os << (static_cast<uint16_t>(environmentVariable.accessType) | 0x8000);
+    } else {
+        os << static_cast<uint16_t>(environmentVariable.accessType);
+    }
+    os << std::dec;
+    os << ' ';
+
+    /* Access Nodes */
+    if (environmentVariable.accessNodes.empty()) {
+        os << "Vector__XXX";
+    } else {
+        os << ' ';
+        bool first = true;
+        for (auto & accessNode : environmentVariable.accessNodes) {
+            if (first) {
+                first = false;
+            } else {
+                os << ',';
+            }
+            os << accessNode;
+        }
+    }
+    os << ";" << endl;
+
+    return os;
+}
+
 }
 }

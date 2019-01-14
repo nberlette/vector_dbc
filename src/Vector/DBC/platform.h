@@ -52,3 +52,6 @@
 #pragma warning (disable: 4482)
 
 #endif
+
+/* force Linux to use Windows line endings */
+static const char endl[] = "\r\n";

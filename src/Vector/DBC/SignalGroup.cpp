@@ -33,5 +33,24 @@ SignalGroup::SignalGroup() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, SignalGroup & signalGroup)
+{
+    os << "SIG_GROUP_ " << signalGroup.messageId << ' ' << signalGroup.name;
+    os << ' ' << signalGroup.repetitions;
+    bool first = true;
+    for (auto & signal : signalGroup.signals) {
+        if (first) {
+            first = false;
+        } else {
+            os << ',';
+        }
+        os << signal;
+    }
+    os << ';' << endl;
+
+    return os;
+}
+
+
 }
 }

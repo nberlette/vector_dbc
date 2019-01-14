@@ -24,6 +24,7 @@
 #include <Vector/DBC/platform.h>
 
 #include <cstdint>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -61,18 +62,18 @@ public:
     /** Value Union */
     union {
         struct {
-            int32_t minimum; /**< Min Value of type AttributeValueType::Int */
-            int32_t maximum; /**< Min Value of type AttributeValueType::Int */
+            int32_t minimum; /**< Min Value of type Type::Int */
+            int32_t maximum; /**< Min Value of type Type::Int */
         } integerValue;
 
         struct {
-            int32_t minimum; /**< Min Value of type AttributeValueType::Hex */
-            int32_t maximum; /**< Max Value of type AttributeValueType::Hex */
+            int32_t minimum; /**< Min Value of type Type::Hex */
+            int32_t maximum; /**< Max Value of type Type::Hex */
         } hexValue;
 
         struct {
-            double minimum; /**< Min Value of type AttributeValueType::Float */
-            double maximum; /**< Max Value of type AttributeValueType::Float */
+            double minimum; /**< Min Value of type Type::Float */
+            double maximum; /**< Max Value of type Type::Float */
         } floatValue;
 
         // std::string has no default
@@ -81,6 +82,8 @@ public:
     /** Values of type AttributeValueType::Enum */
     std::vector<std::string> enumValues;
 };
+
+std::ostream & operator<<(std::ostream & os, AttributeValueType & attributeValueType);
 
 }
 }

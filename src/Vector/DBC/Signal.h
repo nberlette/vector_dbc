@@ -25,6 +25,7 @@
 
 #include <cstdint>
 #include <map>
+#include <ostream>
 #include <set>
 #include <string>
 #include <vector>
@@ -188,6 +189,8 @@ public:
      */
     void encode(std::vector<uint8_t> & data, uint64_t rawValue);
 };
+
+std::ostream & operator<<(std::ostream & os, Signal & signal);
 
 }
 }

@@ -24,6 +24,7 @@
 #include <Vector/DBC/platform.h>
 
 #include <cstdint>
+#include <ostream>
 #include <set>
 #include <string>
 
@@ -58,6 +59,8 @@ public:
     /** Signals */
     std::set<std::string> signals;
 };
+
+std::ostream & operator<<(std::ostream & os, SignalGroup & signalGroup);
 
 }
 }

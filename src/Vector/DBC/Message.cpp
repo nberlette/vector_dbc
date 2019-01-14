@@ -38,5 +38,27 @@ Message::Message() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, Message & message)
+{
+    os << "BO_ " << message.id;
+    os << " " << message.name;
+    os << ": " << message.size << " ";
+    if (message.transmitter.empty()) {
+        os << "Vector__XXX";
+    } else {
+        os << message.transmitter;
+    }
+    os << endl;
+
+    /* Signals (SG) */
+    for (auto & signal : message.signals) {
+        os << signal.second;
+    }
+
+    os << endl;
+
+    return os;
+}
+
 }
 }

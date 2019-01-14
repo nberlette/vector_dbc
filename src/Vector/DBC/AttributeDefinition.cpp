@@ -32,5 +32,46 @@ AttributeDefinition::AttributeDefinition() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, AttributeDefinition & attributeDefinition)
+{
+    /* Object Type */
+    switch (attributeDefinition.objectType) {
+    case AttributeObjectType::Network:
+        os << "BA_DEF_ ";
+        break;
+    case AttributeObjectType::Node:
+        os << "BA_DEF_ BU_ ";
+        break;
+    case AttributeObjectType::Message:
+        os << "BA_DEF_ BO_ ";
+        break;
+    case AttributeObjectType::Signal:
+        os << "BA_DEF_ SG_ ";
+        break;
+    case AttributeObjectType::EnvironmentVariable:
+        os << "BA_DEF_ EV_ ";
+        break;
+    case AttributeObjectType::ControlUnitEnvironmentVariable:
+        os << "BA_DEF_REL_ BU_EV_REL_ ";
+        break;
+    case AttributeObjectType::NodeTxMessage:
+        os << "BA_DEF_REL_ BU_BO_REL_ ";
+        break;
+    case AttributeObjectType::NodeMappedRxSignal:
+        os << "BA_DEF_REL_ BU_SG_REL_ ";
+        break;
+    }
+
+    /* Name */
+    os << " \"" << attributeDefinition.name << "\" ";
+
+    /* Value Type */
+    os << attributeDefinition.valueType;
+
+    os << ";" << endl;
+
+    return os;
+}
+
 }
 }

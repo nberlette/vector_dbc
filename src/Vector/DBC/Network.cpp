@@ -24,9 +24,6 @@
 #include <Vector/DBC/Parser.hpp>
 #include <Vector/DBC/Scanner.h>
 
-/* force Linux to use Windows line endings */
-static const char endl[] = "\r\n";
-
 namespace Vector {
 namespace DBC {
 
@@ -69,11 +66,7 @@ std::ostream & operator<<(std::ostream & os, Network & network)
     os << endl;
 
     /* Bit Timing (BS) */
-    os << "BS_:";
-    if (network.bitTiming.baudrate || network.bitTiming.btr1 || network.bitTiming.btr2) {
-        os << ' ' << network.bitTiming.baudrate << ':' << network.bitTiming.btr1 << ':' << network.bitTiming.btr2;
-    }
-    os << endl;
+    os << network.bitTiming;
     os << endl;
 
     /* Nodes (BU) */
@@ -85,71 +78,14 @@ std::ostream & operator<<(std::ostream & os, Network & network)
 
     /* Value Tables (VAL_TABLE) */
     for (auto & valueTable : network.valueTables) {
-        os << "VAL_TABLE_ " << valueTable.second.name;
-        for (auto & valueDescription : valueTable.second.valueDescriptions) {
-            os << " " << valueDescription.first;
-            os << " \"" << valueDescription.second << "\"";
-        }
-        os << " ;" << endl;
+        os << valueTable.second;
     }
     os << endl;
     os << endl;
 
     /* Messages (BO) */
     for (auto & message : network.messages) {
-        os << "BO_ " << message.second.id;
-        os << " " << message.second.name;
-        os << ": " << message.second.size << " ";
-        if (message.second.transmitter.empty()) {
-            os << "Vector__XXX";
-        } else {
-            os << message.second.transmitter;
-        }
-        os << endl;
-
-        /* Signals (SG) */
-        for (auto & signal : message.second.signals) {
-            /* Name */
-            os << " SG_ " << signal.second.name << ' ';
-
-            /* Multiplexed Signal, Multiplexor Switch/Signal */
-            switch (signal.second.multiplexor) {
-            case Signal::Multiplexor::NoMultiplexor:
-                os << ' ';
-                break;
-            case Signal::Multiplexor::MultiplexedSignal:
-                os << 'm' << signal.second.multiplexerSwitchValue;
-                break;
-            case Signal::Multiplexor::MultiplexorSwitch:
-                os << 'M';
-                break;
-            }
-            os << ": ";
-
-            /* Start Bit, Size, Byte Order, Value Type */
-            os << signal.second.startBit << '|' << signal.second.bitSize << '@' << char(signal.second.byteOrder) << char(signal.second.valueType);
-
-            /* Factor, Offset */
-            os << " (" << signal.second.factor << ',' << signal.second.offset << ')';
-
-            /* Minimum, Maximum */
-            os << " [" << signal.second.minimum << '|' << signal.second.maximum << ']';
-
-            /* Unit */
-            os << " \"" << signal.second.unit << "\" ";
-
-            /* Receivers */
-            if (signal.second.receivers.empty()) {
-                os << "Vector__XXX";
-            } else {
-                for (auto & receiver : signal.second.receivers) {
-                    os << " " << receiver;
-                }
-            }
-            os << endl;
-        }
-
-        os << endl;
+        os << message.second;
     }
 
     /* Message Transmitters (BO_TX_BU) */
@@ -167,68 +103,7 @@ std::ostream & operator<<(std::ostream & os, Network & network)
     /* Environment Variables (EV) */
     for (auto & environmentVariable : network.environmentVariables) {
         os << endl;
-        os << "EV_ " << environmentVariable.second.name << ": ";
-
-        /* Type */
-        switch (environmentVariable.second.type) {
-        case EnvironmentVariable::Type::Integer:
-            [[fallthrough]];
-        case EnvironmentVariable::Type::String:
-            [[fallthrough]];
-        case EnvironmentVariable::Type::Data:
-            os << '0';
-            break;
-        case EnvironmentVariable::Type::Float:
-            os << '1';
-            break;
-        }
-
-        /* Minimum, Maximum */
-        os << " [";
-        os << environmentVariable.second.minimum;
-        os << '|';
-        os << environmentVariable.second.maximum;
-        os << ']';
-
-        /* Unit */
-        os << " \"";
-        os << environmentVariable.second.unit;
-        os << "\" ";
-
-        /* Initial Value */
-        os << environmentVariable.second.initialValue;
-        os << ' ';
-
-        /* ID */
-        os << environmentVariable.second.id;
-
-        /* Access Type */
-        os << " DUMMY_NODE_VECTOR";
-        os << std::hex;
-        if (environmentVariable.second.type == EnvironmentVariable::Type::String) {
-            os << (static_cast<uint16_t>(environmentVariable.second.accessType) | 0x8000);
-        } else {
-            os << static_cast<uint16_t>(environmentVariable.second.accessType);
-        }
-        os << std::dec;
-        os << ' ';
-
-        /* Access Nodes */
-        if (environmentVariable.second.accessNodes.empty()) {
-            os << "Vector__XXX";
-        } else {
-            os << ' ';
-            bool first = true;
-            for (auto & accessNode : environmentVariable.second.accessNodes) {
-                if (first) {
-                    first = false;
-                } else {
-                    os << ',';
-                }
-                os << accessNode;
-            }
-        }
-        os << ";" << endl;
+        os << environmentVariable.second;
     }
 
     /* Environment Variable Data (ENVVAR_DATA) */
@@ -273,84 +148,7 @@ std::ostream & operator<<(std::ostream & os, Network & network)
 
     /* Attribute Definitions (BA_DEF) and Attribute Definitions at Relations (BA_DEF_REL) */
     for (auto & attributeDefinition : network.attributeDefinitions) {
-        /* Object Type */
-        switch (attributeDefinition.second.objectType) {
-        case AttributeObjectType::Network:
-            os << "BA_DEF_ ";
-            break;
-        case AttributeObjectType::Node:
-            os << "BA_DEF_ BU_ ";
-            break;
-        case AttributeObjectType::Message:
-            os << "BA_DEF_ BO_ ";
-            break;
-        case AttributeObjectType::Signal:
-            os << "BA_DEF_ SG_ ";
-            break;
-        case AttributeObjectType::EnvironmentVariable:
-            os << "BA_DEF_ EV_ ";
-            break;
-        case AttributeObjectType::ControlUnitEnvironmentVariable:
-            os << "BA_DEF_REL_ BU_EV_REL_ ";
-            break;
-        case AttributeObjectType::NodeTxMessage:
-            os << "BA_DEF_REL_ BU_BO_REL_ ";
-            break;
-        case AttributeObjectType::NodeMappedRxSignal:
-            os << "BA_DEF_REL_ BU_SG_REL_ ";
-            break;
-        }
-
-        /* Name */
-        os << " \"" << attributeDefinition.second.name << "\" ";
-
-        /* Value Type */
-        switch (attributeDefinition.second.valueType.type) {
-        // integer
-        case AttributeValueType::Type::Int:
-            os << "INT ";
-            os << attributeDefinition.second.valueType.integerValue.minimum;
-            os << " ";
-            os << attributeDefinition.second.valueType.integerValue.maximum;
-            break;
-
-        // hexadecimal
-        case AttributeValueType::Type::Hex:
-            os << "HEX ";
-            os << attributeDefinition.second.valueType.hexValue.minimum;
-            os << " ";
-            os << attributeDefinition.second.valueType.hexValue.maximum;
-            break;
-
-        // float
-        case AttributeValueType::Type::Float:
-            os << "FLOAT ";
-            os << attributeDefinition.second.valueType.floatValue.minimum;
-            os << " ";
-            os << attributeDefinition.second.valueType.floatValue.maximum;
-            break;
-
-        // string
-        case AttributeValueType::Type::String:
-            os << "STRING ";
-            break;
-
-        // enumeration
-        case AttributeValueType::Type::Enum:
-            os << "ENUM  ";
-            bool first = true;
-            for (auto & enumValue : attributeDefinition.second.valueType.enumValues) {
-                if (first) {
-                    first = false;
-                } else {
-                    os << ',';
-                }
-                os << "\"" << enumValue << "\"";
-            }
-            break;
-        }
-
-        os << ";" << endl;
+        os << attributeDefinition.second;
     }
 
     /* Sigtype Attr Lists (?, obsolete) */
@@ -638,13 +436,7 @@ std::ostream & operator<<(std::ostream & os, Network & network)
 
     /* Signal Type Refs (SGTYPE, obsolete) */
     for (auto & signalType : network.signalTypes) {
-        os << "SGTYPE_ " << signalType.second.name;
-        os << " : " << signalType.second.size;
-        os << '@' << char(signalType.second.byteOrder);
-        os << ' ' << char(signalType.second.valueType);
-        os << ' ' << signalType.second.defaultValue;
-        os << ", " << signalType.second.valueTable;
-        os << ';' << endl;
+        os << signalType.second;
     }
     for (auto & message : network.messages) {
         for (auto & signal : message.second.signals) {
@@ -657,18 +449,7 @@ std::ostream & operator<<(std::ostream & os, Network & network)
     /* Signal Groups (SIG_GROUP) */
     for (auto & message : network.messages) {
         for (auto & signalGroup : message.second.signalGroups) {
-            os << "SIG_GROUP_ " << message.second.id << ' ' << signalGroup.second.name;
-            os << ' ' << signalGroup.second.repetitions;
-            bool first = true;
-            for (auto & signal : signalGroup.second.signals) {
-                if (first) {
-                    first = false;
-                } else {
-                    os << ',';
-                }
-                os << signal;
-            }
-            os << ';' << endl;
+            os << signalGroup.second;
         }
     }
 

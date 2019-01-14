@@ -40,5 +40,18 @@ SignalType::SignalType() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, SignalType & signalType)
+{
+    os << "SGTYPE_ " << signalType.name;
+    os << " : " << signalType.size;
+    os << '@' << char(signalType.byteOrder);
+    os << ' ' << char(signalType.valueType);
+    os << ' ' << signalType.defaultValue;
+    os << ", " << signalType.valueTable;
+    os << ';' << endl;
+
+    return os;
+}
+
 }
 }

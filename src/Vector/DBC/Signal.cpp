@@ -231,5 +231,47 @@ void Signal::encode(std::vector<uint8_t> & data, uint64_t rawValue)
     }
 }
 
+std::ostream & operator<<(std::ostream & os, Signal & signal)
+{
+    /* Name */
+    os << " SG_ " << signal.name << ' ';
+
+    /* Multiplexed Signal, Multiplexor Switch/Signal */
+    switch (signal.multiplexor) {
+    case Signal::Multiplexor::NoMultiplexor:
+        os << ' ';
+        break;
+    case Signal::Multiplexor::MultiplexedSignal:
+        os << 'm' << signal.multiplexerSwitchValue;
+        break;
+    case Signal::Multiplexor::MultiplexorSwitch:
+        os << 'M';
+        break;
+    }
+    os << ": ";
+
+    /* Start Bit, Size, Byte Order, Value Type */
+    os << signal.startBit << '|' << signal.bitSize << '@' << char(signal.byteOrder) << char(signal.valueType);
+
+    /* Factor, Offset */
+    os << " (" << signal.factor << ',' << signal.offset << ')';
+
+    /* Minimum, Maximum */
+    os << " [" << signal.minimum << '|' << signal.maximum << ']';
+
+    /* Unit */
+    os << " \"" << signal.unit << "\" ";
+
+    /* Receivers */
+    if (signal.receivers.empty()) {
+        os << "Vector__XXX";
+    } else {
+        for (auto & receiver : signal.receivers) {
+            os << " " << receiver;
+        }
+    }
+    os << endl;
+}
+
 }
 }

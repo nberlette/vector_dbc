@@ -32,5 +32,47 @@ AttributeValueType::AttributeValueType() :
     /* nothing to do here */
 }
 
+std::ostream & operator<<(std::ostream & os, AttributeValueType & attributeValueType)
+{
+    /* Value Type */
+    switch (attributeValueType.type) {
+    case AttributeValueType::Type::Int:
+        os << "INT ";
+        os << attributeValueType.integerValue.minimum;
+        os << " ";
+        os << attributeValueType.integerValue.maximum;
+        break;
+    case AttributeValueType::Type::Hex:
+        os << "HEX ";
+        os << attributeValueType.hexValue.minimum;
+        os << " ";
+        os << attributeValueType.hexValue.maximum;
+        break;
+    case AttributeValueType::Type::Float:
+        os << "FLOAT ";
+        os << attributeValueType.floatValue.minimum;
+        os << " ";
+        os << attributeValueType.floatValue.maximum;
+        break;
+    case AttributeValueType::Type::String:
+        os << "STRING ";
+        break;
+    case AttributeValueType::Type::Enum:
+        os << "ENUM  ";
+        bool first = true;
+        for (auto & enumValue : attributeValueType.enumValues) {
+            if (first) {
+                first = false;
+            } else {
+                os << ',';
+            }
+            os << "\"" << enumValue << "\"";
+        }
+        break;
+    }
+
+    return os;
+}
+
 }
 }
