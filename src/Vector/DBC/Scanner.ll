@@ -46,7 +46,7 @@ HEXADECIMAL_DIGIT       [0-9a-fA-F]
     return Vector::DBC::Parser::make_NS_VALUE(yytext, loc); }
 <NS>":" {
     return Vector::DBC::Parser::make_COLON(loc); }
-<NS>("\r\n")+ {
+<NS>([ ]*[\r\n]+)+ {
     return Vector::DBC::Parser::make_EOL(loc); }
 <NS>[ \t] {
     }
