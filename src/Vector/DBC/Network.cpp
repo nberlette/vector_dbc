@@ -360,6 +360,13 @@ std::ostream & operator<<(std::ostream & os, Network & network)
 
         /* Relation Type */
         switch (attributeRelationValue.second.objectType) {
+        case AttributeObjectType::Network:
+        case AttributeObjectType::Node:
+        case AttributeObjectType::Message:
+        case AttributeObjectType::Signal:
+        case AttributeObjectType::EnvironmentVariable:
+            /* not handled here */
+            break;
         case AttributeObjectType::ControlUnitEnvironmentVariable:
             os << "BU_EV_REL_ ";
             os << attributeRelationValue.second.nodeName;

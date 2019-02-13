@@ -44,6 +44,13 @@ bool AttributeRelation::operator<(const AttributeRelation & rhs) const
 
             /* relationType based optimizations */
             switch(objectType) {
+            case AttributeObjectType::Network:
+            case AttributeObjectType::Node:
+            case AttributeObjectType::Message:
+            case AttributeObjectType::Signal:
+            case AttributeObjectType::EnvironmentVariable:
+                /* not handled here */
+                break;
             case AttributeObjectType::ControlUnitEnvironmentVariable:
                 /* only compare nodeName, environmentVariableName */
                 if (nodeName == rhs.nodeName) {
