@@ -49,9 +49,9 @@ std::ostream & operator<<(std::ostream & os, EnvironmentVariable & environmentVa
     /* Type */
     switch (environmentVariable.type) {
     case EnvironmentVariable::Type::Integer:
-        [[fallthrough]];
+        // [[fallthrough]]
     case EnvironmentVariable::Type::String:
-        [[fallthrough]];
+        // [[fallthrough]]
     case EnvironmentVariable::Type::Data:
         os << '0';
         break;
