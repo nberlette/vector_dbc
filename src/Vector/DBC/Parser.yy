@@ -2,18 +2,18 @@
 %require "3.0"
 %defines
 %define api.namespace {Vector::DBC}
+%define api.parser.class {Parser}
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
+%define parse.error verbose
 %define parse.trace
-%define parser_class_name {Parser}
 %language "C++"
 %locations
 
     // debug options
 %verbose
 %debug
-%error-verbose
 
 %code requires{
 #include <Vector/DBC/Network.h>
