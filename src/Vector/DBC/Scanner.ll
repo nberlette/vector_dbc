@@ -206,6 +206,10 @@ HEXADECIMAL_DIGIT       [0-9a-fA-F]
 {NONDIGIT}({NONDIGIT}|{DIGIT})* {
     return Vector::DBC::Parser::make_DBC_IDENTIFIER(yytext, loc); }
 
+    /* comments */
+"//".*[\r\n]+ {
+    }
+
     /* end of line */
 ([ ]*[\r\n]+)+ {
     return Vector::DBC::Parser::make_EOL(loc); }
