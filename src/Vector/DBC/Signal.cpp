@@ -271,6 +271,8 @@ std::ostream & operator<<(std::ostream & os, Signal & signal)
         }
     }
     os << endl;
+
+    return os;
 }
 
 }
