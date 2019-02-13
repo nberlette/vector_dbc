@@ -27,6 +27,7 @@ NONDIGIT                [_a-zA-Z]
 HEXADECIMAL_PREFIX      (0x|0X)
 NONZERO_DIGIT           [1-9]
 HEXADECIMAL_DIGIT       [0-9a-fA-F]
+EXPONENT_PART           ([Ee][+-]?{DIGIT}+)
 
 %x NS
 
@@ -196,7 +197,7 @@ HEXADECIMAL_DIGIT       [0-9a-fA-F]
     return Vector::DBC::Parser::make_UNSIGNED_INTEGER(yytext, loc); }
 [-+]*{DIGIT}+ {
     return Vector::DBC::Parser::make_SIGNED_INTEGER(yytext, loc); }
-{DIGIT}*"."{DIGIT}+ {
+{DIGIT}*"."?{DIGIT}+{EXPONENT_PART}? {
     return Vector::DBC::Parser::make_DOUBLE(yytext, loc); }
 \"(\\.|[^\\"])*\" {
     std::string str(yytext);
