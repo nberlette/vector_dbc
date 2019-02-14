@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.1] - 2019-02-14
+### Added
+- Support for floating numbers with exponent part
+- Support for comment lines
+### Changed
+- Dropped C++17 specific language features
+### Fixed
+- Windows line endings in NS jammed the flex scanner
+- Added missing return in Signal.cpp
+
 ## [2.0.0] - 2019-01-13
 ### Changed
 - Switch from regex to flex/bison
@@ -23,7 +33,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Fixed C++11 settings that affected AttributeValueType enum class.
 
 ## [1.0.3] - 2017-11-20
-### [Fixed]
+### Fixed
 - Fixed error in test databaes. BO_TX_BU_ had wrong transmitter seperator.
 
 ## [1.0.2] - 2017-09-22

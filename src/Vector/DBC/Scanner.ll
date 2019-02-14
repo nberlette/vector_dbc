@@ -195,9 +195,9 @@ EXPONENT_PART           ([Ee][+-]?{DIGIT}+)
     /* 2 General Definitions */
 {DIGIT}+ {
     return Vector::DBC::Parser::make_UNSIGNED_INTEGER(yytext, loc); }
-[-+]*{DIGIT}+ {
+[-+]?{DIGIT}+ {
     return Vector::DBC::Parser::make_SIGNED_INTEGER(yytext, loc); }
-{DIGIT}*"."?{DIGIT}+{EXPONENT_PART}? {
+[-+]?{DIGIT}*"."?{DIGIT}+{EXPONENT_PART}? {
     return Vector::DBC::Parser::make_DOUBLE(yytext, loc); }
 \"(\\.|[^\\"])*\" {
     std::string str(yytext);
