@@ -7,7 +7,9 @@ It's optimized towards fast access on loaded data, not on load performance or sa
 
 Minimum requirements:
 
-* gcc (>=4.9)
+* compiler with C++14 support (gcc, clang, msvc)
+* flex
+* bison (>=3.3)
 
 Building under Linux works as usual:
 
