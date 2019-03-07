@@ -114,7 +114,7 @@ static double stod(const std::string & str)
 %type <std::string> signal_name
 %type <std::set<std::string>> signal_names
 %type <std::string> multiplexer_indicator
-%type <uint32_t> multiplexer_switch_value
+//%type <uint32_t> multiplexer_switch_value
 %type <uint32_t> start_bit
 %type <uint32_t> signal_size
 %type <ByteOrder> byte_order
@@ -394,9 +394,9 @@ multiplexer_indicator
         | DBC_IDENTIFIER { $$ = $1; $$.erase(0, 1); }
         | UPPER_M { $$ = "*"; }
         ;
-multiplexer_switch_value
-        : unsigned_integer { $$ = $1; }
-        ;
+//multiplexer_switch_value
+//        : unsigned_integer { $$ = $1; }
+//        ;
 start_bit
         : unsigned_integer { $$ = $1; }
         ;
@@ -626,15 +626,15 @@ signal_type_name
 default_value
         : double { $$ = $1; }
         ;
-signal_type_refs
-        : %empty
-        | signal_type_refs signal_type_ref
-        ;
-signal_type_ref
-        : SGTYPE message_id signal_name COLON signal_type_name SEMICOLON EOL {
-              network->messages[$message_id].signals[$signal_name].type = $signal_type_name;
-          }
-        ;
+//signal_type_refs
+//        : %empty
+//        | signal_type_refs signal_type_ref
+//        ;
+//signal_type_ref
+//        : SGTYPE message_id signal_name COLON signal_type_name SEMICOLON EOL {
+//              network->messages[$message_id].signals[$signal_name].type = $signal_type_name;
+//          }
+//        ;
 signal_groups
         : %empty
         | signal_groups signal_group
