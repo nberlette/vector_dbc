@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.2] - 2019-03-08
+### Fixed
+- Support of newest Bison versions
+
 ## [2.0.1] - 2019-02-14
 ### Added
 - Support for floating numbers with exponent part
