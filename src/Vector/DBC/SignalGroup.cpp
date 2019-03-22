@@ -33,7 +33,7 @@ SignalGroup::SignalGroup() :
     /* nothing to do here */
 }
 
-std::ostream & operator<<(std::ostream & os, SignalGroup & signalGroup)
+std::ostream & operator<<(std::ostream & os, const SignalGroup & signalGroup)
 {
     os << "SIG_GROUP_ " << signalGroup.messageId << ' ' << signalGroup.name;
     os << ' ' << signalGroup.repetitions;

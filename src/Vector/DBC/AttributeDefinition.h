@@ -55,7 +55,7 @@ public:
     AttributeValueType valueType;
 };
 
-std::ostream & operator<<(std::ostream & os, AttributeDefinition & attributeDefinition);
+std::ostream & operator<<(std::ostream & os, const AttributeDefinition & attributeDefinition);
 
 }
 }

@@ -42,7 +42,7 @@ EnvironmentVariable::EnvironmentVariable() :
     /* nothing to do here */
 }
 
-std::ostream & operator<<(std::ostream & os, EnvironmentVariable & environmentVariable)
+std::ostream & operator<<(std::ostream & os, const EnvironmentVariable & environmentVariable)
 {
     os << "EV_ " << environmentVariable.name << ": ";
 

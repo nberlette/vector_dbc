@@ -32,7 +32,7 @@ BitTiming::BitTiming() :
     /* nothing to do here */
 }
 
-std::ostream & operator<<(std::ostream & os, BitTiming & bitTiming)
+std::ostream & operator<<(std::ostream & os, const BitTiming & bitTiming)
 {
     os << "BS_:";
     if (bitTiming.baudrate || bitTiming.btr1 || bitTiming.btr2) {

@@ -31,7 +31,7 @@ ValueTable::ValueTable() :
     /* nothing to do here */
 }
 
-std::ostream & operator<<(std::ostream & os, ValueTable & valueTable)
+std::ostream & operator<<(std::ostream & os, const ValueTable & valueTable)
 {
     os << "VAL_TABLE_ " << valueTable.name;
     for (auto & valueDescription : valueTable.valueDescriptions) {

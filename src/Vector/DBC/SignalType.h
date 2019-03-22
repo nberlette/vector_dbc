@@ -77,7 +77,7 @@ public:
     std::string valueTable;
 };
 
-std::ostream & operator<<(std::ostream & os, SignalType & signalType);
+std::ostream & operator<<(std::ostream & os, const SignalType & signalType);
 
 }
 }

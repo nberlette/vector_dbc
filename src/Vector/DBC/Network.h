@@ -141,7 +141,7 @@ public:
     // moved to Signal (SG)
 };
 
-VECTOR_DBC_EXPORT std::ostream & operator<<(std::ostream & os, Network & network);
+VECTOR_DBC_EXPORT std::ostream & operator<<(std::ostream & os, const Network & network);
 VECTOR_DBC_EXPORT std::istream & operator>>(std::istream & is, Network & network);
 
 }

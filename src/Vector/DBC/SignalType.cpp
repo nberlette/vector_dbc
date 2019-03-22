@@ -40,7 +40,7 @@ SignalType::SignalType() :
     /* nothing to do here */
 }
 
-std::ostream & operator<<(std::ostream & os, SignalType & signalType)
+std::ostream & operator<<(std::ostream & os, const SignalType & signalType)
 {
     os << "SGTYPE_ " << signalType.name;
     os << " : " << signalType.size;

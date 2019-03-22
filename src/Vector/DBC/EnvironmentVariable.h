@@ -115,7 +115,7 @@ public:
     std::map<std::string, Attribute> attributeValues;
 };
 
-std::ostream & operator<<(std::ostream & os, EnvironmentVariable & environmentVariable);
+std::ostream & operator<<(std::ostream & os, const EnvironmentVariable & environmentVariable);
 
 }
 }

@@ -83,7 +83,7 @@ public:
     std::vector<std::string> enumValues;
 };
 
-std::ostream & operator<<(std::ostream & os, AttributeValueType & attributeValueType);
+std::ostream & operator<<(std::ostream & os, const AttributeValueType & attributeValueType);
 
 }
 }

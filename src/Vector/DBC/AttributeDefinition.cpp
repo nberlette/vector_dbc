@@ -32,7 +32,7 @@ AttributeDefinition::AttributeDefinition() :
     /* nothing to do here */
 }
 
-std::ostream & operator<<(std::ostream & os, AttributeDefinition & attributeDefinition)
+std::ostream & operator<<(std::ostream & os, const AttributeDefinition & attributeDefinition)
 {
     /* Object Type */
     switch (attributeDefinition.objectType) {

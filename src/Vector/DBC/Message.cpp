@@ -38,7 +38,7 @@ Message::Message() :
     /* nothing to do here */
 }
 
-std::ostream & operator<<(std::ostream & os, Message & message)
+std::ostream & operator<<(std::ostream & os, const Message & message)
 {
     os << "BO_ " << message.id;
     os << " " << message.name;

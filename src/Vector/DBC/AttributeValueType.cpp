@@ -32,7 +32,7 @@ AttributeValueType::AttributeValueType() :
     /* nothing to do here */
 }
 
-std::ostream & operator<<(std::ostream & os, AttributeValueType & attributeValueType)
+std::ostream & operator<<(std::ostream & os, const AttributeValueType & attributeValueType)
 {
     /* Value Type */
     switch (attributeValueType.type) {

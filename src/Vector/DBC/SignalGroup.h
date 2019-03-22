@@ -60,7 +60,7 @@ public:
     std::set<std::string> signals;
 };
 
-std::ostream & operator<<(std::ostream & os, SignalGroup & signalGroup);
+std::ostream & operator<<(std::ostream & os, const SignalGroup & signalGroup);
 
 }
 }

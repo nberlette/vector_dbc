@@ -74,7 +74,7 @@ public:
     std::map<std::string, Attribute> attributeValues;
 };
 
-std::ostream & operator<<(std::ostream & os, Message & message);
+std::ostream & operator<<(std::ostream & os, const Message & message);
 
 }
 }

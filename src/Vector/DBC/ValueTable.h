@@ -48,7 +48,7 @@ public:
     ValueDescriptions valueDescriptions;
 };
 
-std::ostream & operator<<(std::ostream & os, ValueTable & valueTable);
+std::ostream & operator<<(std::ostream & os, const ValueTable & valueTable);
 
 }
 }

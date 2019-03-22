@@ -49,7 +49,7 @@ public:
     uint32_t btr2;
 };
 
-std::ostream & operator<<(std::ostream & os, BitTiming & bitTiming);
+std::ostream & operator<<(std::ostream & os, const BitTiming & bitTiming);
 
 }
 }

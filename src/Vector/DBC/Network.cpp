@@ -46,7 +46,7 @@ Network::Network() :
     /* nothing to do here */
 }
 
-std::ostream & operator<<(std::ostream & os, Network & network)
+std::ostream & operator<<(std::ostream & os, const Network & network)
 {
     /* use english decimal points for floating numbers */
     os.imbue(std::locale("C"));
@@ -155,7 +155,7 @@ std::ostream & operator<<(std::ostream & os, Network & network)
 
     /* Attribute Defaults (BA_DEF_DEF) and Attribute Defaults at Relations (BA_DEF_DEF_REL) */
     for (auto & attributeDefault : network.attributeDefaults) {
-        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeDefault.second.name];
+        const AttributeDefinition & attributeDefinition = network.attributeDefinitions.at(attributeDefault.second.name);
 
         /* Object Type */
         switch (attributeDefinition.objectType) {
@@ -199,7 +199,7 @@ std::ostream & operator<<(std::ostream & os, Network & network)
 
     /* Attribute Values (BA) */
     for (auto & attributeValue : network.attributeValues) {
-        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeValue.second.name];
+        const AttributeDefinition & attributeDefinition = network.attributeDefinitions.at(attributeValue.second.name);
 
         /* Name */
         os << "BA_ \"" << attributeValue.second.name << "\" ";
@@ -226,7 +226,7 @@ std::ostream & operator<<(std::ostream & os, Network & network)
     }
     for (auto & node : network.nodes) {
         for (auto & attributeValue : node.second.attributeValues) {
-            AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeValue.second.name];
+            const AttributeDefinition & attributeDefinition = network.attributeDefinitions.at(attributeValue.second.name);
 
             /* Name */
             os << "BA_ \"" << attributeValue.second.name << "\" ";
@@ -257,7 +257,7 @@ std::ostream & operator<<(std::ostream & os, Network & network)
     }
     for (auto & message : network.messages) {
         for (auto & attributeValue : message.second.attributeValues) {
-            AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeValue.second.name];
+            const AttributeDefinition & attributeDefinition = network.attributeDefinitions.at(attributeValue.second.name);
 
             /* Name */
             os << "BA_ \"" << attributeValue.second.name << "\" ";
@@ -289,7 +289,7 @@ std::ostream & operator<<(std::ostream & os, Network & network)
     for (auto & message : network.messages) {
         for (auto & signal : message.second.signals) {
             for (auto & attributeValue : signal.second.attributeValues) {
-                AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeValue.second.name];
+                const AttributeDefinition & attributeDefinition = network.attributeDefinitions.at(attributeValue.second.name);
 
                 /* Name */
                 os << "BA_ \"" << attributeValue.second.name << "\" ";
@@ -321,7 +321,7 @@ std::ostream & operator<<(std::ostream & os, Network & network)
     }
     for (auto & environmentVariable : network.environmentVariables) {
         for (auto & attributeValue : environmentVariable.second.attributeValues) {
-            AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeValue.second.name];
+            const AttributeDefinition & attributeDefinition = network.attributeDefinitions.at(attributeValue.second.name);
 
             /* Name */
             os << "BA_ \"" << attributeValue.second.name << "\" ";
@@ -353,7 +353,7 @@ std::ostream & operator<<(std::ostream & os, Network & network)
 
     /* Attribute Values at Relations (BA_REL) */
     for (auto & attributeRelationValue : network.attributeRelationValues) {
-        AttributeDefinition & attributeDefinition = network.attributeDefinitions[attributeRelationValue.second.name];
+        const AttributeDefinition & attributeDefinition = network.attributeDefinitions.at(attributeRelationValue.second.name);
 
         /* Name */
         os << "BA_REL_ \"" << attributeRelationValue.second.name << "\" ";
