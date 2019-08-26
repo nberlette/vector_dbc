@@ -33,16 +33,13 @@ target_sources(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/ValueTable.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ValueType.h
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/Attribute.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/AttributeDefinition.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/AttributeRelation.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/AttributeValueType.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/BitTiming.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/EnvironmentVariable.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ExtendedMultiplexor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Message.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Network.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Node.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Signal.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/SignalGroup.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/SignalType.cpp

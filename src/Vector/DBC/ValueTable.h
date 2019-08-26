@@ -36,16 +36,13 @@ namespace DBC {
 /**
  * Value Table (VAL_TABLE)
  */
-class VECTOR_DBC_EXPORT ValueTable
+struct VECTOR_DBC_EXPORT ValueTable
 {
-public:
-    ValueTable();
-
     /** Name */
-    std::string name;
+    std::string name {};
 
     /** Value Descriptions */
-    ValueDescriptions valueDescriptions;
+    ValueDescriptions valueDescriptions {};
 };
 
 std::ostream & operator<<(std::ostream & os, const ValueTable & valueTable);

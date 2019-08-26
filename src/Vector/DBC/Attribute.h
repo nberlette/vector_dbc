@@ -39,20 +39,17 @@ namespace DBC {
  * Attribute Default (BA_DEF_DEF) and
  * Attribute Default Value on Relation (BA_DEF_DEF_REL)
  */
-class VECTOR_DBC_EXPORT Attribute
+struct VECTOR_DBC_EXPORT Attribute
 {
-public:
-    Attribute();
-
     /** Name */
-    std::string name;
+    std::string name {};
 
     /** Value Type */
-    AttributeObjectType objectType;
+    AttributeObjectType objectType { AttributeObjectType::Network };
 
     union {
         /** Integer Value of type AttributeValueType::Int */
-        int32_t integerValue;
+        int32_t integerValue {};
 
         /** Hex Value of type AttributeValueType::Hex */
         int32_t hexValue;
@@ -67,7 +64,7 @@ public:
     };
 
     /** String Value of type AttributeValueType::String (used only for BA_DEF_DEF enums) */
-    std::string stringValue;
+    std::string stringValue {};
 };
 
 }

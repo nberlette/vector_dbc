@@ -24,22 +24,6 @@
 namespace Vector {
 namespace DBC {
 
-SignalType::SignalType() :
-    name(),
-    size(0),
-    byteOrder(ByteOrder::BigEndian),
-    valueType(ValueType::Unsigned),
-    factor(0.0),
-    offset(0.0),
-    minimum(0.0),
-    maximum(0.0),
-    unit(),
-    defaultValue(0.0),
-    valueTable()
-{
-    /* nothing to do here */
-}
-
 std::ostream & operator<<(std::ostream & os, const SignalType & signalType)
 {
     os << "SGTYPE_ " << signalType.name;

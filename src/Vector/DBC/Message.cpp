@@ -24,20 +24,6 @@
 namespace Vector {
 namespace DBC {
 
-Message::Message() :
-    id(0),
-    name(),
-    size(0),
-    transmitter(),
-    signals(),
-    transmitters(),
-    signalGroups(),
-    comment(),
-    attributeValues()
-{
-    /* nothing to do here */
-}
-
 std::ostream & operator<<(std::ostream & os, const Message & message)
 {
     os << "BO_ " << message.id;

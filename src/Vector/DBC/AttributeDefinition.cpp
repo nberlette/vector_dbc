@@ -24,14 +24,6 @@
 namespace Vector {
 namespace DBC {
 
-AttributeDefinition::AttributeDefinition() :
-    name(),
-    objectType(AttributeObjectType::Network),
-    valueType()
-{
-    /* nothing to do here */
-}
-
 std::ostream & operator<<(std::ostream & os, const AttributeDefinition & attributeDefinition)
 {
     /* Object Type */

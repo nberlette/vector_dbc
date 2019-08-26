@@ -36,19 +36,16 @@ namespace DBC {
 /**
  * Node (BU)
  */
-class VECTOR_DBC_EXPORT Node
+struct VECTOR_DBC_EXPORT Node
 {
-public:
-    Node();
-
     /** Name */
-    std::string name;
+    std::string name {};
 
     /** Comment (CM) */
-    std::string comment;
+    std::string comment {};
 
     /** Attribute Values (BA) */
-    std::map<std::string, Attribute> attributeValues;
+    std::map<std::string, Attribute> attributeValues {};
 };
 
 }

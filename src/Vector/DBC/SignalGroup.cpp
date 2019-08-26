@@ -24,15 +24,6 @@
 namespace Vector {
 namespace DBC {
 
-SignalGroup::SignalGroup() :
-    messageId(0),
-    name(),
-    repetitions(1),
-    signals()
-{
-    /* nothing to do here */
-}
-
 std::ostream & operator<<(std::ostream & os, const SignalGroup & signalGroup)
 {
     os << "SIG_GROUP_ " << signalGroup.messageId << ' ' << signalGroup.name;

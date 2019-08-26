@@ -24,26 +24,16 @@
 namespace Vector {
 namespace DBC {
 
-AttributeRelation::AttributeRelation() :
-    Attribute(),
-    nodeName(),
-    environmentVariableName(),
-    messageId(0),
-    signalName()
-{
-    /* nothing to do here */
-}
-
-bool AttributeRelation::operator<(const AttributeRelation & rhs) const
+bool operator<(const AttributeRelation & lhs, const AttributeRelation & rhs)
 {
     /* compare name */
-    if (name == rhs.name) {
+    if (lhs.name == rhs.name) {
 
         /* compare relationType */
-        if (objectType == rhs.objectType) {
+        if (lhs.objectType == rhs.objectType) {
 
             /* relationType based optimizations */
-            switch(objectType) {
+            switch(lhs.objectType) {
             case AttributeObjectType::Network:
             case AttributeObjectType::Node:
             case AttributeObjectType::Message:
@@ -53,40 +43,40 @@ bool AttributeRelation::operator<(const AttributeRelation & rhs) const
                 break;
             case AttributeObjectType::ControlUnitEnvironmentVariable:
                 /* only compare nodeName, environmentVariableName */
-                if (nodeName == rhs.nodeName) {
-                    return environmentVariableName < rhs.environmentVariableName;
+                if (lhs.nodeName == rhs.nodeName) {
+                    return lhs.environmentVariableName < rhs.environmentVariableName;
                 } else {
-                    return nodeName < rhs.nodeName;
+                    return lhs.nodeName < rhs.nodeName;
                 }
                 break;
 
             case AttributeObjectType::NodeTxMessage:
                 /* only compare nodeName, messageId */
-                if (nodeName == rhs.nodeName) {
-                    return messageId < rhs.messageId;
+                if (lhs.nodeName == rhs.nodeName) {
+                    return lhs.messageId < rhs.messageId;
                 } else {
-                    return nodeName < rhs.nodeName;
+                    return lhs.nodeName < rhs.nodeName;
                 }
                 break;
 
             case AttributeObjectType::NodeMappedRxSignal:
                 /* only compare nodeName, messageId, signalName */
-                if (nodeName == rhs.nodeName) {
-                    if (messageId == rhs.messageId) {
-                        return signalName < rhs.signalName;
+                if (lhs.nodeName == rhs.nodeName) {
+                    if (lhs.messageId == rhs.messageId) {
+                        return lhs.signalName < rhs.signalName;
                     } else {
-                        return messageId < rhs.messageId;
+                        return lhs.messageId < rhs.messageId;
                     }
                 } else {
-                    return nodeName < rhs.nodeName;
+                    return lhs.nodeName < rhs.nodeName;
                 }
                 break;
             }
         } else {
-            return objectType < rhs.objectType;
+            return lhs.objectType < rhs.objectType;
         }
     } else {
-        return name < rhs.name;
+        return lhs.name < rhs.name;
     }
 
     return false;

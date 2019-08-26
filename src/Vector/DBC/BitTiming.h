@@ -34,19 +34,16 @@ namespace DBC {
 /**
  * Bit Timing (BS)
  */
-class VECTOR_DBC_EXPORT BitTiming
+struct VECTOR_DBC_EXPORT BitTiming
 {
-public:
-    BitTiming();
-
     /** Baud rate */
-    uint32_t baudrate;
+    uint32_t baudrate {};
 
     /** Bit Timing Register 1 */
-    uint32_t btr1;
+    uint32_t btr1 {};
 
     /** Bit Timing Register 2 */
-    uint32_t btr2;
+    uint32_t btr2 {};
 };
 
 std::ostream & operator<<(std::ostream & os, const BitTiming & bitTiming);

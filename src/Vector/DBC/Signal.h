@@ -44,13 +44,10 @@ namespace DBC {
 /**
  * Signal (SG)
  */
-class VECTOR_DBC_EXPORT Signal
+struct VECTOR_DBC_EXPORT Signal
 {
-public:
-    Signal();
-
     /** Name */
-    std::string name;
+    std::string name {};
 
     /** Multiplexor */
     enum class Multiplexor : char {
@@ -65,40 +62,40 @@ public:
     };
 
     /** @copydoc Multiplexor */
-    Multiplexor multiplexor;
+    Multiplexor multiplexor { Multiplexor::NoMultiplexor };
 
     /** Multiplexer Switch Value */
-    uint32_t multiplexerSwitchValue;
+    uint32_t multiplexerSwitchValue {};
 
     /** Start Bit */
-    uint32_t startBit;
+    uint32_t startBit {};
 
     /** Bit Size */
-    uint32_t bitSize;
+    uint32_t bitSize {};
 
     /** Byte Order */
-    ByteOrder byteOrder;
+    ByteOrder byteOrder { ByteOrder::BigEndian };
 
     /** Value Type */
-    ValueType valueType;
+    ValueType valueType { ValueType::Unsigned };
 
     /** Factor */
-    double factor;
+    double factor {};
 
     /** Offset */
-    double offset;
+    double offset {};
 
     /** Minimun Physical Value (or 0 if auto calculated) */
-    double minimum;
+    double minimum {};
 
     /** Maximum Physical Value (or 0 if auto calculated) */
-    double maximum;
+    double maximum {};
 
     /** Unit */
-    std::string unit;
+    std::string unit {};
 
     /** Receivers */
-    std::set<std::string> receivers;
+    std::set<std::string> receivers {};
 
     /** Signal Extended Value Type (SIG_VALTYPE, obsolete) */
     enum class ExtendedValueType : char {
@@ -116,22 +113,22 @@ public:
     };
 
     /** Signal Extended Value Type (SIG_VALTYPE, obsolete) */
-    ExtendedValueType extendedValueType;
+    ExtendedValueType extendedValueType { ExtendedValueType::Undefined };
 
     /** Value Descriptions (VAL) */
-    ValueDescriptions valueDescriptions;
+    ValueDescriptions valueDescriptions {};
 
     /** Signal Type Refs (SGTYPE, obsolete) */
-    std::string type;
+    std::string type {};
 
     /** Comment (CM) */
-    std::string comment;
+    std::string comment {};
 
     /** Attribute Values (BA) */
-    std::map<std::string, Attribute> attributeValues;
+    std::map<std::string, Attribute> attributeValues {};
 
     /** Extended Multiplexors (SG_MUL_VAL) */
-    std::map<std::string, ExtendedMultiplexor> extendedMultiplexors;
+    std::map<std::string, ExtendedMultiplexor> extendedMultiplexors {};
 
     /**
      * @brief Convert from Raw to Physical Value

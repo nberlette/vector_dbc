@@ -24,24 +24,6 @@
 namespace Vector {
 namespace DBC {
 
-EnvironmentVariable::EnvironmentVariable() :
-    name(),
-    type(EnvironmentVariable::Type::Integer),
-    minimum(0.0),
-    maximum(0.0),
-    unit(),
-    initialValue(0.0),
-    id(0),
-    accessType(EnvironmentVariable::AccessType::Unrestricted),
-    accessNodes(),
-    valueDescriptions(),
-    dataSize(0),
-    comment(),
-    attributeValues()
-{
-    /* nothing to do here */
-}
-
 std::ostream & operator<<(std::ostream & os, const EnvironmentVariable & environmentVariable)
 {
     os << "EV_ " << environmentVariable.name << ": ";

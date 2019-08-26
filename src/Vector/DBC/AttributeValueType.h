@@ -34,10 +34,7 @@ namespace Vector {
 namespace DBC {
 
 /** Attribute Value Type */
-class VECTOR_DBC_EXPORT AttributeValueType {
-public:
-    AttributeValueType();
-
+struct VECTOR_DBC_EXPORT AttributeValueType {
     /** Type */
     enum class Type {
         /** Integer */
@@ -57,7 +54,7 @@ public:
     };
 
     /** @copydoc Type */
-    Type type;
+    Type type { Type::Int };
 
     /** Value Union */
     union {
@@ -80,7 +77,7 @@ public:
     };
 
     /** Values of type AttributeValueType::Enum */
-    std::vector<std::string> enumValues;
+    std::vector<std::string> enumValues {};
 };
 
 std::ostream & operator<<(std::ostream & os, const AttributeValueType & attributeValueType);

@@ -36,16 +36,13 @@ namespace DBC {
 /**
  * Signal Group (SIG_GROUP)
  */
-class VECTOR_DBC_EXPORT SignalGroup
+struct VECTOR_DBC_EXPORT SignalGroup
 {
-public:
-    SignalGroup();
-
     /** Message Identifier */
-    uint32_t messageId;
+    uint32_t messageId {};
 
     /** Name */
-    std::string name;
+    std::string name {};
 
     /**
      * Repetitions
@@ -54,10 +51,10 @@ public:
      *   According to Vector this value is obsolete and is not read by
      *   any Vector product any more. This value is always set to 1.
      */
-    uint32_t repetitions;
+    uint32_t repetitions { 1 };
 
     /** Signals */
-    std::set<std::string> signals;
+    std::set<std::string> signals {};
 };
 
 std::ostream & operator<<(std::ostream & os, const SignalGroup & signalGroup);

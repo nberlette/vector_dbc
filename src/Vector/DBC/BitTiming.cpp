@@ -24,14 +24,6 @@
 namespace Vector {
 namespace DBC {
 
-BitTiming::BitTiming() :
-    baudrate(0),
-    btr1(0),
-    btr2(0)
-{
-    /* nothing to do here */
-}
-
 std::ostream & operator<<(std::ostream & os, const BitTiming & bitTiming)
 {
     os << "BS_:";

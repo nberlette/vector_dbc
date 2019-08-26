@@ -24,14 +24,6 @@
 namespace Vector {
 namespace DBC {
 
-AttributeValueType::AttributeValueType() :
-    type(Type::Int),
-    integerValue(),
-    enumValues()
-{
-    /* nothing to do here */
-}
-
 std::ostream & operator<<(std::ostream & os, const AttributeValueType & attributeValueType)
 {
     /* Value Type */

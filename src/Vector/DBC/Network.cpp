@@ -27,25 +27,6 @@
 namespace Vector {
 namespace DBC {
 
-Network::Network() :
-    successfullyParsed(false),
-    version(),
-    newSymbols(),
-    bitTiming(),
-    nodes(),
-    valueTables(),
-    messages(),
-    environmentVariables(),
-    signalTypes(),
-    comment(),
-    attributeDefinitions(),
-    attributeDefaults(),
-    attributeValues(),
-    attributeRelationValues()
-{
-    /* nothing to do here */
-}
-
 std::ostream & operator<<(std::ostream & os, const Network & network)
 {
     /* use english decimal points for floating numbers */

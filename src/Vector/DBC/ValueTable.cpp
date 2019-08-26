@@ -24,13 +24,6 @@
 namespace Vector {
 namespace DBC {
 
-ValueTable::ValueTable() :
-    name(),
-    valueDescriptions()
-{
-    /* nothing to do here */
-}
-
 std::ostream & operator<<(std::ostream & os, const ValueTable & valueTable)
 {
     os << "VAL_TABLE_ " << valueTable.name;

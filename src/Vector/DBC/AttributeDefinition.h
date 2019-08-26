@@ -40,19 +40,16 @@ namespace DBC {
  * Attribute Definition (BA_DEF) and
  * Attribute Definition for Relations (BA_DEF_REL)
  */
-class VECTOR_DBC_EXPORT AttributeDefinition
+struct VECTOR_DBC_EXPORT AttributeDefinition
 {
-public:
-    AttributeDefinition();
-
     /** Name */
-    std::string name;
+    std::string name {};
 
     /** Object Type */
-    AttributeObjectType objectType;
+    AttributeObjectType objectType { AttributeObjectType::Network };
 
     /** Value Type */
-    AttributeValueType valueType;
+    AttributeValueType valueType {};
 };
 
 std::ostream & operator<<(std::ostream & os, const AttributeDefinition & attributeDefinition);
