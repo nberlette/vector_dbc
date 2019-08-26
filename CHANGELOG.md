@@ -2,9 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [2.0.3] - 2019-06-26
 ### Changed
 - operator<< argument is now const
+- C++11 member initializer lists instead of constructors
+- operator< separated from class
 
 ## [2.0.2] - 2019-03-08
 ### Fixed
