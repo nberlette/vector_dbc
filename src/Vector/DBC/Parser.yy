@@ -480,8 +480,8 @@ message_transmitter
         : BO_TX_BU message_id COLON transmitters SEMICOLON EOL { network->messages[$message_id].transmitters = $transmitters; }
         ;
 transmitters
-        : %empty { $$ = std::set<std::string>(); }
-        | transmitters transmitter { $$ = $1; $$.insert($2); }
+        : transmitter { $$ = std::set<std::string>(); $$.insert($1); }
+        | transmitters COMMA transmitter { $$ = $1; $$.insert($3); }
         ;
 
     /* 8.4 Signal Value Descriptions (Value Encodings) */

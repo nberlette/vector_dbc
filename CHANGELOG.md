@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.4] - 2019-10-12
+### Fixed
+- BO_TX_BU is a comma separated list
+
 ## [2.0.3] - 2019-06-26
 ### Changed
 - operator<< argument is now const

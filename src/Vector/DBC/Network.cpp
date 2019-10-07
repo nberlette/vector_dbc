@@ -73,8 +73,14 @@ std::ostream & operator<<(std::ostream & os, const Network & network)
     for (auto & message : network.messages) {
         if (!message.second.transmitters.empty()) {
             os << "BO_TX_BU_ " << message.second.id << " :";
+            bool first = true;
             for (auto & transmitter : message.second.transmitters) {
-                os << ' ' << transmitter;
+                if (first) {
+                    first = false;
+                } else {
+                    os << ',';
+                }
+                os << transmitter;
             }
             os << ';' << endl;
         }
