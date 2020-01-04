@@ -49,8 +49,7 @@ namespace DBC {
 /**
  * Network
  */
-struct VECTOR_DBC_EXPORT Network
-{
+struct VECTOR_DBC_EXPORT Network {
     /** successfully parsed */
     bool successfullyParsed { false };
 

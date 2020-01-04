@@ -40,8 +40,7 @@ namespace DBC {
 /**
  * Environment Variable (EV)
  */
-struct VECTOR_DBC_EXPORT EnvironmentVariable
-{
+struct VECTOR_DBC_EXPORT EnvironmentVariable {
     /** Name */
     std::string name {};
 

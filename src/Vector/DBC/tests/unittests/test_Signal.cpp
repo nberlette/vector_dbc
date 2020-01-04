@@ -14,8 +14,7 @@
  * Check raw to physical and vice-versa functions.
  * Check min/max functions.
  */
-BOOST_AUTO_TEST_CASE(SignalRawPhysicalMinMax)
-{
+BOOST_AUTO_TEST_CASE(SignalRawPhysicalMinMax) {
     Vector::DBC::Signal signal;
 
     /* check for factor and offset */
@@ -58,8 +57,7 @@ BOOST_AUTO_TEST_CASE(SignalRawPhysicalMinMax)
 /**
  * Check signal decode/encode functions.
  */
-BOOST_AUTO_TEST_CASE(SignalDecodeEncode)
-{
+BOOST_AUTO_TEST_CASE(SignalDecodeEncode) {
     /* construct a signal */
     Vector::DBC::Signal signal;
     signal.startBit = 1;
@@ -87,8 +85,7 @@ BOOST_AUTO_TEST_CASE(SignalDecodeEncode)
  * Checks that signal decode/encode and raw to physical and vice-versa functions
  * work in combination.
  */
-BOOST_AUTO_TEST_CASE(BothFunctionsCombined)
-{
+BOOST_AUTO_TEST_CASE(BothFunctionsCombined) {
     /* construct a signal */
     Vector::DBC::Signal signal;
     signal.startBit = 0;
@@ -113,7 +110,7 @@ BOOST_AUTO_TEST_CASE(BothFunctionsCombined)
     data.push_back(0x02); // 10
     unsignedDecodedData = signal.decode(data);
     BOOST_CHECK_EQUAL(unsignedDecodedData & 0x3FF, 0x21A);
-    switch(signal.valueType) {
+    switch (signal.valueType) {
     case Vector::DBC::ValueType::Unsigned:
         rawValue = unsignedDecodedData;
         break;
@@ -130,7 +127,7 @@ BOOST_AUTO_TEST_CASE(BothFunctionsCombined)
     data.push_back(0x01); // 01
     unsignedDecodedData = signal.decode(data);
     BOOST_CHECK_EQUAL(unsignedDecodedData & 0x3FF, 0x1D3);
-    switch(signal.valueType) {
+    switch (signal.valueType) {
     case Vector::DBC::ValueType::Unsigned:
         rawValue = unsignedDecodedData;
         break;

@@ -24,8 +24,7 @@
 namespace Vector {
 namespace DBC {
 
-std::ostream & operator<<(std::ostream & os, const ValueTable & valueTable)
-{
+std::ostream & operator<<(std::ostream & os, const ValueTable & valueTable) {
     os << "VAL_TABLE_ " << valueTable.name;
     for (auto & valueDescription : valueTable.valueDescriptions) {
         os << " " << valueDescription.first;

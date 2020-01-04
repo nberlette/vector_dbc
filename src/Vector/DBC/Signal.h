@@ -44,8 +44,7 @@ namespace DBC {
 /**
  * Signal (SG)
  */
-struct VECTOR_DBC_EXPORT Signal
-{
+struct VECTOR_DBC_EXPORT Signal {
     /** Name */
     std::string name {};
 

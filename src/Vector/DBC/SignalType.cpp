@@ -24,8 +24,7 @@
 namespace Vector {
 namespace DBC {
 
-std::ostream & operator<<(std::ostream & os, const SignalType & signalType)
-{
+std::ostream & operator<<(std::ostream & os, const SignalType & signalType) {
     os << "SGTYPE_ " << signalType.name;
     os << " : " << signalType.size;
     os << '@' << char(signalType.byteOrder);

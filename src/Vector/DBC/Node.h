@@ -36,8 +36,7 @@ namespace DBC {
 /**
  * Node (BU)
  */
-struct VECTOR_DBC_EXPORT Node
-{
+struct VECTOR_DBC_EXPORT Node {
     /** Name */
     std::string name {};
 

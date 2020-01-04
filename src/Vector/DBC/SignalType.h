@@ -38,8 +38,7 @@ namespace DBC {
 /**
  * Signal Type (SGTYPE)
  */
-struct VECTOR_DBC_EXPORT SignalType
-{
+struct VECTOR_DBC_EXPORT SignalType {
     /** Name */
     std::string name {};
 

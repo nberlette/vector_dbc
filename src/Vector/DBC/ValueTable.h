@@ -36,8 +36,7 @@ namespace DBC {
 /**
  * Value Table (VAL_TABLE)
  */
-struct VECTOR_DBC_EXPORT ValueTable
-{
+struct VECTOR_DBC_EXPORT ValueTable {
     /** Name */
     std::string name {};
 

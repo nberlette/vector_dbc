@@ -36,8 +36,7 @@ namespace DBC {
 /**
  * Signal Group (SIG_GROUP)
  */
-struct VECTOR_DBC_EXPORT SignalGroup
-{
+struct VECTOR_DBC_EXPORT SignalGroup {
     /** Message Identifier */
     uint32_t messageId {};
 

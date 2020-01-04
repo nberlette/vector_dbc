@@ -41,8 +41,7 @@ namespace DBC {
 /**
  * Message (BO)
  */
-struct VECTOR_DBC_EXPORT Message
-{
+struct VECTOR_DBC_EXPORT Message {
     /** Identifier (with bit 31 set this is extended CAN frame) */
     uint32_t id {};
 

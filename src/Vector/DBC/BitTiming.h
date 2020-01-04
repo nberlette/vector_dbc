@@ -34,8 +34,7 @@ namespace DBC {
 /**
  * Bit Timing (BS)
  */
-struct VECTOR_DBC_EXPORT BitTiming
-{
+struct VECTOR_DBC_EXPORT BitTiming {
     /** Baud rate */
     uint32_t baudrate {};
 

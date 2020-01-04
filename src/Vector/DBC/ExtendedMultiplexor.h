@@ -36,8 +36,7 @@ namespace DBC {
 /**
  * Extended Multiplexor (SG_MUL_VAL)
  */
-struct VECTOR_DBC_EXPORT ExtendedMultiplexor
-{
+struct VECTOR_DBC_EXPORT ExtendedMultiplexor {
     /** Switch Name */
     std::string switchName {};
 

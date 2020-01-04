@@ -10,8 +10,7 @@
 
 #include <Vector/DBC.h>
 
-BOOST_AUTO_TEST_CASE(File)
-{
+BOOST_AUTO_TEST_CASE(File) {
     Vector::DBC::Network network;
 
     /* load database file */
@@ -24,9 +23,8 @@ BOOST_AUTO_TEST_CASE(File)
 
     /* create output directory */
     boost::filesystem::path outdir(CMAKE_CURRENT_BINARY_DIR "/data/");
-    if (!exists(outdir)) {
+    if (!exists(outdir))
         BOOST_REQUIRE(create_directory(outdir));
-    }
 
     /* save database file */
     boost::filesystem::path outfile(CMAKE_CURRENT_BINARY_DIR "/data/Database.dbc");

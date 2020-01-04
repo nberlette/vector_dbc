@@ -24,22 +24,19 @@
 namespace Vector {
 namespace DBC {
 
-std::ostream & operator<<(std::ostream & os, const Message & message)
-{
+std::ostream & operator<<(std::ostream & os, const Message & message) {
     os << "BO_ " << message.id;
     os << " " << message.name;
     os << ": " << message.size << " ";
-    if (message.transmitter.empty()) {
+    if (message.transmitter.empty())
         os << "Vector__XXX";
-    } else {
+    else
         os << message.transmitter;
-    }
     os << endl;
 
     /* Signals (SG) */
-    for (auto & signal : message.signals) {
+    for (auto & signal : message.signals)
         os << signal.second;
-    }
 
     os << endl;
 

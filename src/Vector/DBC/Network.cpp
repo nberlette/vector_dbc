@@ -27,8 +27,7 @@
 namespace Vector {
 namespace DBC {
 
-std::ostream & operator<<(std::ostream & os, const Network & network)
-{
+std::ostream & operator<<(std::ostream & os, const Network & network) {
     /* use english decimal points for floating numbers */
     os.imbue(std::locale("C"));
 
@@ -41,9 +40,8 @@ std::ostream & operator<<(std::ostream & os, const Network & network)
     /* New Symbols (NS) */
     os << endl;
     os << "NS_ : " << endl;
-    for (auto & newSymbol : network.newSymbols) {
+    for (auto & newSymbol : network.newSymbols)
         os << "\t" << newSymbol << endl;
-    }
     os << endl;
 
     /* Bit Timing (BS) */
@@ -52,22 +50,19 @@ std::ostream & operator<<(std::ostream & os, const Network & network)
 
     /* Nodes (BU) */
     os << "BU_:";
-    for (auto & node : network.nodes) {
+    for (auto & node : network.nodes)
         os << " " << node.second.name;
-    }
     os << endl;
 
     /* Value Tables (VAL_TABLE) */
-    for (auto & valueTable : network.valueTables) {
+    for (auto & valueTable : network.valueTables)
         os << valueTable.second;
-    }
     os << endl;
     os << endl;
 
     /* Messages (BO) */
-    for (auto & message : network.messages) {
+    for (auto & message : network.messages)
         os << message.second;
-    }
 
     /* Message Transmitters (BO_TX_BU) */
     for (auto & message : network.messages) {
@@ -75,11 +70,10 @@ std::ostream & operator<<(std::ostream & os, const Network & network)
             os << "BO_TX_BU_ " << message.second.id << " :";
             bool first = true;
             for (auto & transmitter : message.second.transmitters) {
-                if (first) {
+                if (first)
                     first = false;
-                } else {
+                else
                     os << ',';
-                }
                 os << transmitter;
             }
             os << ';' << endl;
@@ -107,36 +101,30 @@ std::ostream & operator<<(std::ostream & os, const Network & network)
     // @todo writeSignalTypes(ofs, network);
 
     /* Comments (CM) */
-    if (!network.comment.empty()) {
+    if (!network.comment.empty())
         os << "CM_ \"" << network.comment << "\";" << endl;
-    }
     for (auto & node : network.nodes) {
-        if (!node.second.comment.empty()) {
+        if (!node.second.comment.empty())
             os << "CM_ BU_ " << node.second.name << " \"" << node.second.comment << "\";" << endl;
-        }
     }
     for (auto & message : network.messages) {
-        if (!message.second.comment.empty()) {
+        if (!message.second.comment.empty())
             os << "CM_ BO_ " << message.second.id << " \"" << message.second.comment << "\";" << endl;
-        }
     }
     for (auto & message : network.messages) {
         for (auto & signal : message.second.signals) {
-            if (!signal.second.comment.empty()) {
+            if (!signal.second.comment.empty())
                 os << "CM_ SG_ " << message.second.id << ' ' << signal.second.name << " \"" << signal.second.comment << "\";" << endl;
-            }
         }
     }
     for (auto & environmentVariable : network.environmentVariables) {
-        if (!environmentVariable.second.comment.empty()) {
+        if (!environmentVariable.second.comment.empty())
             os << "CM_ EV_ " << environmentVariable.second.name << " \"" << environmentVariable.second.comment << "\";" << endl;
-        }
     }
 
     /* Attribute Definitions (BA_DEF) and Attribute Definitions at Relations (BA_DEF_REL) */
-    for (auto & attributeDefinition : network.attributeDefinitions) {
+    for (auto & attributeDefinition : network.attributeDefinitions)
         os << attributeDefinition.second;
-    }
 
     /* Sigtype Attr Lists (?, obsolete) */
 
@@ -429,22 +417,19 @@ std::ostream & operator<<(std::ostream & os, const Network & network)
     /* Filters (FILTER, obsolete) */
 
     /* Signal Type Refs (SGTYPE, obsolete) */
-    for (auto & signalType : network.signalTypes) {
+    for (auto & signalType : network.signalTypes)
         os << signalType.second;
-    }
     for (auto & message : network.messages) {
         for (auto & signal : message.second.signals) {
-            if (!signal.second.type.empty()) {
+            if (!signal.second.type.empty())
                 os << "SGTYPE_ " << message.second.id << ' ' << signal.second.name << " : " << signal.second.type << ";" << endl;
-            }
         }
     }
 
     /* Signal Groups (SIG_GROUP) */
     for (auto & message : network.messages) {
-        for (auto & signalGroup : message.second.signalGroups) {
+        for (auto & signalGroup : message.second.signalGroups)
             os << signalGroup.second;
-        }
     }
 
     /* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
@@ -471,11 +456,10 @@ std::ostream & operator<<(std::ostream & os, const Network & network)
                 /* Value Ranges */
                 bool first = true;
                 for (auto & valueRange : extendedMultiplexor.second.valueRanges) {
-                    if (first) {
+                    if (first)
                         first = false;
-                    } else {
+                    else
                         os << ", ";
-                    }
                     os << valueRange.first << '-' << valueRange.second;
                 }
                 os << ';' << endl;
@@ -488,8 +472,7 @@ std::ostream & operator<<(std::ostream & os, const Network & network)
     return os;
 }
 
-std::istream & operator>>(std::istream & is, Network & network)
-{
+std::istream & operator>>(std::istream & is, Network & network) {
     /* Flex scanner */
     Scanner scanner(is);
 

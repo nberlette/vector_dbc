@@ -4,8 +4,7 @@
 
 #include <Vector/DBC.h>
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char * argv[]) {
     Vector::DBC::Network network;
 
     if (argc != 2) {
@@ -30,9 +29,8 @@ int main(int argc, char *argv[])
         std::cout << "Message " << message.second.name << std::endl;
 
         /* loop over signals of this messages */
-        for (auto & signal : message.second.signals) {
+        for (auto & signal : message.second.signals)
             std::cout << "  Signal " << signal.second.name << std::endl;
-        }
     }
 
     return EXIT_SUCCESS;

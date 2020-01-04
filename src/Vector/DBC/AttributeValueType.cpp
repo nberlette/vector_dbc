@@ -24,8 +24,7 @@
 namespace Vector {
 namespace DBC {
 
-std::ostream & operator<<(std::ostream & os, const AttributeValueType & attributeValueType)
-{
+std::ostream & operator<<(std::ostream & os, const AttributeValueType & attributeValueType) {
     /* Value Type */
     switch (attributeValueType.type) {
     case AttributeValueType::Type::Int:
@@ -53,11 +52,10 @@ std::ostream & operator<<(std::ostream & os, const AttributeValueType & attribut
         os << "ENUM  ";
         bool first = true;
         for (auto & enumValue : attributeValueType.enumValues) {
-            if (first) {
+            if (first)
                 first = false;
-            } else {
+            else
                 os << ',';
-            }
             os << "\"" << enumValue << "\"";
         }
         break;

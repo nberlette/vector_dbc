@@ -39,8 +39,7 @@ namespace DBC {
  * Attribute Default (BA_DEF_DEF) and
  * Attribute Default Value on Relation (BA_DEF_DEF_REL)
  */
-struct VECTOR_DBC_EXPORT Attribute
-{
+struct VECTOR_DBC_EXPORT Attribute {
     /** Name */
     std::string name {};
 

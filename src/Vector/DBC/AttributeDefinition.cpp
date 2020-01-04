@@ -24,8 +24,7 @@
 namespace Vector {
 namespace DBC {
 
-std::ostream & operator<<(std::ostream & os, const AttributeDefinition & attributeDefinition)
-{
+std::ostream & operator<<(std::ostream & os, const AttributeDefinition & attributeDefinition) {
     /* Object Type */
     switch (attributeDefinition.objectType) {
     case AttributeObjectType::Network:

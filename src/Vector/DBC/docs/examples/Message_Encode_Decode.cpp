@@ -5,8 +5,7 @@
 
 Vector::DBC::Network network;
 
-void initDatabase()
-{
+void initDatabase() {
     /* define message 0x100 */
     Vector::DBC::Message & message_0x100 = network.messages[0x100];
     message_0x100.id = 0x100;
@@ -58,8 +57,7 @@ void initDatabase()
     signal_2b.offset = 0;
 }
 
-void decodeMessage(unsigned int & canIdentifier, std::vector<std::uint8_t> & canData)
-{
+void decodeMessage(unsigned int & canIdentifier, std::vector<std::uint8_t> & canData) {
     /* get the relevant message from the database */
     Vector::DBC::Message & message = network.messages[canIdentifier];
     std::cout << "Message " << message.name << std::endl;
@@ -78,16 +76,14 @@ void decodeMessage(unsigned int & canIdentifier, std::vector<std::uint8_t> & can
     /* loop over signals of this messages */
     for (auto & signal : message.signals) {
         switch (signal.second.multiplexor) {
-        case Vector::DBC::Signal::Multiplexor::MultiplexorSwitch:
-        {
+        case Vector::DBC::Signal::Multiplexor::MultiplexorSwitch: {
             /* if it's the multiplexorSwitch, only show raw value */
             std::cout << "  Signal (MultiplexorSwitch) " << signal.second.name << std::endl;
             unsigned int rawValue = signal.second.decode(canData);
             std::cout << "    Raw Value: 0x" << std::hex << rawValue << std::endl;
         }
-            break;
-        case Vector::DBC::Signal::Multiplexor::MultiplexedSignal:
-        {
+        break;
+        case Vector::DBC::Signal::Multiplexor::MultiplexedSignal: {
             /* if it's an multiplexed signal check that the value matches */
             std::cout << "  Signal (MultiplexedSignal) " << signal.second.name << std::endl;
             unsigned int rawValue = signal.second.decode(canData);
@@ -95,9 +91,8 @@ void decodeMessage(unsigned int & canIdentifier, std::vector<std::uint8_t> & can
             double physicalValue = signal.second.rawToPhysicalValue(rawValue);
             std::cout << "    Physical Value: " << physicalValue << std::endl;
         }
-            break;
-        case Vector::DBC::Signal::Multiplexor::NoMultiplexor:
-        {
+        break;
+        case Vector::DBC::Signal::Multiplexor::NoMultiplexor: {
             /* if it's a not a multiplexed signal just proceed it */
             std::cout << "  Signal " << signal.second.name << std::endl;
             unsigned int rawValue = signal.second.decode(canData);
@@ -105,13 +100,12 @@ void decodeMessage(unsigned int & canIdentifier, std::vector<std::uint8_t> & can
             double physicalValue = signal.second.rawToPhysicalValue(rawValue);
             std::cout << "    Physical Value: " << physicalValue << std::endl;
         }
-            break;
+        break;
         }
     }
 }
 
-int main()
-{
+int main() {
     /* init database */
     initDatabase();
 

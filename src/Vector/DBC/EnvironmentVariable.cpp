@@ -24,16 +24,15 @@
 namespace Vector {
 namespace DBC {
 
-std::ostream & operator<<(std::ostream & os, const EnvironmentVariable & environmentVariable)
-{
+std::ostream & operator<<(std::ostream & os, const EnvironmentVariable & environmentVariable) {
     os << "EV_ " << environmentVariable.name << ": ";
 
     /* Type */
     switch (environmentVariable.type) {
     case EnvironmentVariable::Type::Integer:
-        // [[fallthrough]]
+    // [[fallthrough]]
     case EnvironmentVariable::Type::String:
-        // [[fallthrough]]
+    // [[fallthrough]]
     case EnvironmentVariable::Type::Data:
         os << '0';
         break;
@@ -64,26 +63,24 @@ std::ostream & operator<<(std::ostream & os, const EnvironmentVariable & environ
     /* Access Type */
     os << " DUMMY_NODE_VECTOR";
     os << std::hex;
-    if (environmentVariable.type == EnvironmentVariable::Type::String) {
+    if (environmentVariable.type == EnvironmentVariable::Type::String)
         os << (static_cast<uint16_t>(environmentVariable.accessType) | 0x8000);
-    } else {
+    else
         os << static_cast<uint16_t>(environmentVariable.accessType);
-    }
     os << std::dec;
     os << ' ';
 
     /* Access Nodes */
-    if (environmentVariable.accessNodes.empty()) {
+    if (environmentVariable.accessNodes.empty())
         os << "Vector__XXX";
-    } else {
+    else {
         os << ' ';
         bool first = true;
         for (auto & accessNode : environmentVariable.accessNodes) {
-            if (first) {
+            if (first)
                 first = false;
-            } else {
+            else
                 os << ',';
-            }
             os << accessNode;
         }
     }

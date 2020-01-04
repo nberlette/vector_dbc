@@ -24,12 +24,10 @@
 namespace Vector {
 namespace DBC {
 
-std::ostream & operator<<(std::ostream & os, const BitTiming & bitTiming)
-{
+std::ostream & operator<<(std::ostream & os, const BitTiming & bitTiming) {
     os << "BS_:";
-    if (bitTiming.baudrate || bitTiming.btr1 || bitTiming.btr2) {
+    if (bitTiming.baudrate || bitTiming.btr1 || bitTiming.btr2)
         os << ' ' << bitTiming.baudrate << ':' << bitTiming.btr1 << ':' << bitTiming.btr2;
-    }
     os << endl;
 
     return os;

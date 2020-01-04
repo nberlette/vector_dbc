@@ -33,9 +33,8 @@ namespace DBC {
  *
  * This contains the converter-specific Flex Lexer class.
  */
-class Scanner : public yyFlexLexer
-{
-public:
+class Scanner : public yyFlexLexer {
+  public:
     Scanner(std::istream & istream) :
         yyFlexLexer(&istream),
         location()

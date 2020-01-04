@@ -40,8 +40,7 @@ namespace DBC {
  * Attribute Definition (BA_DEF) and
  * Attribute Definition for Relations (BA_DEF_REL)
  */
-struct VECTOR_DBC_EXPORT AttributeDefinition
-{
+struct VECTOR_DBC_EXPORT AttributeDefinition {
     /** Name */
     std::string name {};
 
