@@ -40,6 +40,7 @@ target_sources(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/EnvironmentVariable.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Message.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Network.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Signal.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/SignalGroup.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/SignalType.cpp

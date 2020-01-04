@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.5] - 2020-01-04
+### Changed
+- Changed style to Google
+- Fixed some clang-tidy warnings
+
 ## [2.0.4] - 2019-10-12
 ### Fixed
 - BO_TX_BU is a comma separated list
