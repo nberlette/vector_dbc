@@ -25,11 +25,11 @@ int main(int argc, char * argv[]) {
     }
 
     /* loop over messages */
-    for (auto & message : network.messages) {
+    for (const auto & message : network.messages) {
         std::cout << "Message " << message.second.name << std::endl;
 
         /* loop over signals of this messages */
-        for (auto & signal : message.second.signals)
+        for (const auto & signal : message.second.signals)
             std::cout << "  Signal " << signal.second.name << std::endl;
     }
 

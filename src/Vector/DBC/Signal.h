@@ -136,7 +136,7 @@ struct VECTOR_DBC_EXPORT Signal {
      *
      * Converts a value from raw to physical representation.
      */
-    double rawToPhysicalValue(double rawValue);
+    double rawToPhysicalValue(double rawValue) const;
 
     /**
      * @brief Convert from Physical to Raw Value
@@ -145,7 +145,7 @@ struct VECTOR_DBC_EXPORT Signal {
      *
      * Converts a value from physical to raw representation.
      */
-    double physicalToRawValue(double physicalValue);
+    double physicalToRawValue(double physicalValue) const;
 
     /**
      * @brief Get minimum Physical Value
@@ -153,7 +153,7 @@ struct VECTOR_DBC_EXPORT Signal {
      *
      * Based on size, valueType and extendedValueType this calculates the minimum raw value.
      */
-    double minimumRawValue();
+    double minimumRawValue() const;
 
     /**
      * @brief Get maximum Raw Value
@@ -161,7 +161,7 @@ struct VECTOR_DBC_EXPORT Signal {
      *
      * Based on size, valueType and extendedValueType this calculates the maximum raw value.
      */
-    double maximumRawValue();
+    double maximumRawValue() const;
 
     /**
      * @brief Decodes/Extracts a signal from the message data
@@ -172,7 +172,7 @@ struct VECTOR_DBC_EXPORT Signal {
      *
      * @note Multiplexors are not taken into account.
      */
-    uint64_t decode(std::vector<uint8_t> & data);
+    uint64_t decode(std::vector<uint8_t> & data) const;
 
     /**
      * @brief Encodes a signal into the message data
@@ -183,7 +183,7 @@ struct VECTOR_DBC_EXPORT Signal {
      *
      * @note Multiplexors are not taken into account.
      */
-    void encode(std::vector<uint8_t> & data, uint64_t rawValue);
+    void encode(std::vector<uint8_t> & data, uint64_t rawValue) const;
 };
 
 std::ostream & operator<<(std::ostream & os, const Signal & signal);

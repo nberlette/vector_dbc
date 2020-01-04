@@ -64,7 +64,7 @@ void decodeMessage(unsigned int & canIdentifier, std::vector<std::uint8_t> & can
 
     /* loop over signals of this message to find and get multiplexor */
     unsigned int multiplexerSwitchValue = 0;
-    for (auto & signal : message.signals) {
+    for (const auto & signal : message.signals) {
         if (signal.second.multiplexor == Vector::DBC::Signal::Multiplexor::MultiplexorSwitch) {
             unsigned int rawValue = signal.second.decode(canData);
             multiplexerSwitchValue = rawValue;
@@ -74,7 +74,7 @@ void decodeMessage(unsigned int & canIdentifier, std::vector<std::uint8_t> & can
     }
 
     /* loop over signals of this messages */
-    for (auto & signal : message.signals) {
+    for (const auto & signal : message.signals) {
         switch (signal.second.multiplexor) {
         case Vector::DBC::Signal::Multiplexor::MultiplexorSwitch: {
             /* if it's the multiplexorSwitch, only show raw value */

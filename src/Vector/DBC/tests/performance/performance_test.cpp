@@ -40,11 +40,11 @@ void performance_test_1() {
     Vector::DBC::Network network;
 
     /* multiple measurement loops */
-    for (int i = 0; i < measurements; ++i) {
+    for (auto i = 0; i < measurements; ++i) {
         unsigned int messageCount = (rand() % 1000) + 1;
 
         /* setup the database with random number of messages */
-        for (unsigned int id = 0; id < messageCount; ++id) {
+        for (auto id = 0; id < messageCount; ++id) {
             Vector::DBC::Message & message = network.messages[id];
             message.id = id;
             message.name = "message_" + std::to_string(id);
@@ -77,11 +77,11 @@ void performance_test_2() {
     Vector::DBC::Message message;
 
     /* multiple measurement loops */
-    for (int i = 0; i < measurements; ++i) {
+    for (auto i = 0; i < measurements; ++i) {
         unsigned int signalCount = (rand() % 8) + 1;
 
         /* setup the message with random number of signals */
-        for (unsigned int nr = 0; nr < signalCount; ++nr) {
+        for (auto nr = 0; nr < signalCount; ++nr) {
             std::string signalName = "signal_" + std::to_string(nr);
             Vector::DBC::Signal & signal = message.signals[signalName];
             signal.name = signalName;
@@ -91,7 +91,7 @@ void performance_test_2() {
 
         /* and look it up */
         auto t1 = std::chrono::high_resolution_clock::now();
-        for (auto signal : message.signals)
+        for (const auto & signal : message.signals)
             std::string & signalName = signal.second.name;
         auto t2 = std::chrono::high_resolution_clock::now();
 
@@ -110,12 +110,12 @@ void performance_test_2() {
  */
 void performance_test_3(Vector::DBC::ByteOrder byteOrder, Vector::DBC::ValueType valueType) {
     /* multiple measurement loops */
-    for (int i = 0; i < measurements; ++i) {
+    for (auto i = 0; i < measurements; ++i) {
         unsigned int bitSize = (rand() % 64) + 1;
 
         /* setup 8 byte random data */
         std::vector<uint8_t> data;
-        for (int b = 0; b < 8; ++b)
+        for (auto b = 0; b < 8; ++b)
             data.push_back(rand() % 0x100);
 
         /* setup signal */

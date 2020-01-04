@@ -21,23 +21,24 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 #include <Vector/DBC/Signal.h>
 
 namespace Vector {
 namespace DBC {
 
-double Signal::rawToPhysicalValue(double rawValue) {
+double Signal::rawToPhysicalValue(double rawValue) const {
     /* physicalValue = rawValue * factor + offset */
     return rawValue * factor + offset;
 }
 
-double Signal::physicalToRawValue(double physicalValue) {
+double Signal::physicalToRawValue(double physicalValue) const {
     /* rawValue = (physicalValue - offset) / factor */
     return (physicalValue - offset) / factor;
 }
 
-double Signal::minimumRawValue() {
+double Signal::minimumRawValue() const {
     /* calculate minimum raw value */
     double minimumRawValue = 0.0;
     switch (extendedValueType) {
@@ -50,17 +51,17 @@ double Signal::minimumRawValue() {
         break;
 
     case ExtendedValueType::Float:
-        minimumRawValue = 3.4e-38;
+        minimumRawValue = std::numeric_limits<float>::min();
         break;
 
     case ExtendedValueType::Double:
-        minimumRawValue = 1.7e-308;
+        minimumRawValue = std::numeric_limits<double>::min();
         break;
     }
     return minimumRawValue;
 }
 
-double Signal::maximumRawValue() {
+double Signal::maximumRawValue() const {
     /* calculate maximum raw value */
     double maximumRawValue = 0.0;
     switch (extendedValueType) {
@@ -74,17 +75,17 @@ double Signal::maximumRawValue() {
         break;
 
     case ExtendedValueType::Float:
-        maximumRawValue = 3.4e38;
+        maximumRawValue = std::numeric_limits<float>::max();
         break;
 
     case ExtendedValueType::Double:
-        maximumRawValue = 1.7e308;
+        maximumRawValue = std::numeric_limits<double>::max();
         break;
     }
     return maximumRawValue;
 }
 
-uint64_t Signal::decode(std::vector<uint8_t> & data) {
+uint64_t Signal::decode(std::vector<uint8_t> & data) const {
     /* safety check */
     if (bitSize == 0)
         return 0;
@@ -95,7 +96,7 @@ uint64_t Signal::decode(std::vector<uint8_t> & data) {
         /* start with MSB */
         unsigned int srcBit = startBit;
         unsigned int dstBit = bitSize - 1;
-        for (unsigned int i = 0; i < bitSize; ++i) {
+        for (auto i = 0; i < bitSize; ++i) {
             /* copy bit */
             if (data[srcBit / 8] & (1 << (srcBit % 8)))
                 retVal |= (1ULL << dstBit);
@@ -111,7 +112,7 @@ uint64_t Signal::decode(std::vector<uint8_t> & data) {
         /* start with LSB */
         unsigned int srcBit = startBit;
         unsigned int dstBit = 0;
-        for (unsigned int i = 0; i < bitSize; ++i) {
+        for (auto i = 0; i < bitSize; ++i) {
             /* copy bit */
             if (data[srcBit / 8] & (1 << (srcBit % 8)))
                 retVal |= (1ULL << dstBit);
@@ -125,7 +126,7 @@ uint64_t Signal::decode(std::vector<uint8_t> & data) {
     /* if signed, then fill all bits above MSB with 1 */
     if (valueType == ValueType::Signed) {
         if (retVal & (1 << (bitSize - 1))) {
-            for (unsigned long i = bitSize; i < 8 * sizeof(retVal); ++i)
+            for (auto i = bitSize; i < 64; ++i)
                 retVal |= (1ULL << i);
         }
     }
@@ -133,7 +134,7 @@ uint64_t Signal::decode(std::vector<uint8_t> & data) {
     return retVal;
 }
 
-void Signal::encode(std::vector<uint8_t> & data, uint64_t rawValue) {
+void Signal::encode(std::vector<uint8_t> & data, uint64_t rawValue) const {
     /* safety check */
     if (bitSize == 0)
         return;
@@ -143,7 +144,7 @@ void Signal::encode(std::vector<uint8_t> & data, uint64_t rawValue) {
         /* start with MSB */
         unsigned int srcBit = startBit;
         unsigned int dstBit = bitSize - 1;
-        for (unsigned int i = 0; i < bitSize; ++i) {
+        for (auto i = 0; i < bitSize; ++i) {
             /* copy bit */
             if (rawValue & (1ULL << dstBit))
                 data[srcBit / 8] |= (1 << (srcBit % 8));
@@ -161,7 +162,7 @@ void Signal::encode(std::vector<uint8_t> & data, uint64_t rawValue) {
         /* start with LSB */
         unsigned int srcBit = startBit;
         unsigned int dstBit = 0;
-        for (unsigned int i = 0; i < bitSize; ++i) {
+        for (auto i = 0; i < bitSize; ++i) {
             /* copy bit */
             if (rawValue & (1ULL << dstBit))
                 data[srcBit / 8] |= (1 << (srcBit % 8));
@@ -209,7 +210,7 @@ std::ostream & operator<<(std::ostream & os, const Signal & signal) {
     if (signal.receivers.empty())
         os << "Vector__XXX";
     else {
-        for (auto & receiver : signal.receivers)
+        for (const auto & receiver : signal.receivers)
             os << " " << receiver;
     }
     os << endl;

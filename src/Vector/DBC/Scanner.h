@@ -13,7 +13,7 @@
 #define YY_USER_ACTION \
     location.begin.line = location.end.line; \
     location.begin.column = location.end.column; \
-    for(int i = 0; yytext[i] != '\0'; i++) { \
+    for (int i = 0; yytext[i] != '\0'; i++) { \
         if(yytext[i] == '\n') { \
             location.end.line++; \
             location.end.column = 0; \

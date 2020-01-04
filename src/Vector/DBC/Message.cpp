@@ -35,7 +35,7 @@ std::ostream & operator<<(std::ostream & os, const Message & message) {
     os << endl;
 
     /* Signals (SG) */
-    for (auto & signal : message.signals)
+    for (const auto & signal : message.signals)
         os << signal.second;
 
     os << endl;

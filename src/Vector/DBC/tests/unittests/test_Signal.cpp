@@ -6,6 +6,7 @@
 
 #include <fstream>
 #include <iterator>
+#include <limits>
 #include <boost/filesystem.hpp>
 
 #include <Vector/DBC.h>
@@ -45,13 +46,13 @@ BOOST_AUTO_TEST_CASE(SignalRawPhysicalMinMax) {
     // float
     signal.bitSize = 32;
     signal.extendedValueType = Vector::DBC::Signal::ExtendedValueType::Float;
-    BOOST_CHECK_EQUAL(signal.minimumRawValue(), 3.4e-38);
-    BOOST_CHECK_EQUAL(signal.maximumRawValue(), 3.4e38);
+    BOOST_CHECK_EQUAL(signal.minimumRawValue(), std::numeric_limits<float>::min());
+    BOOST_CHECK_EQUAL(signal.maximumRawValue(), std::numeric_limits<float>::max());
     // double
     signal.bitSize = 64;
     signal.extendedValueType = Vector::DBC::Signal::ExtendedValueType::Double;
-    BOOST_CHECK_EQUAL(signal.minimumRawValue(), 1.7e-308);
-    BOOST_CHECK_EQUAL(signal.maximumRawValue(), 1.7e308);
+    BOOST_CHECK_EQUAL(signal.minimumRawValue(), std::numeric_limits<double>::min());
+    BOOST_CHECK_EQUAL(signal.maximumRawValue(), std::numeric_limits<double>::max());
 }
 
 /**
@@ -98,7 +99,7 @@ BOOST_AUTO_TEST_CASE(BothFunctionsCombined) {
     /* construct raw data */
     std::vector<uint8_t> data;
     union {
-        uint64_t unsignedDecodedData;
+        uint64_t unsignedDecodedData {};
         int64_t signedDecodedData;
     };
     double rawValue = 0.0;

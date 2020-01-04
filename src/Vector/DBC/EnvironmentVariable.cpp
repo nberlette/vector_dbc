@@ -76,7 +76,7 @@ std::ostream & operator<<(std::ostream & os, const EnvironmentVariable & environ
     else {
         os << ' ';
         bool first = true;
-        for (auto & accessNode : environmentVariable.accessNodes) {
+        for (const auto & accessNode : environmentVariable.accessNodes) {
             if (first)
                 first = false;
             else

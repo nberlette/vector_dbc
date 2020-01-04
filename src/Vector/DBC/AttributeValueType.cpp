@@ -51,7 +51,7 @@ std::ostream & operator<<(std::ostream & os, const AttributeValueType & attribut
     case AttributeValueType::Type::Enum:
         os << "ENUM  ";
         bool first = true;
-        for (auto & enumValue : attributeValueType.enumValues) {
+        for (const auto & enumValue : attributeValueType.enumValues) {
             if (first)
                 first = false;
             else

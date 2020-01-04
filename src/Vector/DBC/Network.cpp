@@ -40,7 +40,7 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
     /* New Symbols (NS) */
     os << endl;
     os << "NS_ : " << endl;
-    for (auto & newSymbol : network.newSymbols)
+    for (const auto & newSymbol : network.newSymbols)
         os << "\t" << newSymbol << endl;
     os << endl;
 
@@ -50,26 +50,26 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
 
     /* Nodes (BU) */
     os << "BU_:";
-    for (auto & node : network.nodes)
+    for (const auto & node : network.nodes)
         os << " " << node.second.name;
     os << endl;
 
     /* Value Tables (VAL_TABLE) */
-    for (auto & valueTable : network.valueTables)
+    for (const auto & valueTable : network.valueTables)
         os << valueTable.second;
     os << endl;
     os << endl;
 
     /* Messages (BO) */
-    for (auto & message : network.messages)
+    for (const auto & message : network.messages)
         os << message.second;
 
     /* Message Transmitters (BO_TX_BU) */
-    for (auto & message : network.messages) {
+    for (const auto & message : network.messages) {
         if (!message.second.transmitters.empty()) {
             os << "BO_TX_BU_ " << message.second.id << " :";
             bool first = true;
-            for (auto & transmitter : message.second.transmitters) {
+            for (const auto & transmitter : message.second.transmitters) {
                 if (first)
                     first = false;
                 else
@@ -82,13 +82,13 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
     os << endl;
 
     /* Environment Variables (EV) */
-    for (auto & environmentVariable : network.environmentVariables) {
+    for (const auto & environmentVariable : network.environmentVariables) {
         os << endl;
         os << environmentVariable.second;
     }
 
     /* Environment Variable Data (ENVVAR_DATA) */
-    for (auto & environmentVariable : network.environmentVariables) {
+    for (const auto & environmentVariable : network.environmentVariables) {
         if (environmentVariable.second.type == EnvironmentVariable::Type::Data) {
             os << "ENVVAR_DATA_ " << environmentVariable.second.name;
             os << ": " << environmentVariable.second.dataSize;
@@ -103,33 +103,33 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
     /* Comments (CM) */
     if (!network.comment.empty())
         os << "CM_ \"" << network.comment << "\";" << endl;
-    for (auto & node : network.nodes) {
+    for (const auto & node : network.nodes) {
         if (!node.second.comment.empty())
             os << "CM_ BU_ " << node.second.name << " \"" << node.second.comment << "\";" << endl;
     }
-    for (auto & message : network.messages) {
+    for (const auto & message : network.messages) {
         if (!message.second.comment.empty())
             os << "CM_ BO_ " << message.second.id << " \"" << message.second.comment << "\";" << endl;
     }
-    for (auto & message : network.messages) {
-        for (auto & signal : message.second.signals) {
+    for (const auto & message : network.messages) {
+        for (const auto & signal : message.second.signals) {
             if (!signal.second.comment.empty())
                 os << "CM_ SG_ " << message.second.id << ' ' << signal.second.name << " \"" << signal.second.comment << "\";" << endl;
         }
     }
-    for (auto & environmentVariable : network.environmentVariables) {
+    for (const auto & environmentVariable : network.environmentVariables) {
         if (!environmentVariable.second.comment.empty())
             os << "CM_ EV_ " << environmentVariable.second.name << " \"" << environmentVariable.second.comment << "\";" << endl;
     }
 
     /* Attribute Definitions (BA_DEF) and Attribute Definitions at Relations (BA_DEF_REL) */
-    for (auto & attributeDefinition : network.attributeDefinitions)
+    for (const auto & attributeDefinition : network.attributeDefinitions)
         os << attributeDefinition.second;
 
     /* Sigtype Attr Lists (?, obsolete) */
 
     /* Attribute Defaults (BA_DEF_DEF) and Attribute Defaults at Relations (BA_DEF_DEF_REL) */
-    for (auto & attributeDefault : network.attributeDefaults) {
+    for (const auto & attributeDefault : network.attributeDefaults) {
         const AttributeDefinition & attributeDefinition = network.attributeDefinitions.at(attributeDefault.second.name);
 
         /* Object Type */
@@ -173,7 +173,7 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
     }
 
     /* Attribute Values (BA) */
-    for (auto & attributeValue : network.attributeValues) {
+    for (const auto & attributeValue : network.attributeValues) {
         const AttributeDefinition & attributeDefinition = network.attributeDefinitions.at(attributeValue.second.name);
 
         /* Name */
@@ -199,8 +199,8 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
         }
         os << ';' << endl;
     }
-    for (auto & node : network.nodes) {
-        for (auto & attributeValue : node.second.attributeValues) {
+    for (const auto & node : network.nodes) {
+        for (const auto & attributeValue : node.second.attributeValues) {
             const AttributeDefinition & attributeDefinition = network.attributeDefinitions.at(attributeValue.second.name);
 
             /* Name */
@@ -230,8 +230,8 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
             os << ';' << endl;
         }
     }
-    for (auto & message : network.messages) {
-        for (auto & attributeValue : message.second.attributeValues) {
+    for (const auto & message : network.messages) {
+        for (const auto & attributeValue : message.second.attributeValues) {
             const AttributeDefinition & attributeDefinition = network.attributeDefinitions.at(attributeValue.second.name);
 
             /* Name */
@@ -261,9 +261,9 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
             os << ';' << endl;
         }
     }
-    for (auto & message : network.messages) {
-        for (auto & signal : message.second.signals) {
-            for (auto & attributeValue : signal.second.attributeValues) {
+    for (const auto & message : network.messages) {
+        for (const auto & signal : message.second.signals) {
+            for (const auto & attributeValue : signal.second.attributeValues) {
                 const AttributeDefinition & attributeDefinition = network.attributeDefinitions.at(attributeValue.second.name);
 
                 /* Name */
@@ -294,8 +294,8 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
             }
         }
     }
-    for (auto & environmentVariable : network.environmentVariables) {
-        for (auto & attributeValue : environmentVariable.second.attributeValues) {
+    for (const auto & environmentVariable : network.environmentVariables) {
+        for (const auto & attributeValue : environmentVariable.second.attributeValues) {
             const AttributeDefinition & attributeDefinition = network.attributeDefinitions.at(attributeValue.second.name);
 
             /* Name */
@@ -327,7 +327,7 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
     }
 
     /* Attribute Values at Relations (BA_REL) */
-    for (auto & attributeRelationValue : network.attributeRelationValues) {
+    for (const auto & attributeRelationValue : network.attributeRelationValues) {
         const AttributeDefinition & attributeDefinition = network.attributeDefinitions.at(attributeRelationValue.second.name);
 
         /* Name */
@@ -387,11 +387,11 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
     }
 
     /* Value Descriptions (VAL) */
-    for (auto & message : network.messages) {
-        for (auto & signal : message.second.signals) {
+    for (const auto & message : network.messages) {
+        for (const auto & signal : message.second.signals) {
             if (!signal.second.valueDescriptions.empty()) {
                 os << "VAL_ " << message.second.id << ' ' << signal.second.name;
-                for (auto & valueDescription : signal.second.valueDescriptions) {
+                for (const auto & valueDescription : signal.second.valueDescriptions) {
                     os << " " << valueDescription.first;
                     os << " \"" << valueDescription.second << "\"";
                 }
@@ -399,10 +399,10 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
             }
         }
     }
-    for (auto & environmentVariable : network.environmentVariables) {
+    for (const auto & environmentVariable : network.environmentVariables) {
         if (!environmentVariable.second.valueDescriptions.empty()) {
             os << "VAL_ " << environmentVariable.second.name;
-            for (auto & valueDescription : environmentVariable.second.valueDescriptions) {
+            for (const auto & valueDescription : environmentVariable.second.valueDescriptions) {
                 os << " " << valueDescription.first;
                 os << " \"" << valueDescription.second << "\"";
             }
@@ -417,24 +417,24 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
     /* Filters (FILTER, obsolete) */
 
     /* Signal Type Refs (SGTYPE, obsolete) */
-    for (auto & signalType : network.signalTypes)
+    for (const auto & signalType : network.signalTypes)
         os << signalType.second;
-    for (auto & message : network.messages) {
-        for (auto & signal : message.second.signals) {
+    for (const auto & message : network.messages) {
+        for (const auto & signal : message.second.signals) {
             if (!signal.second.type.empty())
                 os << "SGTYPE_ " << message.second.id << ' ' << signal.second.name << " : " << signal.second.type << ";" << endl;
         }
     }
 
     /* Signal Groups (SIG_GROUP) */
-    for (auto & message : network.messages) {
-        for (auto & signalGroup : message.second.signalGroups)
+    for (const auto & message : network.messages) {
+        for (const auto & signalGroup : message.second.signalGroups)
             os << signalGroup.second;
     }
 
     /* Signal Extended Value Types (SIG_VALTYPE, obsolete) */
-    for (auto & message : network.messages) {
-        for (auto & signal : message.second.signals) {
+    for (const auto & message : network.messages) {
+        for (const auto & signal : message.second.signals) {
             if (signal.second.extendedValueType  !=  Signal::ExtendedValueType::Undefined) {
                 os << "SIG_VALTYPE_ " << message.second.id << ' ' << signal.second.name;
                 os << " : " << char(signal.second.extendedValueType);
@@ -444,9 +444,9 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
     }
 
     /* Extended Multiplexors (SG_MUL_VAL) */
-    for (auto & message : network.messages) {
-        for (auto & signal : message.second.signals) {
-            for (auto & extendedMultiplexor : signal.second.extendedMultiplexors) {
+    for (const auto & message : network.messages) {
+        for (const auto & signal : message.second.signals) {
+            for (const auto & extendedMultiplexor : signal.second.extendedMultiplexors) {
                 /* Identifier, Name */
                 os << "SG_MUL_VAL_ " << message.second.id << ' ' << signal.second.name;
 
@@ -455,7 +455,7 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
 
                 /* Value Ranges */
                 bool first = true;
-                for (auto & valueRange : extendedMultiplexor.second.valueRanges) {
+                for (const auto & valueRange : extendedMultiplexor.second.valueRanges) {
                     if (first)
                         first = false;
                     else

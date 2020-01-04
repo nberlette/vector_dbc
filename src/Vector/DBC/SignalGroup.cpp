@@ -28,7 +28,7 @@ std::ostream & operator<<(std::ostream & os, const SignalGroup & signalGroup) {
     os << "SIG_GROUP_ " << signalGroup.messageId << ' ' << signalGroup.name;
     os << ' ' << signalGroup.repetitions;
     bool first = true;
-    for (auto & signal : signalGroup.signals) {
+    for (const auto & signal : signalGroup.signals) {
         if (first)
             first = false;
         else

@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(Message) {
 
     /* load database file */
     boost::filesystem::path infile(CMAKE_CURRENT_SOURCE_DIR "/data/Database.dbc");
-    std::string infilename = infile.string();
+    const std::string & infilename = infile.string();
     std::ifstream ifs(infilename);
     ifs >> network;
     BOOST_REQUIRE(network.successfullyParsed);
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(MessageSeparation) {
 
     /* load database file */
     boost::filesystem::path infile(CMAKE_CURRENT_SOURCE_DIR "/data/MessageSeparation.dbc");
-    std::string infilename = infile.string();
+    const std::string & infilename = infile.string();
     std::ifstream ifs(infilename);
     ifs >> network;
     BOOST_REQUIRE(network.successfullyParsed);
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(MultiLineComments) {
 
     /* load database file */
     boost::filesystem::path infile(CMAKE_CURRENT_SOURCE_DIR "/data/MessageSeparation.dbc");
-    std::string infilename = infile.string();
+    const std::string & infilename = infile.string();
     std::cout << "Input file: " << infilename << std::endl;
     std::ifstream ifs(infilename);
     ifs >> network;
