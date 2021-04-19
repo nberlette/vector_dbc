@@ -292,6 +292,7 @@ nodes
         ;
 node_names
         : %empty
+        | VECTOR_XXX
         | node_names node_name { network->nodes[$node_name].name = $node_name; }
         ;
 node_name

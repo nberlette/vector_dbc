@@ -50,8 +50,11 @@ std::ostream & operator<<(std::ostream & os, const Network & network) {
 
     /* Nodes (BU) */
     os << "BU_:";
-    for (const auto & node : network.nodes)
-        os << " " << node.second.name;
+    if (network.nodes.empty())
+        os << " Vector__XXX";
+    else
+        for (const auto & node : network.nodes)
+            os << " " << node.second.name;
     os << endl;
 
     /* Value Tables (VAL_TABLE) */
