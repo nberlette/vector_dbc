@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.6] - 2021-04-19
+### Fixed
+- Support empty node (BU_) list with just Vector__XXX
+
 ## [2.0.5] - 2020-01-04
 ### Changed
 - Changed style to Google
