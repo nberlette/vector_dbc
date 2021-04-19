@@ -96,7 +96,7 @@ uint64_t Signal::decode(std::vector<uint8_t> & data) const {
         /* start with MSB */
         unsigned int srcBit = startBit;
         unsigned int dstBit = bitSize - 1;
-        for (auto i = 0; i < bitSize; ++i) {
+        for (uint32_t i = 0; i < bitSize; ++i) {
             /* copy bit */
             if (data[srcBit / 8] & (1 << (srcBit % 8)))
                 retVal |= (1ULL << dstBit);
@@ -112,7 +112,7 @@ uint64_t Signal::decode(std::vector<uint8_t> & data) const {
         /* start with LSB */
         unsigned int srcBit = startBit;
         unsigned int dstBit = 0;
-        for (auto i = 0; i < bitSize; ++i) {
+        for (uint32_t i = 0; i < bitSize; ++i) {
             /* copy bit */
             if (data[srcBit / 8] & (1 << (srcBit % 8)))
                 retVal |= (1ULL << dstBit);
@@ -144,7 +144,7 @@ void Signal::encode(std::vector<uint8_t> & data, uint64_t rawValue) const {
         /* start with MSB */
         unsigned int srcBit = startBit;
         unsigned int dstBit = bitSize - 1;
-        for (auto i = 0; i < bitSize; ++i) {
+        for (uint32_t i = 0; i < bitSize; ++i) {
             /* copy bit */
             if (rawValue & (1ULL << dstBit))
                 data[srcBit / 8] |= (1 << (srcBit % 8));
@@ -162,7 +162,7 @@ void Signal::encode(std::vector<uint8_t> & data, uint64_t rawValue) const {
         /* start with LSB */
         unsigned int srcBit = startBit;
         unsigned int dstBit = 0;
-        for (auto i = 0; i < bitSize; ++i) {
+        for (uint32_t i = 0; i < bitSize; ++i) {
             /* copy bit */
             if (rawValue & (1ULL << dstBit))
                 data[srcBit / 8] |= (1 << (srcBit % 8));

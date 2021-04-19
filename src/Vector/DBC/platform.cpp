@@ -19,8 +19,6 @@
  * met: http://www.gnu.org/copyleft/gpl.html.
  */
 
-#pragma once
-
 #include "platform.h"
 
 const std::string endl = "\r\n";
